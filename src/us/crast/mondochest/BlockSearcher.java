@@ -17,18 +17,32 @@ public class BlockSearcher {
 	}
 	
 	public java.util.Vector<Block> findBlocks(Block contextBlock) {
-		java.util.Vector<Block> blocksFound = new java.util.Vector<Block>();
 		Material targetMaterial = contextBlock.getType();
+		return findBlocks(contextBlock, targetMaterial, true);
+	}
+
+	public java.util.Vector<Block> findBlocks(Block contextBlock, boolean includeContext) {
+		Material targetMaterial = contextBlock.getType();
+		return findBlocks(contextBlock, targetMaterial, includeContext);
+	}
+	
+	public java.util.Vector<Block> findBlocks(Block contextBlock, Material targetMaterial) {
+		return findBlocks(contextBlock, targetMaterial,true);
+	}
+	
+	public java.util.Vector<Block> findBlocks(Block contextBlock, Material targetMaterial, boolean includeContext) {
+		java.util.Vector<Block> blocksFound = new java.util.Vector<Block>();
 		Location loc = contextBlock.getLocation().clone();
 		World world = loc.getWorld();
 		int maxX = loc.getBlockX() + radiusX;
 		int maxY = loc.getBlockY() + radiusY;
 		int maxZ = loc.getBlockZ() + radiusZ;
-		for (int x = loc.getBlockX() - radiusX; x < maxX; x++) {
-			for (int y = loc.getBlockY() - radiusY; y < maxY; y++) {
-				for (int z = loc.getBlockZ() - radiusZ; z < maxZ; z++) {
+		for (int x = loc.getBlockX() - radiusX; x <= maxX; x++) {
+			for (int y = loc.getBlockY() - radiusY; y <= maxY; y++) {
+				for (int z = loc.getBlockZ() - radiusZ; z <= maxZ; z++) {
 					Block block = world.getBlockAt(x, y, z);
 					if (block.getType() == targetMaterial) {
+						if (!includeContext && block.getLocation().equals(loc)) continue;
 						blocksFound.add(block);
 					}
 				}
