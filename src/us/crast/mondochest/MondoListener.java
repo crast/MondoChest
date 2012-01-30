@@ -1,5 +1,7 @@
 package us.crast.mondochest;
 
+import java.util.HashMap;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -9,11 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BlockVector;
 
 public class MondoListener implements Listener {
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
-	private BankSet bankset = null;
+	private HashMap<String, BankSet> banks = new HashMap<String, BankSet>();
+	private HashMap<BlockVector, BankSet> banksByCoords = new HashMap<BlockVector, BankSet>();
 	
 	public MondoListener(java.util.logging.Logger log) {
 		this.log = log;
@@ -36,38 +40,47 @@ public class MondoListener implements Listener {
 		case SIGN:
 			Sign sign = SignUtils.signFromBlock(block);
 			String firstLine = sign.getLine(0);
-			if (firstLine.startsWith("=Mondo")) {
-				if (firstLine.equals("=MondoMaster")) {
-					java.util.Vector<Chest> chestsFound = SignUtils.nearbyChests(sign);
-					if (chestsFound.isEmpty()) {
-						event.getPlayer().sendMessage("No chests found near MondoMaster sign");
-					} else if (this.bankset == null) {
-						this.bankset = new BankSet(chestsFound.elementAt(0));
-					} else {
-						String msg = "Found Materials: ";
-						for (Material m: this.bankset.refreshMaterials(block.getWorld())) {
-							msg += m.toString() + ", ";
-						}
-						event.getPlayer().sendMessage(msg);
+			if (firstLine.equals("[MondoChest]")) {
+				BlockVector vec = block.getLocation().toVector().toBlockVector();
+				BankSet bank = banksByCoords.get(vec);
+				if (bank == null) {
+					try {
+						bank = bankFromSign(sign);
+					} catch (MondoMessage m) {
+						event.getPlayer().sendMessage(m.getMessage());
 					}
+					banksByCoords.put(vec, bank);
+					initBank(bank, block);
 				} else {
-					for (Chest chest: SignUtils.nearbyChests(sign)) {
-						this.bankset.addChest(chest);
+					String msg = "Found Materials: ";
+					for (Material m: bank.refreshMaterials(block.getWorld())) {
+						msg += m.toString() + ", ";
 					}
+					event.getPlayer().sendMessage(msg);
+					bank.shelveItems(block.getWorld());
 				}
-				for (Chest chest: SignUtils.nearbyChests(sign)) {
-					Inventory inv = chest.getInventory();
-					listInventory(inv);
-				}
+			} else if (firstLine.equals("[MondoSlave]")) {
+				//stuff
 			}
 			break;
-		case CHEST:
-			for (Block someBlock: searcher.findBlocks(block)) {
-				Chest chest = (Chest) someBlock.getState();
-				Inventory inv = chest.getInventory();
-				listInventory(inv);
+		}
+	}
+
+	private BankSet bankFromSign(Sign sign) throws MondoMessage {
+		java.util.Vector<Chest> chestsFound = SignUtils.nearbyChests(sign);
+		if (chestsFound.isEmpty()) {
+			throw new MondoMessage("No chests found near MondoMaster sign");
+		} else {
+			return new BankSet(chestsFound.elementAt(0));
+		}
+	}
+	
+	private void initBank(BankSet bank, Block context) {
+		for (Block block: searcher.findBlocks(context, Material.SIGN)) {
+			Sign sign = SignUtils.signFromBlock(block);
+			for (Chest chest: SignUtils.nearbyChests(sign)) {
+				bank.addChest(chest);
 			}
-			break;
 		}
 	}
 	
