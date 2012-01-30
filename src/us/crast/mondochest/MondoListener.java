@@ -8,12 +8,16 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
 public class MondoListener implements Listener {
+	private static final String MASTER_SIGN_NAME = "[MondoChest]";
+	private static final String SLAVE_SIGN_NAME = "[MondoSlave]";
+	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
 	private HashMap<String, BankSet> banks = new HashMap<String, BankSet>();
@@ -27,6 +31,7 @@ public class MondoListener implements Listener {
 	
 	@EventHandler
     public void playerInteract(PlayerInteractEvent event) {
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
 		Material blockType = block.getType();
 		String typestr = block.getType().toString();
@@ -40,7 +45,7 @@ public class MondoListener implements Listener {
 		case SIGN:
 			Sign sign = SignUtils.signFromBlock(block);
 			String firstLine = sign.getLine(0);
-			if (firstLine.equals("[MondoChest]")) {
+			if (firstLine.equals(MASTER_SIGN_NAME)) {
 				BlockVector vec = block.getLocation().toVector().toBlockVector();
 				BankSet bank = banksByCoords.get(vec);
 				if (bank == null) {
@@ -48,19 +53,36 @@ public class MondoListener implements Listener {
 						bank = bankFromSign(sign);
 					} catch (MondoMessage m) {
 						event.getPlayer().sendMessage(m.getMessage());
+						return;
 					}
 					banksByCoords.put(vec, bank);
 					initBank(bank, block);
-				} else {
-					String msg = "Found Materials: ";
-					for (Material m: bank.refreshMaterials(block.getWorld())) {
-						msg += m.toString() + ", ";
-					}
-					event.getPlayer().sendMessage(msg);
-					bank.shelveItems(block.getWorld());
+					event.getPlayer().sendMessage("Created bank with " + bank.numChests() + " chests");
+				} 
+				String msg = "Found Materials: ";
+				for (Material m: bank.refreshMaterials(block.getWorld())) {
+					msg += m.toString() + ", ";
 				}
-			} else if (firstLine.equals("[MondoSlave]")) {
-				//stuff
+				event.getPlayer().sendMessage(msg);
+				bank.shelveItems(block.getWorld());
+			} else if (firstLine.equals(SLAVE_SIGN_NAME)) {
+				BlockVector v = block.getLocation().toVector().toBlockVector();
+				BlockVector other = null;
+				double otherdistance = 0;
+				for (BlockVector candidate: banksByCoords.keySet()) {
+					if (other == null) {
+						other = candidate;
+						otherdistance = v.distance(candidate);
+					} else {
+						double curdistance = v.distance(candidate);
+						if (curdistance < otherdistance) {
+							other = candidate;
+						}
+					}
+				}
+				if (other != null) {
+					addNearbyChestsToBank(banksByCoords.get(other), sign);
+				}
 			}
 			break;
 		}
@@ -75,13 +97,24 @@ public class MondoListener implements Listener {
 		}
 	}
 	
-	private void initBank(BankSet bank, Block context) {
-		for (Block block: searcher.findBlocks(context, Material.SIGN)) {
+	private int addNearbyChestsToBank(BankSet bank, Sign sign) {
+		int chestsAdded = 0;
+		for (Chest chest: SignUtils.nearbyChests(sign)) {
+			bank.addChest(chest);
+			chestsAdded++;
+		}
+		return chestsAdded;
+	}
+	
+	private int initBank(BankSet bank, Block context) {
+		int chestsAdded = 0;
+		for (Block block: searcher.findBlocks(context)) {
 			Sign sign = SignUtils.signFromBlock(block);
-			for (Chest chest: SignUtils.nearbyChests(sign)) {
-				bank.addChest(chest);
+			if (sign.getLine(0).equals(SLAVE_SIGN_NAME)) {
+				chestsAdded += addNearbyChestsToBank(bank, sign);
 			}
 		}
+		return chestsAdded;
 	}
 	
 	private void listInventory(Inventory inv) {

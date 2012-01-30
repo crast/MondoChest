@@ -43,9 +43,13 @@ public class BankSet {
 			ChestManager dest = materialChests.get(m);
 			if (dest != null) {
 				HashMap<Integer, ItemStack> x = dest.addItem(world, stack);
-				masterChest.removeItem(world, stack);
+				//masterChest.removeItem(world, stack);
 				ChestManager.printWeirdStack(x);
 			}
 		}
+	}
+	
+	public int numChests() {
+		return chestLocations.size();
 	}
 }
