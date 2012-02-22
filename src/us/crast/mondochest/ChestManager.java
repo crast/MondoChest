@@ -18,14 +18,16 @@ public class ChestManager {
 	private static final BlockFace[] cardinals = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
 	private BlockVector chest1 = null;
 	private BlockVector chest2 = null;
+	private boolean restackAllowed;
 	@SuppressWarnings("unused")
 	private java.util.logging.Logger log = Logger.getLogger("Minecraft");
 	
-	public ChestManager(Chest chest) { 
-		this(chest.getBlock());
+	public ChestManager(Chest chest, boolean allow_restack) { 
+		this(chest.getBlock(), allow_restack);
 	}
 	
-	public ChestManager(Block block) {
+	public ChestManager(Block block, boolean allow_restack) {
+		this.setRestackAllowed(allow_restack);
 		chest1 = block.getLocation().toVector().toBlockVector();
 		for (BlockFace face: cardinals) {
 			Block other = block.getRelative(face);
@@ -134,5 +136,13 @@ public class ChestManager {
 
 	public BlockVector getChest2() {
 		return chest2;
+	}
+
+	public boolean isRestackAllowed() {
+		return restackAllowed;
+	}
+
+	public void setRestackAllowed(boolean restackAllowed) {
+		this.restackAllowed = restackAllowed;
 	}
 }

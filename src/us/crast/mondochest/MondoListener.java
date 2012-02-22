@@ -49,15 +49,20 @@ public class MondoListener implements Listener {
 			if (firstLine.equals(MASTER_SIGN_NAME)) {
 				BlockVector vec = block.getLocation().toVector().toBlockVector();
 				BankSet bank = banksByCoords.get(vec);
+				
 				if (bank == null) {
+					Block bank_context = block;
 					try {
 						bank = bankFromSign(sign);
+						if (!sign.getLine(1).isEmpty()) {
+							bank_context = DirectionalStrings.parseDirectional(block, sign.getLine(1));
+						}
 					} catch (MondoMessage m) {
 						event.getPlayer().sendMessage(m.getMessage());
 						return;
 					}
 					banksByCoords.put(vec, bank);
-					initBank(bank, block);
+					initBank(bank, block, bank_context);
 					event.getPlayer().sendMessage("Created bank with " + bank.numChests() + " chests");
 				}
 				bank.restackSpecial(block.getWorld());
@@ -105,17 +110,18 @@ public class MondoListener implements Listener {
 	
 	private int addNearbyChestsToBank(BankSet bank, Sign sign) {
 		int chestsAdded = 0;
+		boolean allow_restack = sign.getLine(1).equals("restack");
 		for (Chest chest: SignUtils.nearbyChests(sign)) {
-			if (bank.addChest(chest)) {
+			if (bank.addChest(chest, allow_restack)) {
 				chestsAdded++;
 			}
 		}
 		return chestsAdded;
 	}
 	
-	private int initBank(BankSet bank, Block context) {
+	private int initBank(BankSet bank, Block orig, Block search_context) {
 		int chestsAdded = 0;
-		for (Block block: searcher.findBlocks(context)) {
+		for (Block block: searcher.findBlocks(search_context, orig.getType())) {
 			Sign sign = SignUtils.signFromBlock(block);
 			if (sign.getLine(0).equals(SLAVE_SIGN_NAME)) {
 				chestsAdded += addNearbyChestsToBank(bank, sign);

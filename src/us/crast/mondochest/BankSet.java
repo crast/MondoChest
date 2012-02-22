@@ -2,6 +2,8 @@ package us.crast.mondochest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
@@ -13,7 +15,7 @@ public class BankSet {
 	private Map<Material, ChestManager> materialChests = new HashMap<Material, ChestManager>();
 	
 	public BankSet(Chest masterChest) {
-		this.masterChest = new ChestManager(masterChest);
+		this.masterChest = new ChestManager(masterChest, false);
 	}
 	
 	public void restackSpecial(World world) {
@@ -21,7 +23,11 @@ public class BankSet {
 	}
 	
 	public boolean addChest(Chest chest) {
-		ChestManager newmanager = new ChestManager(chest);
+		return addChest(chest, false);
+	}
+	
+	public boolean addChest(Chest chest, boolean allow_restack) {
+		ChestManager newmanager = new ChestManager(chest, allow_restack);
 		for (ChestManager m: chestLocations) {
 			if (m.equals(newmanager)) return false;
 		}
@@ -41,6 +47,7 @@ public class BankSet {
 	
 	public int shelveItems(World world) {
 		int num_shelved = 0;
+		Set<ChestManager> to_restack = new java.util.HashSet<ChestManager>();
 		for (ItemStack stack: masterChest.listItems(world)) {
 			Material m = stack.getType();
 			ChestManager dest = materialChests.get(m);
@@ -54,8 +61,14 @@ public class BankSet {
 					ChestManager.printWeirdStack(failures);
 				}
 				//log.info("Stack of " + stack.getType().toString() + " ending quantity: " + stack.getAmount());
+				if (dest.isRestackAllowed()) {
+					to_restack.add(dest);
+				}
 				num_shelved++;
 			}
+		}
+		for (ChestManager chest: to_restack) {
+			chest.restackSpecial(world);
 		}
 		return num_shelved;
 	}
