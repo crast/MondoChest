@@ -20,7 +20,7 @@ public class MondoListener implements Listener {
 	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
-	private HashMap<String, BankSet> banks = new HashMap<String, BankSet>();
+	//private HashMap<String, BankSet> banks = new HashMap<String, BankSet>();
 	private HashMap<BlockVector, BankSet> banksByCoords = new HashMap<BlockVector, BankSet>();
 	
 	public MondoListener(java.util.logging.Logger log) {
@@ -34,12 +34,13 @@ public class MondoListener implements Listener {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
 		Material blockType = block.getType();
-		String typestr = block.getType().toString();
+		/*
 		log.info("Got PlayerInteract event: " + typestr + 
 				" at x=" + block.getX() +
 				" y=" + block.getY() +
 				" z=" + block.getZ()
 				);
+		*/
 		switch (blockType) {
 		case WALL_SIGN:
 		case SIGN:
@@ -59,12 +60,11 @@ public class MondoListener implements Listener {
 					initBank(bank, block);
 					event.getPlayer().sendMessage("Created bank with " + bank.numChests() + " chests");
 				} 
-				String msg = "Found Materials: ";
-				for (Material m: bank.refreshMaterials(block.getWorld())) {
-					msg += m.toString() + ", ";
+				bank.refreshMaterials(block.getWorld());
+				int num_shelved = bank.shelveItems(block.getWorld());
+				if (num_shelved > 0) {
+					event.getPlayer().sendMessage(String.format("Shelved %d items", num_shelved));
 				}
-				event.getPlayer().sendMessage(msg);
-				bank.shelveItems(block.getWorld());
 			} else if (firstLine.equals(SLAVE_SIGN_NAME)) {
 				BlockVector v = block.getLocation().toVector().toBlockVector();
 				BlockVector other = null;
@@ -81,7 +81,12 @@ public class MondoListener implements Listener {
 					}
 				}
 				if (other != null) {
-					addNearbyChestsToBank(banksByCoords.get(other), sign);
+					int num_added = addNearbyChestsToBank(banksByCoords.get(other), sign);
+					if (num_added > 0) {
+						event.getPlayer().sendMessage("Added " + num_added + " chest" + (num_added == 1? "": "s") +" to bank");
+					} else {
+						event.getPlayer().sendMessage("Chests probably already in bank");
+					}
 				}
 			}
 			break;
@@ -100,8 +105,9 @@ public class MondoListener implements Listener {
 	private int addNearbyChestsToBank(BankSet bank, Sign sign) {
 		int chestsAdded = 0;
 		for (Chest chest: SignUtils.nearbyChests(sign)) {
-			bank.addChest(chest);
-			chestsAdded++;
+			if (bank.addChest(chest)) {
+				chestsAdded++;
+			}
 		}
 		return chestsAdded;
 	}
@@ -117,6 +123,7 @@ public class MondoListener implements Listener {
 		return chestsAdded;
 	}
 	
+	@SuppressWarnings("unused")
 	private void listInventory(Inventory inv) {
 		for(ItemStack stack: inv.getContents()) {
 			if (stack == null) continue;

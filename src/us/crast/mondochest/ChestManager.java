@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -19,6 +18,8 @@ public class ChestManager {
 	private static final BlockFace[] cardinals = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
 	private BlockVector chest1 = null;
 	private BlockVector chest2 = null;
+	@SuppressWarnings("unused")
+	private java.util.logging.Logger log = Logger.getLogger("Minecraft");
 	
 	public ChestManager(Chest chest) { 
 		this(chest.getBlock());
@@ -92,6 +93,7 @@ public class ChestManager {
 	}
 	
 	public static void printWeirdStack(HashMap<Integer, ItemStack> entries) {
+		if (entries.isEmpty()) return;
 		Logger logger = Logger.getLogger("Minecraft");
 		logger.info("Printing Weird Hashmap:");
 		for (Map.Entry<Integer, ItemStack> entry: entries.entrySet()) {

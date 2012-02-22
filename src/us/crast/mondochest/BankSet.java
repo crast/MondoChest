@@ -2,12 +2,10 @@ package us.crast.mondochest;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.BlockVector;
 
 public class BankSet {
 	private ChestManager masterChest;
@@ -37,16 +35,25 @@ public class BankSet {
 		return materialChests.keySet();
 	}
 	
-	public void shelveItems(World world) {
+	public int shelveItems(World world) {
+		int num_shelved = 0;
 		for (ItemStack stack: masterChest.listItems(world)) {
 			Material m = stack.getType();
 			ChestManager dest = materialChests.get(m);
 			if (dest != null) {
-				HashMap<Integer, ItemStack> x = dest.addItem(world, stack);
-				//masterChest.removeItem(world, stack);
-				ChestManager.printWeirdStack(x);
+				//Logger log = Logger.getLogger("Minecraft");
+				//log.info("Stack of " + stack.getType().toString() + " starting quantity: " + stack.getAmount());
+				HashMap<Integer, ItemStack> failures = dest.addItem(world, stack);
+				if (failures.isEmpty() && stack.getAmount() >= 0) {
+					masterChest.removeItem(world, stack);
+				} else {
+					ChestManager.printWeirdStack(failures);
+				}
+				//log.info("Stack of " + stack.getType().toString() + " ending quantity: " + stack.getAmount());
+				num_shelved++;
 			}
 		}
+		return num_shelved;
 	}
 	
 	public int numChests() {
