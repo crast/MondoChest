@@ -59,7 +59,8 @@ public class MondoListener implements Listener {
 					banksByCoords.put(vec, bank);
 					initBank(bank, block);
 					event.getPlayer().sendMessage("Created bank with " + bank.numChests() + " chests");
-				} 
+				}
+				bank.restackSpecial(block.getWorld());
 				bank.refreshMaterials(block.getWorld());
 				int num_shelved = bank.shelveItems(block.getWorld());
 				if (num_shelved > 0) {

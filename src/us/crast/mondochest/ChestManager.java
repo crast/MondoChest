@@ -105,6 +105,10 @@ public class ChestManager {
 		}
 	}
 	
+	public void restackSpecial(World world) {
+		Restacker.restackChestManager(world, this);
+	}
+	
 	/* Object Primitives */
 	public int hashCode() {
 		int code = chest1.hashCode();

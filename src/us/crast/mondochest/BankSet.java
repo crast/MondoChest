@@ -16,6 +16,10 @@ public class BankSet {
 		this.masterChest = new ChestManager(masterChest);
 	}
 	
+	public void restackSpecial(World world) {
+		masterChest.restackSpecial(world);
+	}
+	
 	public boolean addChest(Chest chest) {
 		ChestManager newmanager = new ChestManager(chest);
 		for (ChestManager m: chestLocations) {
