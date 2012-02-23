@@ -26,7 +26,6 @@ public class MondoListener implements Listener {
 	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher) {
 		this.log = log;
 		this.searcher = searcher;
-		log.info("Started MondoListener too");
 	}
 	
 	public MondoListener(java.util.logging.Logger log) {
@@ -47,7 +46,6 @@ public class MondoListener implements Listener {
 		*/
 		switch (blockType) {
 		case WALL_SIGN:
-		case SIGN:
 			Sign sign = SignUtils.signFromBlock(block);
 			String firstLine = sign.getLine(0);
 			if (firstLine.equals(MASTER_SIGN_NAME)) {

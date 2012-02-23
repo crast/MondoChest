@@ -10,11 +10,11 @@ public class MondoChest extends JavaPlugin {
 	private MondoListener listener = null;
 
 	public void onEnable() {
-		log.info("Loaded MondoChest v1");
 		saveDefaultConfig();
 		MondoConfig.configure(getConfig(), log);
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig());
 		getServer().getPluginManager().registerEvents(listener, this);
+		log.info("Loaded MondoChest v0.1");
 
 	}
 	
