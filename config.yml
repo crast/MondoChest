@@ -12,10 +12,10 @@ chest_search:
 # Allow restacking of materials for the master chest.  Restacking will allow
 # various materials which can't stack or stack to less than 64 to be stacked to
 # the maximum value.
-restack_master: true
+restack_master: false
 
 # Restack materials for the slave chests if 'restack' is on the second line.
-restack_slaves: true
+restack_slaves: false
 
 # What materials to restack to the maximum 64
 restack_materials:
