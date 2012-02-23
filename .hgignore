@@ -3,3 +3,4 @@ syntax: regexp
 ^\.classpath
 ^\.project
 ^\.settings
+^MondoChest\.jar
