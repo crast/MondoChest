@@ -7,16 +7,14 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-public class Restacker {
-	private static final Material[] STACKABLE_MATERIALS = {Material.SIGN, Material.SNOW_BALL, Material.EGG};
-	
+public class Restacker {	
 	public static void restackChestManager(World world, ChestManager manager) {
 		restack(new RestackerContextChestManager(manager, world));
 	}
 	
 	private static void restack(RestackerContext context) {
 		Map<Integer, ItemStack> availMats = new java.util.HashMap<Integer, ItemStack>();
-		for (Material mat: STACKABLE_MATERIALS) availMats.put(new Integer(mat.getId()), null);
+		for (Material mat: MondoConfig.RESTACK_MATERIALS) availMats.put(new Integer(mat.getId()), null);
 		
 		List<ItemStack> items = context.listItems();
 		for (ItemStack stack: items) {

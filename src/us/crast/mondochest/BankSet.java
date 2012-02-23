@@ -3,6 +3,7 @@ package us.crast.mondochest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -11,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class BankSet {
 	private ChestManager masterChest;
-	private java.util.Vector<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
+	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
 	private Map<Material, ChestManager> materialChests = new HashMap<Material, ChestManager>();
 	
 	public BankSet(Chest masterChest) {
@@ -67,8 +68,10 @@ public class BankSet {
 				num_shelved++;
 			}
 		}
-		for (ChestManager chest: to_restack) {
-			chest.restackSpecial(world);
+		if (MondoConfig.RESTACK_SLAVES) {
+			for (ChestManager chest: to_restack) {
+				chest.restackSpecial(world);
+			}
 		}
 		return num_shelved;
 	}

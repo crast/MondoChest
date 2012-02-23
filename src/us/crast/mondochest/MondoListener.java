@@ -23,10 +23,14 @@ public class MondoListener implements Listener {
 	//private HashMap<String, BankSet> banks = new HashMap<String, BankSet>();
 	private HashMap<BlockVector, BankSet> banksByCoords = new HashMap<BlockVector, BankSet>();
 	
-	public MondoListener(java.util.logging.Logger log) {
+	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher) {
 		this.log = log;
-		this.searcher = new BlockSearcher(20, 10, 20);
+		this.searcher = searcher;
 		log.info("Started MondoListener too");
+	}
+	
+	public MondoListener(java.util.logging.Logger log) {
+		this(log, new BlockSearcher(20, 10, 20));
 	}
 	
 	@EventHandler
@@ -65,11 +69,13 @@ public class MondoListener implements Listener {
 					initBank(bank, block, bank_context);
 					event.getPlayer().sendMessage("Created bank with " + bank.numChests() + " chests");
 				}
-				bank.restackSpecial(block.getWorld());
 				bank.refreshMaterials(block.getWorld());
 				int num_shelved = bank.shelveItems(block.getWorld());
 				if (num_shelved > 0) {
 					event.getPlayer().sendMessage(String.format("Shelved %d items", num_shelved));
+				}
+				if (MondoConfig.RESTACK_MASTER) {
+					bank.restackSpecial(block.getWorld());
 				}
 			} else if (firstLine.equals(SLAVE_SIGN_NAME)) {
 				BlockVector v = block.getLocation().toVector().toBlockVector();
@@ -102,7 +108,7 @@ public class MondoListener implements Listener {
 	private BankSet bankFromSign(Sign sign) throws MondoMessage {
 		java.util.Vector<Chest> chestsFound = SignUtils.nearbyChests(sign);
 		if (chestsFound.isEmpty()) {
-			throw new MondoMessage("No chests found near MondoMaster sign");
+			throw new MondoMessage("No chests found near MondoChest sign");
 		} else {
 			return new BankSet(chestsFound.elementAt(0));
 		}
