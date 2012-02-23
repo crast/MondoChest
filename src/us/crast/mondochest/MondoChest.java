@@ -2,18 +2,30 @@ package us.crast.mondochest;
 
 import java.util.logging.Logger;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MondoChest extends JavaPlugin {
 	Logger log = Logger.getLogger("Minecraft");
-	MondoListener listener = null;
+	private MondoListener listener = null;
 
 	public void onEnable() {
 		log.info("Loaded MondoChest v1");
-		if (listener == null) listener = new MondoListener(log);
+		saveDefaultConfig();
+		MondoConfig.configure(getConfig(), log);
+		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig());
 		getServer().getPluginManager().registerEvents(listener, this);
 
 	}
+	
+	private BlockSearcher getSearcherFromConfig() {
+		FileConfiguration config = getConfig();
+		int x = config.getInt("chest_search.radiusX");
+		int y = config.getInt("chest_search.radiusY");
+		int z = config.getInt("chest_search.radiusZ");
+		return new BlockSearcher(x, y, z);
+	}
+	
 	public void onDisable(){
 		
 	}

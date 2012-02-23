@@ -1,0 +1,25 @@
+# How far from the master chest to search for slave chests.
+# an X radius of 20 blocks means 20 blocks plus or minus in either direction
+# from the block in question.
+#
+# a radius of (20, 10, 20) will therefore search 
+# (20*2) * (10*2) * (20*2) = 32,000 blocks.
+chest_search:
+    radiusX: 20
+    radiusY: 10
+    radiusZ: 20
+
+# Allow restacking of materials for the master chest.  Restacking will allow
+# various materials which can't stack or stack to less than 64 to be stacked to
+# the maximum value.
+restack_master: true
+
+# Restack materials for the slave chests if 'restack' is on the second line.
+restack_slaves: true
+
+# What materials to restack to the maximum 64
+restack_materials:
+  - SIGN
+  - SNOW_BALL
+  - EGG
+
