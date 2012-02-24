@@ -1,0 +1,7 @@
+Version 0.2: 2012-02-24
+ - Do not try to make a config file if config.yml exists.
+ - Item restacking is off by default in configuration
+ - Chest search uses world.getMaxHeight() to prepare for 1.2
+
+Version 0.1: 2012-02-23
+ - Initial Release
