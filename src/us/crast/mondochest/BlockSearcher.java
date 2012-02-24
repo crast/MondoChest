@@ -34,9 +34,13 @@ public class BlockSearcher {
 		java.util.Vector<Block> blocksFound = new java.util.Vector<Block>();
 		Location loc = contextBlock.getLocation().clone();
 		World world = loc.getWorld();
+		// Maximum possible height can be overridden.
+		int maxHeight = (MondoConfig.CONSTRAINTS_Y_MAX == -1)? (loc.getWorld().getMaxHeight() -1): MondoConfig.CONSTRAINTS_Y_MAX;
+		
 		int maxX = loc.getBlockX() + radiusX;
-		int maxY = Math.min(loc.getBlockY() + radiusY, MondoConfig.CONSTRAINTS_Y_MAX);
+		int maxY = Math.min(loc.getBlockY() + radiusY, maxHeight);
 		int maxZ = loc.getBlockZ() + radiusZ;
+		
 		int minY = Math.max(loc.getBlockZ() - radiusZ, MondoConfig.CONSTRAINTS_Y_MIN);
 		for (int x = loc.getBlockX() - radiusX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {

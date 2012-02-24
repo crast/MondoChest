@@ -29,5 +29,8 @@ restack_materials:
 # in MC 1.2 and we want to be ready.
 world_constraints:
     Ymin: 0
-    Ymax: 127
+    # Set Ymax to -1 to have the code use world.getMaxHeight(). This should
+    # work in 1.1 and 1.2 just fine, but the option exists to override just in
+    # case you want different behavior.
+    Ymax: -1
 
