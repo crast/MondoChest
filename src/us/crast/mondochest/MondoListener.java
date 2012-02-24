@@ -28,22 +28,11 @@ public class MondoListener implements Listener {
 		this.searcher = searcher;
 	}
 	
-	public MondoListener(java.util.logging.Logger log) {
-		this(log, new BlockSearcher(20, 10, 20));
-	}
-	
 	@EventHandler
     public void playerInteract(PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
 		Material blockType = block.getType();
-		/*
-		log.info("Got PlayerInteract event: " + typestr + 
-				" at x=" + block.getX() +
-				" y=" + block.getY() +
-				" z=" + block.getZ()
-				);
-		*/
 		switch (blockType) {
 		case WALL_SIGN:
 			Sign sign = SignUtils.signFromBlock(block);
