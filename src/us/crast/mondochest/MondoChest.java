@@ -1,5 +1,6 @@
 package us.crast.mondochest;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,7 +11,9 @@ public class MondoChest extends JavaPlugin {
 	private MondoListener listener = null;
 
 	public void onEnable() {
-		saveDefaultConfig();
+		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
+			saveDefaultConfig();
+		}
 		MondoConfig.configure(getConfig(), log);
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig());
 		getServer().getPluginManager().registerEvents(listener, this);
