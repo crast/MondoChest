@@ -14,6 +14,7 @@ public class BankSet {
 	private ChestManager masterChest;
 	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
 	private Map<Material, ChestManager> materialChests = new HashMap<Material, ChestManager>();
+	private Map<MaterialWithData, ChestManager> materialDataChests = new HashMap<MaterialWithData, ChestManager>();
 	
 	public BankSet(Chest masterChest) {
 		this.masterChest = new ChestManager(masterChest, false);
@@ -38,8 +39,10 @@ public class BankSet {
 	
 	public java.util.Set<Material> refreshMaterials(World world) {
 		materialChests.clear();
+		materialDataChests.clear();
 		for (ChestManager m: chestLocations) {
 			for (ItemStack stack: m.listItems(world)) {
+				materialDataChests.put(new MaterialWithData(stack), m);
 				materialChests.put(stack.getType(), m);
 			}
 		}
@@ -50,8 +53,12 @@ public class BankSet {
 		int num_shelved = 0;
 		Set<ChestManager> to_restack = new java.util.HashSet<ChestManager>();
 		for (ItemStack stack: masterChest.listItems(world)) {
-			Material m = stack.getType();
-			ChestManager dest = materialChests.get(m);
+			MaterialWithData md = new MaterialWithData(stack);
+			ChestManager dest = materialDataChests.get(md);
+			if (dest == null) {
+				Material m = stack.getType();
+				dest = materialChests.get(m);
+			}
 			if (dest != null) {
 				//Logger log = Logger.getLogger("Minecraft");
 				//log.info("Stack of " + stack.getType().toString() + " starting quantity: " + stack.getAmount());
