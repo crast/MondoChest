@@ -35,10 +35,11 @@ public class BlockSearcher {
 		Location loc = contextBlock.getLocation().clone();
 		World world = loc.getWorld();
 		int maxX = loc.getBlockX() + radiusX;
-		int maxY = loc.getBlockY() + radiusY;
+		int maxY = Math.min(loc.getBlockY() + radiusY, MondoConfig.CONSTRAINTS_Y_MAX);
 		int maxZ = loc.getBlockZ() + radiusZ;
+		int minY = Math.max(loc.getBlockZ() - radiusZ, MondoConfig.CONSTRAINTS_Y_MIN);
 		for (int x = loc.getBlockX() - radiusX; x <= maxX; x++) {
-			for (int y = loc.getBlockY() - radiusY; y <= maxY; y++) {
+			for (int y = minY; y <= maxY; y++) {
 				for (int z = loc.getBlockZ() - radiusZ; z <= maxZ; z++) {
 					Block block = world.getBlockAt(x, y, z);
 					if (block.getType() == targetMaterial) {

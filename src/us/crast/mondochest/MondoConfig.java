@@ -10,6 +10,9 @@ public final class MondoConfig {
 	public static boolean RESTACK_SLAVES = false;
 	public static Material[] RESTACK_MATERIALS = {};
 	
+	public static int CONSTRAINTS_Y_MAX = 127;
+	public static int CONSTRAINTS_Y_MIN = 0;
+	
 	public static void configure(FileConfiguration config, Logger log) {
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
@@ -18,5 +21,8 @@ public final class MondoConfig {
 		for (int i = 0; i < matlist.size(); i++) {
 			RESTACK_MATERIALS[i] = Material.matchMaterial(matlist.get(i));
 		}
+		
+		CONSTRAINTS_Y_MAX = config.getInt("world_constraints.Ymax");
+		CONSTRAINTS_Y_MIN = config.getInt("world_constraints.Ymin");
 	}
 }

@@ -23,3 +23,11 @@ restack_materials:
   - SNOW_BALL
   - EGG
 
+
+# Constraints on the search algorithm's Y coordinate
+# This is here because the Y-max is going to increase
+# in MC 1.2 and we want to be ready.
+world_constraints:
+    Ymin: 0
+    Ymax: 127
+
