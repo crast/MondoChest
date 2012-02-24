@@ -1,3 +1,7 @@
+Version 0.3: 2012-02-24
+ - Items are now disambiguated by data value: colors of wool, dyes, etc
+   can go into different chests
+
 Version 0.2: 2012-02-24
  - Do not try to make a config file if config.yml exists.
  - Item restacking is off by default in configuration

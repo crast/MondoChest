@@ -17,7 +17,7 @@ public class MondoChest extends JavaPlugin {
 		MondoConfig.configure(getConfig(), log);
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig());
 		getServer().getPluginManager().registerEvents(listener, this);
-		log.info("MondoChest v0.2 ready");
+		log.info("MondoChest v0.3 ready");
 
 	}
 	
