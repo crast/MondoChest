@@ -13,6 +13,8 @@ public final class MondoConfig {
 	public static int CONSTRAINTS_Y_MAX = 127;
 	public static int CONSTRAINTS_Y_MIN = 0;
 	
+	public static boolean USE_PERMISSIONS = false;
+	
 	public static void configure(FileConfiguration config, Logger log) {
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
@@ -24,5 +26,7 @@ public final class MondoConfig {
 		
 		CONSTRAINTS_Y_MAX = config.getInt("world_constraints.Ymax");
 		CONSTRAINTS_Y_MIN = config.getInt("world_constraints.Ymin");
+		
+		USE_PERMISSIONS = config.getBoolean("permissions");
 	}
 }

@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -18,6 +19,11 @@ public class MondoListener implements Listener {
 	private static final String MASTER_SIGN_NAME = "[MondoChest]";
 	private static final String SLAVE_SIGN_NAME = "[MondoSlave]";
 	
+	private static final String PERMISSION_USE = "mondochest.use";
+	private static final String PERMISSION_CREATE_BANK = "mondochest.create_master";
+	private static final String PERMISSION_ADD_SLAVE = "mondochest.add_slave";
+	
+	private boolean use_permissions;
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
 	//private HashMap<String, BankSet> banks = new HashMap<String, BankSet>();
@@ -26,6 +32,7 @@ public class MondoListener implements Listener {
 	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher) {
 		this.log = log;
 		this.searcher = searcher;
+		this.use_permissions = !MondoConfig.USE_PERMISSIONS;
 	}
 	
 	@EventHandler
@@ -38,10 +45,19 @@ public class MondoListener implements Listener {
 			Sign sign = SignUtils.signFromBlock(block);
 			String firstLine = sign.getLine(0);
 			if (firstLine.equals(MASTER_SIGN_NAME)) {
+				Player player = event.getPlayer();
+				if (use_permissions && !player.hasPermission(PERMISSION_USE)) {
+					event.getPlayer().sendMessage("No permissions to use MondoChest");
+					return;
+				}
 				BlockVector vec = block.getLocation().toVector().toBlockVector();
 				BankSet bank = banksByCoords.get(vec);
 				
 				if (bank == null) {
+					if (use_permissions && !player.hasPermission(PERMISSION_CREATE_BANK)) {
+						player.sendMessage("No permissions to create new MondoChest bank");
+						return;
+					}
 					Block bank_context = block;
 					try {
 						bank = bankFromSign(sign);
@@ -49,12 +65,12 @@ public class MondoListener implements Listener {
 							bank_context = DirectionalStrings.parseDirectional(block, sign.getLine(1));
 						}
 					} catch (MondoMessage m) {
-						event.getPlayer().sendMessage(m.getMessage());
+						player.sendMessage(m.getMessage());
 						return;
 					}
 					banksByCoords.put(vec, bank);
 					initBank(bank, block, bank_context);
-					event.getPlayer().sendMessage("Created bank with " + bank.numChests() + " chests");
+					player.sendMessage("Created bank with " + bank.numChests() + " chests");
 				}
 				bank.refreshMaterials(block.getWorld());
 				int num_shelved = bank.shelveItems(block.getWorld());
@@ -64,7 +80,8 @@ public class MondoListener implements Listener {
 				if (MondoConfig.RESTACK_MASTER) {
 					bank.restackSpecial(block.getWorld());
 				}
-			} else if (firstLine.equals(SLAVE_SIGN_NAME)) {
+			} else if (firstLine.equals(SLAVE_SIGN_NAME) 
+					   && (!use_permissions || event.getPlayer().hasPermission(PERMISSION_ADD_SLAVE))) {
 				BlockVector v = block.getLocation().toVector().toBlockVector();
 				BlockVector other = null;
 				double otherdistance = 0;
