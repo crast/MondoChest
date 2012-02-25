@@ -32,7 +32,8 @@ public final class MondoConfig {
 			USE_PERMISSIONS = true;
 		} else if (!perms_config.equals("false") && !perms_config.equals("none")) {
 			log.warning(String.format(
-				"Do not know permissions scheme '%s', only supported scheme is SuperPerms at the moment.",
+				"[MondoChest] Do not know permissions scheme '%s', only supported "
+                + "scheme is SuperPerms at the moment.",
 				perms_config
 			));
 		}

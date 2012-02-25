@@ -1,3 +1,7 @@
+Version 0.4: 2012-02-26
+ - Permissions support
+ - Multiworld support
+
 Version 0.3: 2012-02-24
  - Items are now disambiguated by data value: colors of wool, dyes, etc
    can go into different chests
