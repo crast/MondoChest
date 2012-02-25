@@ -23,6 +23,9 @@ restack_materials:
   - SNOW_BALL
   - EGG
 
+# Valid values: false/none, SuperPerms
+permissions: false
+
 
 # Constraints on the search algorithm's Y coordinate
 # This is here because the Y-max is going to increase

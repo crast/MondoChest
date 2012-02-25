@@ -27,6 +27,14 @@ public final class MondoConfig {
 		CONSTRAINTS_Y_MAX = config.getInt("world_constraints.Ymax");
 		CONSTRAINTS_Y_MIN = config.getInt("world_constraints.Ymin");
 		
-		USE_PERMISSIONS = config.getBoolean("permissions");
+		String perms_config = config.getString("permissions").toLowerCase();
+		if (perms_config.equals("superperms") || perms_config.equals("true")) {
+			USE_PERMISSIONS = true;
+		} else if (!perms_config.equals("false") && !perms_config.equals("none")) {
+			log.warning(String.format(
+				"Do not know permissions scheme '%s', only supported scheme is SuperPerms at the moment.",
+				perms_config
+			));
+		}
 	}
 }
