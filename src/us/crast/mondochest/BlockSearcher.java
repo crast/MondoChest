@@ -1,5 +1,7 @@
 package us.crast.mondochest;
 
+import java.util.logging.Logger;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -32,6 +34,7 @@ public class BlockSearcher {
 	
 	public java.util.Vector<Block> findBlocks(Block contextBlock, Material targetMaterial, boolean includeContext) {
 		java.util.Vector<Block> blocksFound = new java.util.Vector<Block>();
+		//Logger log = Logger.getLogger("Minecraft");
 		Location loc = contextBlock.getLocation().clone();
 		World world = loc.getWorld();
 		// Maximum possible height can be overridden.
@@ -41,11 +44,14 @@ public class BlockSearcher {
 		int maxY = Math.min(loc.getBlockY() + radiusY, maxHeight);
 		int maxZ = loc.getBlockZ() + radiusZ;
 		
-		int minY = Math.max(loc.getBlockZ() - radiusZ, MondoConfig.CONSTRAINTS_Y_MIN);
+		int minY = Math.max(loc.getBlockY() - radiusY, MondoConfig.CONSTRAINTS_Y_MIN);
+		
+		//log.info(String.format("maxX: %d, minY: %d, maxY: %d, maxZ: %d", maxX, minY, maxY, maxZ));
 		for (int x = loc.getBlockX() - radiusX; x <= maxX; x++) {
 			for (int y = minY; y <= maxY; y++) {
 				for (int z = loc.getBlockZ() - radiusZ; z <= maxZ; z++) {
 					Block block = world.getBlockAt(x, y, z);
+					//log.info(String.format("Block at %d,%d,%d: %s", x, y, z, block.getType().toString()));
 					if (block.getType() == targetMaterial) {
 						if (!includeContext && block.getLocation().equals(loc)) continue;
 						blocksFound.add(block);
