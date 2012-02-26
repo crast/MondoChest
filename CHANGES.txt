@@ -1,15 +1,15 @@
-Version 0.4: 2012-02-26
- - Permissions support
- - Multiworld support
+Version 0.4: 2012-02-25
+ * Permissions support
+ * Multiworld support
 
 Version 0.3: 2012-02-24
- - Items are now disambiguated by data value: colors of wool, dyes, etc
+ * Items are now disambiguated by data value: colors of wool, dyes, etc
    can go into different chests
 
 Version 0.2: 2012-02-24
- - Do not try to make a config file if config.yml exists.
- - Item restacking is off by default in configuration
- - Chest search uses world.getMaxHeight() to prepare for 1.2
+ * Do not try to make a config file if config.yml exists.
+ * Item restacking is off by default in configuration
+ * Chest search uses world.getMaxHeight() to prepare for 1.2
 
 Version 0.1: 2012-02-23
- - Initial Release
+ * Initial Release
