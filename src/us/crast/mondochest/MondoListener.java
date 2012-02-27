@@ -24,9 +24,9 @@ public class MondoListener implements Listener {
 	private static final String MASTER_SIGN_NAME = "[MondoChest]";
 	private static final String SLAVE_SIGN_NAME = "[MondoSlave]";
 	
-	private PermissionChecker PERMISSION_USE;
-	private PermissionChecker PERMISSION_CREATE_BANK;
-	private PermissionChecker PERMISSION_ADD_SLAVE;
+	private PermissionChecker can_use;
+	private PermissionChecker can_create_bank;
+	private PermissionChecker can_add_slave;
 	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
@@ -35,9 +35,9 @@ public class MondoListener implements Listener {
 	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher) {
 		this.log = log;
 		this.searcher = searcher;
-		this.PERMISSION_USE = MondoSecurity.getChecker("mondochest.use");
-		this.PERMISSION_ADD_SLAVE = MondoSecurity.getChecker("mondochest.add_slave");
-		this.PERMISSION_CREATE_BANK = MondoSecurity.getChecker("mondochest.create_master");
+		this.can_use = MondoSecurity.getChecker("mondochest.use");
+		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
+		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
 	}
 	
 	@EventHandler
@@ -51,7 +51,7 @@ public class MondoListener implements Listener {
 			String firstLine = sign.getLine(0);
 			if (firstLine.equals(MASTER_SIGN_NAME)) {
 				Player player = event.getPlayer();
-				if (!PERMISSION_USE.check(player)) {
+				if (!can_use.check(player)) {
 					event.getPlayer().sendMessage("No permissions to use MondoChest");
 					return;
 				}
@@ -60,7 +60,7 @@ public class MondoListener implements Listener {
 				BankSet bank = getWorldBanks(world).get(vec);
 				
 				if (bank == null) {
-					if (!PERMISSION_CREATE_BANK.check(player)) {
+					if (!can_create_bank.check(player)) {
 						player.sendMessage("No permissions to create new MondoChest bank");
 						return;
 					}
@@ -86,7 +86,7 @@ public class MondoListener implements Listener {
 				if (MondoConfig.RESTACK_MASTER) {
 					bank.restackSpecial(world);
 				}
-			} else if (firstLine.equals(SLAVE_SIGN_NAME) && PERMISSION_ADD_SLAVE.check(event.getPlayer())) {
+			} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
 				BlockVector v = block.getLocation().toVector().toBlockVector();
 				BlockVector other = null;
 				double otherdistance = 0;
