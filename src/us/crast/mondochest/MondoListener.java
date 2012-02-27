@@ -17,15 +17,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
+import us.crast.mondochest.security.MondoSecurity;
+import us.crast.mondochest.security.PermissionChecker;
+
 public class MondoListener implements Listener {
 	private static final String MASTER_SIGN_NAME = "[MondoChest]";
 	private static final String SLAVE_SIGN_NAME = "[MondoSlave]";
 	
-	private static final String PERMISSION_USE = "mondochest.use";
-	private static final String PERMISSION_CREATE_BANK = "mondochest.create_master";
-	private static final String PERMISSION_ADD_SLAVE = "mondochest.add_slave";
+	private PermissionChecker PERMISSION_USE;
+	private PermissionChecker PERMISSION_CREATE_BANK;
+	private PermissionChecker PERMISSION_ADD_SLAVE;
 	
-	private boolean use_permissions;
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
 	private Map<String, Map<BlockVector, BankSet>> banks = new HashMap<String, Map<BlockVector, BankSet>>();
@@ -33,7 +35,9 @@ public class MondoListener implements Listener {
 	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher) {
 		this.log = log;
 		this.searcher = searcher;
-		this.use_permissions = MondoConfig.USE_PERMISSIONS;
+		this.PERMISSION_USE = MondoSecurity.getChecker("mondochest.use");
+		this.PERMISSION_ADD_SLAVE = MondoSecurity.getChecker("mondochest.add_slave");
+		this.PERMISSION_CREATE_BANK = MondoSecurity.getChecker("mondochest.create_master");
 	}
 	
 	@EventHandler
@@ -47,7 +51,7 @@ public class MondoListener implements Listener {
 			String firstLine = sign.getLine(0);
 			if (firstLine.equals(MASTER_SIGN_NAME)) {
 				Player player = event.getPlayer();
-				if (use_permissions && !player.hasPermission(PERMISSION_USE)) {
+				if (!PERMISSION_USE.check(player)) {
 					event.getPlayer().sendMessage("No permissions to use MondoChest");
 					return;
 				}
@@ -56,7 +60,7 @@ public class MondoListener implements Listener {
 				BankSet bank = getWorldBanks(world).get(vec);
 				
 				if (bank == null) {
-					if (use_permissions && !player.hasPermission(PERMISSION_CREATE_BANK)) {
+					if (!PERMISSION_CREATE_BANK.check(player)) {
 						player.sendMessage("No permissions to create new MondoChest bank");
 						return;
 					}
@@ -82,8 +86,7 @@ public class MondoListener implements Listener {
 				if (MondoConfig.RESTACK_MASTER) {
 					bank.restackSpecial(world);
 				}
-			} else if (firstLine.equals(SLAVE_SIGN_NAME) 
-					   && (!use_permissions || event.getPlayer().hasPermission(PERMISSION_ADD_SLAVE))) {
+			} else if (firstLine.equals(SLAVE_SIGN_NAME) && PERMISSION_ADD_SLAVE.check(event.getPlayer())) {
 				BlockVector v = block.getLocation().toVector().toBlockVector();
 				BlockVector other = null;
 				double otherdistance = 0;

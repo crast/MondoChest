@@ -1,7 +1,5 @@
 package us.crast.mondochest;
 
-import java.util.logging.Logger;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -34,7 +32,7 @@ public class BlockSearcher {
 	
 	public java.util.Vector<Block> findBlocks(Block contextBlock, Material targetMaterial, boolean includeContext) {
 		java.util.Vector<Block> blocksFound = new java.util.Vector<Block>();
-		//Logger log = Logger.getLogger("Minecraft");
+		//java.util.logging.Logger log = Logger.getLogger("Minecraft");
 		Location loc = contextBlock.getLocation().clone();
 		World world = loc.getWorld();
 		// Maximum possible height can be overridden.
