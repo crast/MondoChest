@@ -1,3 +1,6 @@
+Version 0.4.1: 2012-02-26
+ * fix bug that occurred at positive-Z coordinates which caused chests to never be found
+
 Version 0.4: 2012-02-25
  * Permissions support
  * Multiworld support
