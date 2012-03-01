@@ -66,7 +66,7 @@ public class BankSet {
 				if (failures.isEmpty() && stack.getAmount() >= 0) {
 					masterChest.removeItem(world, stack);
 				} else {
-					ChestManager.printWeirdStack(failures);
+					//ChestManager.printWeirdStack(failures);
 				}
 				//log.info("Stack of " + stack.getType().toString() + " ending quantity: " + stack.getAmount());
 				if (dest.isRestackAllowed()) {
