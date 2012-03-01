@@ -1,3 +1,6 @@
+Version 0.4.2: 2012-02-29
+ * Remove spurious debug output
+
 Version 0.4.1: 2012-02-26
  * fix bug that occurred at positive-Z coordinates which caused chests to never be found
 

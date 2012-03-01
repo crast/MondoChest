@@ -57,10 +57,10 @@ public class ChestManager implements ConfigurationSerializable {
 	
 	public HashMap<Integer, ItemStack> addItem(World world, ItemStack stack) {
 		HashMap<Integer, ItemStack> failures = getInventory(world, chest1).addItem(stack);
-		printWeirdStack(failures);
+		//printWeirdStack(failures);
 		if (!failures.isEmpty() && chest2 != null) {
 			failures = getInventory(world, chest2).addItem(failures.values().toArray(new ItemStack[0]));
-			printWeirdStack(failures);
+			//printWeirdStack(failures);
 		}
 		return failures;
 	}
