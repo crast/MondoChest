@@ -30,14 +30,15 @@ public class MondoListener implements Listener {
 	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
-	private Map<String, Map<BlockVector, BankSet>> banks = new HashMap<String, Map<BlockVector, BankSet>>();
+	private Map<String, Map<BlockVector, BankSet>> banks;
 	
-	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher) {
+	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher, MondoChest plugin) {
 		this.log = log;
 		this.searcher = searcher;
 		this.can_use = MondoSecurity.getChecker("mondochest.use");
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
 		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
+		this.banks = plugin.getBankManager().getBanks();
 	}
 	
 	@EventHandler
@@ -66,7 +67,7 @@ public class MondoListener implements Listener {
 					}
 					Block bank_context = block;
 					try {
-						bank = bankFromSign(sign);
+						bank = bankFromSign(sign, player.getName());
 						if (!sign.getLine(1).isEmpty()) {
 							bank_context = DirectionalStrings.parseDirectional(block, sign.getLine(1));
 						}
@@ -123,12 +124,12 @@ public class MondoListener implements Listener {
 		return banksByCoords;
 	}
 
-	private BankSet bankFromSign(Sign sign) throws MondoMessage {
+	private BankSet bankFromSign(Sign sign, String owner) throws MondoMessage {
 		java.util.Vector<Chest> chestsFound = SignUtils.nearbyChests(sign);
 		if (chestsFound.isEmpty()) {
 			throw new MondoMessage("No chests found near MondoChest sign");
 		} else {
-			return new BankSet(chestsFound.elementAt(0));
+			return new BankSet(chestsFound.elementAt(0), owner);
 		}
 	}
 	

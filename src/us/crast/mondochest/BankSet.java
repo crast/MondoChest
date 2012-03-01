@@ -4,20 +4,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 
-public class BankSet {
+@SerializableAs("MondoChestSet")
+public class BankSet implements ConfigurationSerializable {
+	private String owner;
 	private ChestManager masterChest;
 	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
 	private Map<Material, ChestManager> materialChests = new HashMap<Material, ChestManager>();
 	private Map<MaterialWithData, ChestManager> materialDataChests = new HashMap<MaterialWithData, ChestManager>();
 	
-	public BankSet(Chest masterChest) {
+	public BankSet(Chest masterChest, String owner) {
+		this.owner = owner;
 		this.masterChest = new ChestManager(masterChest, false);
+	}
+	
+	private BankSet(ChestManager masterChest, String owner) {
+		this.owner = owner;
+		this.masterChest = masterChest;
 	}
 	
 	public void restackSpecial(World world) {
@@ -35,6 +46,10 @@ public class BankSet {
 		}
 		chestLocations.add(newmanager);
 		return true;
+	}
+	
+	private void addChestManager(ChestManager manager) {
+		chestLocations.add(manager);
 	}
 	
 	public java.util.Set<Material> refreshMaterials(World world) {
@@ -85,5 +100,58 @@ public class BankSet {
 	
 	public int numChests() {
 		return chestLocations.size();
+	}
+	
+	/* Getters/setters */
+
+	public String getOwner() {
+		return owner;
+	}
+	
+	public String toString() {
+		return String.format(
+			"<Bankset: master(%s), owner=%s, %d chests>",
+			masterChest,
+			getOwner(),
+			numChests()
+		);
+	}
+	
+	/* Serialization */
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> d = new HashMap<String, Object>();
+		d.put("masterChest", masterChest);
+		d.put("chestLocations", chestLocations);
+		d.put("owner", owner);
+		return d;
+	}
+	
+	public static BankSet deserialize(Map<String, Object> d) {
+		Logger log = MondoConfig.getLog();
+
+		BankSet bankset = new BankSet(
+				(ChestManager) d.get("masterChest"),
+				(String) d.get("owner")
+		);
+		
+		Object locations = d.get("chestLocations");
+		if (locations instanceof List<?>) {
+			for (Object location: (List<?>) d.get("chestLocations")) {
+				if (location instanceof ChestManager) {
+					bankset.addChestManager((ChestManager) location);
+				} else {
+					log.warning(String.format(
+							"[MondoChest] when building chestLocations for bankset %s, expected a ChestManager, got a %s",
+							bankset.toString(),
+							location.getClass().getName()
+					));
+				}
+			}
+		} else {
+			log.warning("[MondoChest] chestLocations is supposed to be a list, wtf mait");
+		}
+		
+		return bankset;
 	}
 }

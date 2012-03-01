@@ -11,6 +11,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import us.crast.mondochest.security.MondoSecurity;
 
 public final class MondoConfig {
+	private static Logger log;
+
 	public static boolean RESTACK_MASTER = false;
 	public static boolean RESTACK_SLAVES = false;
 	public static Material[] RESTACK_MATERIALS = {};
@@ -21,6 +23,7 @@ public final class MondoConfig {
 	public static Permission VAULT_PERMISSIONS = null;
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
+		MondoConfig.log = log;
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
@@ -63,4 +66,8 @@ public final class MondoConfig {
         }
         return null;
     }
+
+	public static Logger getLog() {
+		return log;
+	}
 }
