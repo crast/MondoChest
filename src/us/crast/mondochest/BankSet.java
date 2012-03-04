@@ -12,23 +12,31 @@ import org.bukkit.block.Chest;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BlockVector;
+
+import us.crast.mondochest.util.StringTools;
 
 @SerializableAs("MondoChestSet")
 public class BankSet implements ConfigurationSerializable {
+	private String world;
 	private String owner;
+	private BlockVector masterSign;
 	private ChestManager masterChest;
 	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
 	private Map<Material, ChestManager> materialChests = new HashMap<Material, ChestManager>();
 	private Map<MaterialWithData, ChestManager> materialDataChests = new HashMap<MaterialWithData, ChestManager>();
 	
-	public BankSet(Chest masterChest, String owner) {
+	public BankSet(Chest masterChest, String owner, BlockVector masterSign) {
 		this.owner = owner;
 		this.masterChest = new ChestManager(masterChest, false);
+		this.masterSign = masterSign;
+		this.setWorld(masterChest.getWorld().getName());
 	}
 	
-	private BankSet(ChestManager masterChest, String owner) {
+	private BankSet(ChestManager masterChest, String owner, BlockVector masterSign) {
 		this.owner = owner;
 		this.masterChest = masterChest;
+		this.masterSign = masterSign;
 	}
 	
 	public void restackSpecial(World world) {
@@ -103,11 +111,31 @@ public class BankSet implements ConfigurationSerializable {
 	}
 	
 	/* Getters/setters */
+	
+	public ChestManager getMasterChest() {
+		return masterChest;
+	}
+
+	public BlockVector getMasterSign() {
+		return masterSign;
+	}
+	
+	public String getKey() {
+		return StringTools.md5String(this.masterSign.toString());
+	}
 
 	public String getOwner() {
 		return owner;
 	}
 	
+	public String getWorld() {
+		return world;
+	}
+
+	public void setWorld(String world) {
+		this.world = world;
+	}
+
 	public String toString() {
 		return String.format(
 			"<Bankset: master(%s), owner=%s, %d chests>",
@@ -122,6 +150,7 @@ public class BankSet implements ConfigurationSerializable {
 	public Map<String, Object> serialize() {
 		Map<String, Object> d = new HashMap<String, Object>();
 		d.put("masterChest", masterChest);
+		d.put("masterSign", masterSign);
 		d.put("chestLocations", chestLocations);
 		d.put("owner", owner);
 		return d;
@@ -132,7 +161,8 @@ public class BankSet implements ConfigurationSerializable {
 
 		BankSet bankset = new BankSet(
 				(ChestManager) d.get("masterChest"),
-				(String) d.get("owner")
+				(String) d.get("owner"),
+				(BlockVector) d.get("masterSign")
 		);
 		
 		Object locations = d.get("chestLocations");

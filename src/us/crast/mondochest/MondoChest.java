@@ -3,13 +3,12 @@ package us.crast.mondochest;
 import java.io.File;
 import java.util.logging.Logger;
 
-import net.milkbowl.vault.economy.Economy;
+//import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.plugin.RegisteredServiceProvider;
+//import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.BlockVector;
 
 import us.crast.mondochest.persist.BankManager;
 
@@ -21,7 +20,11 @@ public class MondoChest extends JavaPlugin {
 	//private Economy econ;
 
 	public void onEnable() {
-		bankManager = new BankManager(this);
+		if (bankManager == null) {
+			bankManager = new BankManager(this);
+		} else {
+			bankManager.load();
+		}
 		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
 			saveDefaultConfig();
 		}
@@ -29,14 +32,6 @@ public class MondoChest extends JavaPlugin {
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig(), this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		
-		Object co = getConfig().get("footest");
-		if (co instanceof ChestManager) {
-			log.info("got chest manager");
-			ChestManager cm = (ChestManager) co;
-		} else {
-			getConfig().set("footest", new ChestManager(new BlockVector(11, 75, 22), new BlockVector(12, 24, 98), false));
-			saveConfig();
-		}
 		log.info("[MondoChest] MondoChest v0.5 ready");
 		/*
 		if (!setupEconomy()) {
@@ -56,8 +51,12 @@ public class MondoChest extends JavaPlugin {
 		return new BlockSearcher(x, y, z);
 	}
 	
-	public void onDisable(){
-		
+	public void onDisable() {
+		try {
+			bankManager.save();
+		} catch (MondoMessage msg) {
+			log.warning(msg.getMessage());
+		}
 	}
 	
 	/*

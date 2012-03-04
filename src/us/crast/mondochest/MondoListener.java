@@ -1,6 +1,5 @@
 package us.crast.mondochest;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
@@ -17,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
+import us.crast.mondochest.persist.BankManager;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
 
@@ -30,7 +30,8 @@ public class MondoListener implements Listener {
 	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
-	private Map<String, Map<BlockVector, BankSet>> banks;
+	//private Map<String, Map<BlockVector, BankSet>> banks;
+	private BankManager bankManager;
 	
 	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher, MondoChest plugin) {
 		this.log = log;
@@ -38,7 +39,7 @@ public class MondoListener implements Listener {
 		this.can_use = MondoSecurity.getChecker("mondochest.use");
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
 		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
-		this.banks = plugin.getBankManager().getBanks();
+		this.bankManager = plugin.getBankManager();
 	}
 	
 	@EventHandler
@@ -75,7 +76,7 @@ public class MondoListener implements Listener {
 						player.sendMessage(m.getMessage());
 						return;
 					}
-					getWorldBanks(world).put(vec, bank);
+					bankManager.addBank(world.getName(), vec, bank);
 					initBank(bank, block, bank_context);
 					player.sendMessage("Created bank with " + bank.numChests() + " chests");
 				}
@@ -103,8 +104,15 @@ public class MondoListener implements Listener {
 					}
 				}
 				if (other != null) {
-					int num_added = addNearbyChestsToBank(getWorldBanks(block.getWorld()).get(other), sign);
+					BankSet targetBank = getWorldBanks(block.getWorld()).get(other);
+					int num_added = addNearbyChestsToBank(targetBank, sign);
+					try {
+						bankManager.save();
+					} catch (MondoMessage m) {
+						event.getPlayer().sendMessage(m.toString());
+					}
 					if (num_added > 0) {
+						bankManager.markChanged(block.getWorld().getName(), targetBank);
 						event.getPlayer().sendMessage("Added " + num_added + " chest" + (num_added == 1? "": "s") +" to bank");
 					} else {
 						event.getPlayer().sendMessage("Chests probably already in bank");
@@ -116,12 +124,7 @@ public class MondoListener implements Listener {
 	}
 	
 	private Map<BlockVector, BankSet> getWorldBanks(World world) {
-		Map<BlockVector, BankSet> banksByCoords = banks.get(world.getName());
-		if (banksByCoords == null) {
-			banksByCoords = new HashMap<BlockVector, BankSet>();
-			banks.put(world.getName(), banksByCoords);
-		}
-		return banksByCoords;
+		return bankManager.getWorldBanks(world.getName());
 	}
 
 	private BankSet bankFromSign(Sign sign, String owner) throws MondoMessage {
@@ -129,7 +132,11 @@ public class MondoListener implements Listener {
 		if (chestsFound.isEmpty()) {
 			throw new MondoMessage("No chests found near MondoChest sign");
 		} else {
-			return new BankSet(chestsFound.elementAt(0), owner);
+			return new BankSet(
+				chestsFound.elementAt(0), 
+				owner,
+				sign.getBlock().getLocation().toVector().toBlockVector()
+			);
 		}
 	}
 	
