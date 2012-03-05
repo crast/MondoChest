@@ -1,9 +1,6 @@
 # How far from the master chest to search for slave chests.
 # an X radius of 20 blocks means 20 blocks plus or minus in either direction
 # from the block in question.
-#
-# a radius of (20, 10, 20) will therefore search 
-# (20*2) * (10*2) * (20*2) = 32,000 blocks.
 chest_search:
     radiusX: 20
     radiusY: 10
@@ -23,7 +20,7 @@ restack_materials:
   - SNOW_BALL
   - EGG
 
-# Valid values: false/none, SuperPerms
+# Valid values: false/none, SuperPerms, Vault
 permissions: false
 
 
