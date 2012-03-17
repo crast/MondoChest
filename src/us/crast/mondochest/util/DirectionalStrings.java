@@ -1,10 +1,12 @@
-package us.crast.mondochest;
+package us.crast.mondochest.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+
+import us.crast.mondochest.MondoMessage;
 
 public class DirectionalStrings {
 	private static Map<String, BlockFace> dirs = new HashMap<String, BlockFace>();
