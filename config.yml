@@ -2,9 +2,9 @@
 # an X radius of 20 blocks means 20 blocks plus or minus in either direction
 # from the block in question.
 chest_search:
-    radiusX: 20
-    radiusY: 10
-    radiusZ: 20
+    radiusX: 5
+    radiusY: 1
+    radiusZ: 5
 
 # Allow restacking of materials for the master chest.  Restacking will allow
 # various materials which can't stack or stack to less than 64 to be stacked to
