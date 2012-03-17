@@ -75,7 +75,9 @@ public class BankSet implements ConfigurationSerializable {
 	public int shelveItems(World world) {
 		int num_shelved = 0;
 		Set<ChestManager> to_restack = new java.util.HashSet<ChestManager>();
+		//Logger log = Logger.getLogger("Minecraft");
 		for (ItemStack stack: masterChest.listItems(world)) {
+			//log.info(String.format("Item: %d of %s", stack.getAmount(), stack.getType().toString()));
 			MaterialWithData md = new MaterialWithData(stack);
 			ChestManager dest = materialDataChests.get(md);
 			if (dest == null) {
@@ -83,7 +85,6 @@ public class BankSet implements ConfigurationSerializable {
 				dest = materialChests.get(m);
 			}
 			if (dest != null) {
-				//Logger log = Logger.getLogger("Minecraft");
 				//log.info("Stack of " + stack.getType().toString() + " starting quantity: " + stack.getAmount());
 				HashMap<Integer, ItemStack> failures = dest.addItem(world, stack);
 				if (failures.isEmpty() && stack.getAmount() >= 0) {

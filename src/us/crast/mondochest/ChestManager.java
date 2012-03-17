@@ -16,6 +16,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
+import us.crast.mondochest.doublechest.DoubleChestImpl;
+import us.crast.mondochest.doublechest.DoubleChestImplMC12;
+
 @SerializableAs("ChestManager")
 public class ChestManager implements ConfigurationSerializable {
 	private static final BlockFace[] cardinals = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
@@ -24,6 +27,7 @@ public class ChestManager implements ConfigurationSerializable {
 	private boolean restackAllowed;
 	@SuppressWarnings("unused")
 	private static java.util.logging.Logger log = Logger.getLogger("Minecraft"); 
+	private static DoubleChestImpl impl = new DoubleChestImplMC12();
 	
 	public ChestManager(Chest chest, boolean allow_restack) { 
 		this(chest.getBlock(), allow_restack);
@@ -56,34 +60,18 @@ public class ChestManager implements ConfigurationSerializable {
 	/* ChestManager methods */
 	
 	public HashMap<Integer, ItemStack> addItem(World world, ItemStack stack) {
-		HashMap<Integer, ItemStack> failures = getInventory(world, chest1).addItem(stack);
-		//printWeirdStack(failures);
-		if (!failures.isEmpty() && chest2 != null) {
-			failures = getInventory(world, chest2).addItem(failures.values().toArray(new ItemStack[0]));
-			//printWeirdStack(failures);
-		}
-		return failures;
+		return impl.addItem(this, world, stack);
 	}
 	
 	public void removeItem(World world, ItemStack stack) {
-		HashMap<Integer, ItemStack> failures = null;
-		for (Inventory inv: validInventories(world)) {
-			failures = inv.removeItem(stack);
-			if (failures.isEmpty()) break;
-		}
+		impl.removeItem(this, world, stack);
 	}
 	
 	public List<ItemStack> listItems(World world) {
-		java.util.Vector<ItemStack> items = new java.util.Vector<ItemStack>();
-		for (Inventory inv: validInventories(world)) {
-			for (ItemStack stack: inv.getContents()) {
-				if (stack != null) items.add(stack);
-			}
-		}
-		return items;
+		return impl.listItems(this, world);
 	}
 	
-	private Inventory getInventory(World world, BlockVector vector) {
+	public Inventory getInventory(World world, BlockVector vector) {
 		Block block = world.getBlockAt(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
 		if (block.getType() == Material.CHEST) {
 			return ((Chest) block.getState()).getInventory();
@@ -91,7 +79,7 @@ public class ChestManager implements ConfigurationSerializable {
 			return null;
 		}
 	}
-	
+	/*
 	private Inventory[] validInventories(World world) {
 		Inventory i1 = getInventory(world, chest1);
 		Inventory i2 = null;
@@ -101,7 +89,7 @@ public class ChestManager implements ConfigurationSerializable {
 		if (i1 == null) return new Inventory[0];
 		if (i2 == null) return new Inventory[] { i1 };
 		return new Inventory[] { i1, i2 };
-	}
+	}*/
 	
 	public static void printWeirdStack(HashMap<Integer, ItemStack> entries) {
 		if (entries.isEmpty()) return;
