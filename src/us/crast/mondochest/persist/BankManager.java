@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -74,6 +75,15 @@ public class BankManager {
 			banks.put(world, banksByCoords);
 		}
 		return banksByCoords;
+	}
+	
+	public BankSet getBank(String world, BlockVector vec) {
+		return getWorldBanks(world).get(vec);
+	}
+	
+	public BankSet getBank(Location loc) {
+		//java.util.logging.Logger.getLogger("Minecraft").info("Something Something")
+		return getBank(loc.getWorld().getName(), loc.toVector().toBlockVector());
 	}
 	
 	public void addBank(String world, BlockVector vec, BankSet bank) {

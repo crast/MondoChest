@@ -2,6 +2,7 @@ package us.crast.mondochest;
 
 import java.util.Map;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -17,8 +18,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
 import us.crast.mondochest.persist.BankManager;
+import us.crast.mondochest.persist.PlayerInfoManager;
+import us.crast.mondochest.persist.PlayerState;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
+import us.crast.mondochest.util.DirectionalStrings;
 
 public class MondoListener implements Listener {
 	private static final String MASTER_SIGN_NAME = "[MondoChest]";
@@ -30,8 +34,8 @@ public class MondoListener implements Listener {
 	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
-	//private Map<String, Map<BlockVector, BankSet>> banks;
 	private BankManager bankManager;
+	private PlayerInfoManager playerManager = new PlayerInfoManager();
 	
 	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher, MondoChest plugin) {
 		this.log = log;
@@ -54,12 +58,12 @@ public class MondoListener implements Listener {
 			if (firstLine.equals(MASTER_SIGN_NAME)) {
 				Player player = event.getPlayer();
 				if (!can_use.check(player)) {
-					event.getPlayer().sendMessage("No permissions to use MondoChest");
+					player.sendMessage("No permissions to use MondoChest");
 					return;
 				}
 				World world = block.getWorld();
 				BlockVector vec = block.getLocation().toVector().toBlockVector();
-				BankSet bank = getWorldBanks(world).get(vec);
+				BankSet bank = getWorldBanks(world).get(vec);;
 				
 				if (bank == null) {
 					if (!can_create_bank.check(player)) {
@@ -83,40 +87,51 @@ public class MondoListener implements Listener {
 				bank.refreshMaterials(world);
 				int num_shelved = bank.shelveItems(world);
 				if (num_shelved > 0) {
-					event.getPlayer().sendMessage(String.format("Shelved %d items", num_shelved));
+					player.sendMessage(String.format("Shelved %d item%s", num_shelved, (num_shelved == 1 ? "" : "s")));
 				}
 				if (MondoConfig.RESTACK_MASTER) {
 					bank.restackSpecial(world);
 				}
+				// Store the last clicked bank
+				PlayerState state = playerManager.getState(player);
+				state.setLastClickedMaster(block.getLocation());
 			} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
-				BlockVector v = block.getLocation().toVector().toBlockVector();
-				BlockVector other = null;
-				double otherdistance = 0;
-				for (BlockVector candidate: getWorldBanks(block.getWorld()).keySet()) {
-					if (other == null) {
-						other = candidate;
-						otherdistance = v.distance(candidate);
-					} else {
-						double curdistance = v.distance(candidate);
-						if (curdistance < otherdistance) {
-							other = candidate;
-						}
-					}
+				Player player = event.getPlayer();
+				Location lastClicked = playerManager.getState(player).getLastClickedMaster();
+				if (lastClicked == null 
+					|| !block.getLocation().getWorld().equals(lastClicked.getWorld())) {
+					player.sendMessage("To add slaves to a bank, click a master sign first");
+					return;
 				}
-				if (other != null) {
-					BankSet targetBank = getWorldBanks(block.getWorld()).get(other);
-					int num_added = addNearbyChestsToBank(targetBank, sign);
-					try {
-						bankManager.save();
-					} catch (MondoMessage m) {
-						event.getPlayer().sendMessage(m.toString());
-					}
-					if (num_added > 0) {
-						bankManager.markChanged(block.getWorld().getName(), targetBank);
-						event.getPlayer().sendMessage("Added " + num_added + " chest" + (num_added == 1? "": "s") +" to bank");
-					} else {
-						event.getPlayer().sendMessage("Chests probably already in bank");
-					}
+				double distance = block.getLocation().distance(lastClicked);
+				if (distance > MondoConfig.SLAVE_MAX_ADD_RADIUS) {
+					player.sendMessage("Slave is too far away from the last clicked master, this is not recommended.");
+					return;
+				}
+				
+				BankSet targetBank = bankManager.getBank(lastClicked);
+				if (targetBank == null) {
+					player.sendMessage("Wot. No Target " + lastClicked.toString());
+					return;
+				} else if (!targetBank.getOwner().equals(player.getName())) {
+					player.sendMessage(String.format("Only this bank's owner, %s, can add slaves to the bank", targetBank.getOwner()));
+					return;
+				}
+				int num_added = addNearbyChestsToBank(targetBank, sign);
+				try {
+					bankManager.save();
+				} catch (MondoMessage m) {
+					player.sendMessage(m.toString());
+				}
+				if (num_added > 0) {
+					bankManager.markChanged(block.getWorld().getName(), targetBank);
+					player.sendMessage(String.format(
+							"Added %d chest%s to bank",
+							num_added,
+							(num_added == 1? "": "s")
+					));
+				} else {
+					player.sendMessage("Chests probably already in bank");
 				}
 			}
 			break;
@@ -170,5 +185,24 @@ public class MondoListener implements Listener {
 			String itype = stack.getType().toString();
 			log.info("->" + amount + " of " + itype);
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	private BlockVector closestVector(BlockVector v, java.util.Collection<BlockVector> candidates) {
+		BlockVector other = null;
+		double otherdistance = 0;
+		for (BlockVector candidate: candidates) {
+			if (other == null) {
+				other = candidate;
+				otherdistance = v.distance(candidate);
+			} else {
+				double curdistance = v.distance(candidate);
+				if (curdistance < otherdistance) {
+					otherdistance = curdistance;
+					other = candidate;
+				}
+			}
+		}
+		return other;
 	}
 }

@@ -19,6 +19,8 @@ public final class MondoConfig {
 	
 	public static int CONSTRAINTS_Y_MAX = 127;
 	public static int CONSTRAINTS_Y_MIN = 0;
+	public static int SLAVE_MAX_ADD_RADIUS = 150;
+
 	
 	public static Permission VAULT_PERMISSIONS = null;
 	
