@@ -76,12 +76,13 @@ public class MondoListener implements Listener {
 						if (!sign.getLine(1).isEmpty()) {
 							bank_context = DirectionalStrings.parseDirectional(block, sign.getLine(1));
 						}
+						bankManager.addBank(world.getName(), vec, bank);
+						initBank(bank, block, bank_context);
+						bankManager.save();
 					} catch (MondoMessage m) {
 						player.sendMessage(m.getMessage());
 						return;
 					}
-					bankManager.addBank(world.getName(), vec, bank);
-					initBank(bank, block, bank_context);
 					player.sendMessage("Created bank with " + bank.numChests() + " chests");
 				}
 				bank.refreshMaterials(world);
