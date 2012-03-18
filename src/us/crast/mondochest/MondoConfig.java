@@ -15,19 +15,20 @@ public final class MondoConfig {
 
 	public static boolean RESTACK_MASTER = false;
 	public static boolean RESTACK_SLAVES = false;
+	public static boolean SIGN_PROTECTION = false;
 	public static Material[] RESTACK_MATERIALS = {};
 	
 	public static int CONSTRAINTS_Y_MAX = 127;
 	public static int CONSTRAINTS_Y_MIN = 0;
 	public static int SLAVE_MAX_ADD_RADIUS = 150;
 
-	
 	public static Permission VAULT_PERMISSIONS = null;
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
+		SIGN_PROTECTION = config.getBoolean("sign_protection");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];
 		for (int i = 0; i < matlist.size(); i++) {

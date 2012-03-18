@@ -91,6 +91,10 @@ public class BankManager {
 		changed.add(bank);
 	}
 	
+	public void removeBank(String world, BankSet bank) {
+		
+	}
+	
 	public void markChanged(String world, BankSet bank) {
 		changed.add(bank);
 	}
@@ -119,5 +123,6 @@ public class BankManager {
 		}
 		return hash;
 	}
+	
 
 }

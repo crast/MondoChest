@@ -27,7 +27,6 @@ public class BankSet implements ConfigurationSerializable {
 	private ChestManager masterChest;
 	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
 	private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(new ChestManagerSetMaker());
-	//private Map<Material, ChestManagerSet> materialChests = new HashMap<Material, ChestManagerSet>();
 	private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(new ChestManagerSetMaker());
 	
 	public BankSet(Chest masterChest, String owner, BlockVector masterSign) {

@@ -15,6 +15,7 @@ import us.crast.mondochest.persist.BankManager;
 public class MondoChest extends JavaPlugin {
 	Logger log = Logger.getLogger("Minecraft");
 	private MondoListener listener = null;
+	private BreakListener break_listener = null;
 	private BankManager bankManager;
 
 	//private Economy econ;
@@ -31,6 +32,11 @@ public class MondoChest extends JavaPlugin {
 		MondoConfig.configure(this, getConfig(), log);
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig(), this);
 		getServer().getPluginManager().registerEvents(listener, this);
+		
+		if (MondoConfig.SIGN_PROTECTION) {
+			break_listener = new BreakListener(listener);
+			getServer().getPluginManager().registerEvents(break_listener, this);
+		}
 		
 		log.info("[MondoChest] MondoChest v0.5 ready");
 		/*

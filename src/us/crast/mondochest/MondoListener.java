@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -25,12 +26,13 @@ import us.crast.mondochest.security.PermissionChecker;
 import us.crast.mondochest.util.DirectionalStrings;
 
 public class MondoListener implements Listener {
-	private static final String MASTER_SIGN_NAME = "[MondoChest]";
-	private static final String SLAVE_SIGN_NAME = "[MondoSlave]";
+	private static final String MASTER_SIGN_NAME = MondoConstants.MASTER_SIGN_NAME;
+	private static final String SLAVE_SIGN_NAME = MondoConstants.SLAVE_SIGN_NAME;
 	
 	private PermissionChecker can_use;
 	private PermissionChecker can_create_bank;
 	private PermissionChecker can_add_slave;
+	private PermissionChecker can_override_break;
 	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
@@ -43,6 +45,7 @@ public class MondoListener implements Listener {
 		this.can_use = MondoSecurity.getChecker("mondochest.use");
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
 		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
+		this.can_override_break = MondoSecurity.getChecker("mondochest.admin.break_any");
 		this.bankManager = plugin.getBankManager();
 	}
 	
@@ -88,7 +91,7 @@ public class MondoListener implements Listener {
 				bank.refreshMaterials(world);
 				int num_shelved = bank.shelveItems(world);
 				if (num_shelved > 0) {
-					player.sendMessage(String.format("Shelved %d item%s", num_shelved, (num_shelved == 1 ? "" : "s")));
+					player.sendMessage(String.format("Shelved %d item%s", num_shelved, pluralize(num_shelved)));
 				}
 				if (MondoConfig.RESTACK_MASTER) {
 					bank.restackSpecial(world);
@@ -129,7 +132,7 @@ public class MondoListener implements Listener {
 					player.sendMessage(String.format(
 							"Added %d chest%s to bank",
 							num_added,
-							(num_added == 1? "": "s")
+							pluralize(num_added)
 					));
 				} else {
 					player.sendMessage("Chests probably already in bank");
@@ -138,6 +141,33 @@ public class MondoListener implements Listener {
 			break;
 		}
 	}
+	
+	public void masterBroken(Cancellable event, Sign sign, Player player) {
+		BankSet bank = bankManager.getBank(sign.getLocation());
+		if (bank == null) return;
+		if (!bank.getOwner().equals(player.getName())) {
+			if (can_override_break.check(player)) {
+				player.sendMessage("MondoChest: break override allowed");
+			} else {
+				event.setCancelled(true);
+				player.sendMessage("Cannot destroy a MondoChest which does not belong to you");
+				return;
+			}
+		}
+		// If we're here, actually delete the bank
+		int num_slaves = bank.numChests();
+		bankManager.removeBank(sign.getWorld().getName(), bank);
+		player.sendMessage(String.format(
+			"MondoChest: removed bank and %d slave%s",
+			num_slaves,
+			pluralize(num_slaves)
+		));
+	}
+	
+	public void slaveBroken(Cancellable event, Sign sign, Player player) {
+	
+	}
+	
 	
 	private Map<BlockVector, BankSet> getWorldBanks(World world) {
 		return bankManager.getWorldBanks(world.getName());
@@ -205,5 +235,9 @@ public class MondoListener implements Listener {
 			}
 		}
 		return other;
+	}
+	
+	private String pluralize(int number) {
+		return (number == 1? "": "s");
 	}
 }
