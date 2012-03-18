@@ -14,6 +14,9 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
+import us.crast.mondochest.util.ChestManagerSet;
+import us.crast.mondochest.util.DefaultDict;
+import us.crast.mondochest.util.ObjectMaker;
 import us.crast.mondochest.util.StringTools;
 
 @SerializableAs("MondoChestSet")
@@ -23,8 +26,9 @@ public class BankSet implements ConfigurationSerializable {
 	private BlockVector masterSign;
 	private ChestManager masterChest;
 	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
-	private Map<Material, ChestManager> materialChests = new HashMap<Material, ChestManager>();
-	private Map<MaterialWithData, ChestManager> materialDataChests = new HashMap<MaterialWithData, ChestManager>();
+	private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(new ChestManagerSetMaker());
+	//private Map<Material, ChestManagerSet> materialChests = new HashMap<Material, ChestManagerSet>();
+	private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(new ChestManagerSetMaker());
 	
 	public BankSet(Chest masterChest, String owner, BlockVector masterSign) {
 		this.owner = owner;
@@ -61,12 +65,13 @@ public class BankSet implements ConfigurationSerializable {
 	}
 	
 	public java.util.Set<Material> refreshMaterials(World world) {
+		//Logger log = Logger.getLogger("Minecraft");
 		materialChests.clear();
 		materialDataChests.clear();
 		for (ChestManager m: chestLocations) {
 			for (ItemStack stack: m.listItems(world)) {
-				materialDataChests.put(new MaterialWithData(stack), m);
-				materialChests.put(stack.getType(), m);
+				materialDataChests.ensure(new MaterialWithData(stack)).add(m);
+				materialChests.ensure(stack.getType()).add(m);
 			}
 		}
 		return materialChests.keySet();
@@ -79,24 +84,27 @@ public class BankSet implements ConfigurationSerializable {
 		for (ItemStack stack: masterChest.listItems(world)) {
 			//log.info(String.format("Item: %d of %s", stack.getAmount(), stack.getType().toString()));
 			MaterialWithData md = new MaterialWithData(stack);
-			ChestManager dest = materialDataChests.get(md);
-			if (dest == null) {
+			ChestManagerSet destinations = materialDataChests.get(md);
+			if (destinations == null) {
 				Material m = stack.getType();
-				dest = materialChests.get(m);
+				destinations = materialChests.get(m);
 			}
-			if (dest != null) {
-				//log.info("Stack of " + stack.getType().toString() + " starting quantity: " + stack.getAmount());
-				HashMap<Integer, ItemStack> failures = dest.addItem(world, stack);
-				if (failures.isEmpty() && stack.getAmount() >= 0) {
-					masterChest.removeItem(world, stack);
-				} else {
-					//ChestManager.printWeirdStack(failures);
+			if (destinations != null) {
+				for (ChestManager dest: destinations) {
+					//log.info("Stack of " + stack.getType().toString() + " starting quantity: " + stack.getAmount());
+					HashMap<Integer, ItemStack> failures = dest.addItem(world, stack);
+					if (failures.isEmpty() && stack.getAmount() >= 0) {
+						masterChest.removeItem(world, stack);
+						if (dest.isRestackAllowed()) {
+							to_restack.add(dest);
+						}
+						num_shelved++;
+						break;
+					} else {
+						//ChestManager.printWeirdStack(failures);
+					}
+					//log.info("Stack of " + stack.getType().toString() + " ending quantity: " + stack.getAmount());
 				}
-				//log.info("Stack of " + stack.getType().toString() + " ending quantity: " + stack.getAmount());
-				if (dest.isRestackAllowed()) {
-					to_restack.add(dest);
-				}
-				num_shelved++;
 			}
 		}
 		if (MondoConfig.RESTACK_SLAVES) {
@@ -184,5 +192,13 @@ public class BankSet implements ConfigurationSerializable {
 		}
 		
 		return bankset;
+	}
+}
+
+
+class ChestManagerSetMaker implements ObjectMaker<ChestManagerSet> {
+	@Override
+	public ChestManagerSet build() {
+		return new ChestManagerSet();
 	}
 }
