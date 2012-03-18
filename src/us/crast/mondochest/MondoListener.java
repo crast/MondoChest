@@ -33,6 +33,7 @@ public class MondoListener implements Listener {
 	private PermissionChecker can_create_bank;
 	private PermissionChecker can_add_slave;
 	private PermissionChecker can_override_break;
+	private PermissionChecker can_override_add_slave;
 	
 	private java.util.logging.Logger log;
 	private BlockSearcher searcher;
@@ -46,6 +47,7 @@ public class MondoListener implements Listener {
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
 		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
 		this.can_override_break = MondoSecurity.getChecker("mondochest.admin.break_any");
+		this.can_override_add_slave = MondoSecurity.getChecker("mondochest.admin.add_any_slave");
 		this.bankManager = plugin.getBankManager();
 	}
 	
@@ -118,8 +120,12 @@ public class MondoListener implements Listener {
 					player.sendMessage("Wot. No Target " + lastClicked.toString());
 					return;
 				} else if (!targetBank.getOwner().equals(player.getName())) {
-					player.sendMessage(String.format("Only this bank's owner, %s, can add slaves to the bank", targetBank.getOwner()));
-					return;
+					if (can_override_add_slave.check(player)) {
+						player.sendMessage("MondoChest: admin override allowed");
+					} else {
+						player.sendMessage(String.format("Only this bank's owner, %s, can add slaves to the bank", targetBank.getOwner()));
+						return;
+					}
 				}
 				int num_added = addNearbyChestsToBank(targetBank, sign);
 				try {

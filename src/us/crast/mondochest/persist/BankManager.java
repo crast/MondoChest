@@ -92,7 +92,9 @@ public class BankManager {
 	}
 	
 	public void removeBank(String world, BankSet bank) {
-		
+		getWorldBanks(world).remove(bank.getMasterSign());
+		changed.remove(bank);
+		worldSection(world).set(bank.getKey(), null);
 	}
 	
 	public void markChanged(String world, BankSet bank) {

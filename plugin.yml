@@ -17,6 +17,7 @@ permissions:
         description: Do all mondochest admin actions
         children:
             mondochest.admin.break_any: true
+            mondochest.admin.add_any_slave: true
     mondochest.create_master:
         description: Create a new MondoChest bank
         default: op
@@ -27,6 +28,9 @@ permissions:
         default: true
     mondochest.admin.break_any:
         description: "Break anybody's MondoChest signs"
+        default: op
+    mondochest.admin.add_any_slave:
+        description: "Add slaves to other's MondoChests"
         default: op
 
 # vim: ts=4 sw=4 sts=4 expandtab
