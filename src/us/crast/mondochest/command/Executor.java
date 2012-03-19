@@ -2,7 +2,6 @@ package us.crast.mondochest.command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -11,15 +10,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import us.crast.mondochest.MessageWithStatus;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoConstants;
 import us.crast.mondochest.MondoListener;
 import us.crast.mondochest.MondoMessage;
-import us.crast.mondochest.security.MondoSecurity;
-import us.crast.mondochest.security.PermissionChecker;
 
 public class Executor implements CommandExecutor {
-	private PermissionChecker can_reload;
 	
 	private MondoListener listener;
 	private MondoChest mondoChest;
@@ -30,7 +27,6 @@ public class Executor implements CommandExecutor {
 	public Executor(MondoChest mondoChest, MondoListener listener) {
 		this.mondoChest = mondoChest;
 		this.listener = listener;
-		this.can_reload = MondoSecurity.getChecker("mondochest.admin.reload");
 		setupCommands();
 	}
 
@@ -82,7 +78,7 @@ public class Executor implements CommandExecutor {
 		} catch (MondoMessage m) {
 			call.append(m);
 		}
-		for (MondoMessage m: call.getMessages()) {
+		for (MessageWithStatus m: call.getMessages()) {
 			ChatColor color = ChatColor.BLACK;
 			switch(m.getStatus()) {
 			case SUCCESS:

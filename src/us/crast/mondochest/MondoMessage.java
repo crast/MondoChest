@@ -1,6 +1,6 @@
 package us.crast.mondochest;
 
-public class MondoMessage extends Exception {
+public class MondoMessage extends Exception implements MessageWithStatus {
 	private static final long serialVersionUID = 8977396906672876450L;
 	private Status status;
 

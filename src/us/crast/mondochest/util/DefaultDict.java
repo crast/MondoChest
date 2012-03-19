@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DefaultDict<K, V> extends HashMap<K, V> {
+	private static final long serialVersionUID = -5131836669351168996L;
 	ObjectMaker<V> builder;
 	
 	public DefaultDict(ObjectMaker<V> builder) {
