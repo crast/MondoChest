@@ -59,6 +59,17 @@ public class BankSet implements ConfigurationSerializable {
 		return true;
 	}
 	
+	public boolean removeChest(Chest chest) {
+		ChestManager other = new ChestManager(chest, false);
+		for (ChestManager m: chestLocations) {
+			if (m.equals(other)) {
+				chestLocations.remove(m);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void addChestManager(ChestManager manager) {
 		chestLocations.add(manager);
 	}
@@ -119,6 +130,10 @@ public class BankSet implements ConfigurationSerializable {
 	}
 	
 	/* Getters/setters */
+	
+	public List<ChestManager> listSlaves() {
+		return chestLocations;
+	}
 	
 	public ChestManager getMasterChest() {
 		return masterChest;

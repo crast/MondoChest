@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
+import us.crast.mondochest.command.BasicMessage;
 import us.crast.mondochest.command.CallInfo;
 import us.crast.mondochest.persist.BankManager;
 import us.crast.mondochest.persist.PlayerInfoManager;
@@ -73,7 +74,7 @@ public class MondoListener implements Listener {
 				
 				if (bank == null) {
 					if (!can_create_bank.check(player)) {
-						player.sendMessage("No permissions to create new MondoChest bank");
+						BasicMessage.send(player, Status.WARNING, "No permissions to create new bank");
 						return;
 					}
 					Block bank_context = block;
@@ -172,6 +173,23 @@ public class MondoListener implements Listener {
 	}
 	
 	public void slaveBroken(Cancellable event, Sign sign, Player player) {
+		Map<ChestManager, BankSet> slaves = bankManager.getWorldSlaves(sign.getWorld().getName());
+		int removed = 0;
+		for (Chest chest: SignUtils.nearbyChests(sign)) {
+			ChestManager info = new ChestManager(chest, false);
+			if (slaves.containsKey(info)) {
+				BankSet bs = slaves.get(info);
+				if (bs.getOwner().equals(player.getName())) {
+					bs.removeChest(chest);
+					removed++;
+				} else {
+					BasicMessage.send(player, Status.WARNING, "No access to remove this slave sign");
+					event.setCancelled(true);
+					return;
+				}
+			}
+		}
+		BasicMessage.send(player, Status.SUCCESS, "Removed %d chests", removed);
 	
 	}
 	

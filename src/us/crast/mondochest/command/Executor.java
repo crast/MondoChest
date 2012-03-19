@@ -79,22 +79,7 @@ public class Executor implements CommandExecutor {
 			call.append(m);
 		}
 		for (MessageWithStatus m: call.getMessages()) {
-			ChatColor color = ChatColor.BLACK;
-			switch(m.getStatus()) {
-			case SUCCESS:
-				color = ChatColor.GREEN;
-				break;
-			case ERROR:
-				color = ChatColor.RED;
-				break;
-			case WARNING:
-				color = ChatColor.DARK_RED;
-				break;
-			case USAGE:
-				color = ChatColor.AQUA;
-				break;
-			}
-			sender.sendMessage(String.format("%sMondoChest: %s%s", ChatColor.GOLD, color, m.getMessage()));
+			sender.sendMessage(BasicMessage.render(m, true));
 		}
 		return false;
 	}

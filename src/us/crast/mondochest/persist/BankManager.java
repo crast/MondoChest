@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.BlockVector;
 
 import us.crast.mondochest.BankSet;
+import us.crast.mondochest.ChestManager;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoMessage;
 import us.crast.mondochest.util.StringTools;
@@ -75,6 +76,16 @@ public class BankManager {
 			banks.put(world, banksByCoords);
 		}
 		return banksByCoords;
+	}
+	
+	public Map<ChestManager, BankSet> getWorldSlaves(String world) {
+		Map<ChestManager, BankSet> slaves = new HashMap<ChestManager, BankSet>();
+		for (BankSet bs: getWorldBanks(world).values()) {
+			for (ChestManager cm: bs.listSlaves()) {
+				slaves.put(cm, bs);
+			}
+		}
+		return slaves;
 	}
 	
 	public BankSet getBank(String world, BlockVector vec) {
