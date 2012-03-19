@@ -10,7 +10,7 @@ public class MondoMessage extends Exception implements MessageWithStatus {
 	}
 	
 	public MondoMessage(String message) {
-		this(message, Status.SUCCESS);
+		this(message, Status.ERROR);
 	}
 
 	public Status getStatus() {

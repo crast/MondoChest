@@ -29,7 +29,7 @@ public final class MondoConfig {
 		MondoConfig.log = log;
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
-		SIGN_PROTECTION = config.getBoolean("sign_protection");
+		SIGN_PROTECTION = config.getBoolean("protection.signs");
 		USE_COMMANDS = config.getBoolean("use_commands");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];

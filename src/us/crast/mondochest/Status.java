@@ -4,5 +4,6 @@ public enum Status {
 	SUCCESS,
 	ERROR,
 	WARNING,
-	USAGE
+	USAGE,
+	INFO
 }

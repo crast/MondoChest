@@ -11,9 +11,13 @@ public class BasicMessage implements MessageWithStatus {
 	private String message;
 	private Status status;
 
-	BasicMessage(String message, Status status) {
+	public BasicMessage(String message, Status status) {
 		this.message = message;
 		this.status = status;
+	}
+	
+	public BasicMessage(Status status, String message, Object...args) {
+		this(String.format(message, args), status);
 	}
 
 	@Override
@@ -48,6 +52,9 @@ public class BasicMessage implements MessageWithStatus {
 			break;
 		case USAGE:
 			color = ChatColor.AQUA;
+			break;
+		case INFO:
+			color = ChatColor.GRAY;
 			break;
 		}
 		return String.format("%sMondoChest: %s%s", ChatColor.GOLD, color, message);
