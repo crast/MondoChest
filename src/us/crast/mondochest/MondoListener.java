@@ -175,9 +175,16 @@ public class MondoListener implements Listener {
 	
 	}
 	
-	public void allowAccess(CallInfo call, String target) {
-		call.getPlayer().getServer().getPlayer(target);
-		call.showHelp();
+	public void allowAccess(CallInfo call, String target) throws MondoMessage {
+		Player player = call.getPlayer();
+		BankSet lastClicked = getLastClickedBank(player, true);
+		Player targetPlayer = call.getPlayer().getServer().getPlayer(target);
+		if (targetPlayer == null) throw new MondoMessage("Target not found");
+		if (call.getArg(0).equalsIgnoreCase("allow")) {
+			lastClicked.addAccess(targetPlayer.getName());
+		} else {
+			lastClicked.removeAccess(targetPlayer.getName());
+		}
 	}
 	
 	
@@ -260,5 +267,19 @@ public class MondoListener implements Listener {
 			return null;
 		}
 		return lastClicked;
+	}
+	
+	private BankSet getLastClickedBank(Player player, boolean enforce_ownership) throws MondoMessage{
+		Location lastClicked = getLastClicked(player);
+		if (lastClicked == null) throw new MondoMessage("Needs last clicked");
+		
+		BankSet targetBank = bankManager.getBank(lastClicked);
+		if (targetBank == null) {
+			throw new MondoMessage("Wot. No Target " + lastClicked.toString());
+		}
+		if (enforce_ownership && !targetBank.getOwner().equals(player.getName())) {
+			throw new MondoMessage("No messing with other people's banks");
+		}
+		return targetBank;
 	}
 }

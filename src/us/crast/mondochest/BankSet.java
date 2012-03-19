@@ -192,6 +192,16 @@ public class BankSet implements ConfigurationSerializable {
 		
 		return bankset;
 	}
+
+	public void addAccess(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void removeAccess(String name) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 

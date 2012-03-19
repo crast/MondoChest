@@ -30,6 +30,7 @@ public final class MondoConfig {
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		SIGN_PROTECTION = config.getBoolean("sign_protection");
+		USE_COMMANDS = config.getBoolean("use_commands");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];
 		for (int i = 0; i < matlist.size(); i++) {

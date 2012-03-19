@@ -3,6 +3,7 @@ Version 0.5: Not yet released
  * Radius is deprecated
  * Slave signs add to the nearest chest
  * Multiple chests per item type
+ * Optional sign protection
 
 Version 0.4.2: 2012-02-29
  * Remove spurious debug output

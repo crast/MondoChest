@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoConstants;
 import us.crast.mondochest.MondoListener;
+import us.crast.mondochest.MondoMessage;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
 
@@ -49,17 +50,17 @@ public class Executor implements CommandExecutor {
 				return false;
 			}
 		}
-		String subcommand = args[0].toLowerCase();
-		if (subcommand.equals("reload")) {
-			if (can_reload.checkSender(sender)) {
-				// something here
-			}
+		String subcommandName = args[0].toLowerCase();
+		SubCommand sub = subcommands.get(subcommandName);
+		if (sub == null) {
+			// TODO return usage
+			return false;
 		}
-		if (player != null) {
-			if (subcommand.equals("remove")) {
-				
-			} else if (subcommand.equals("allow")) {
-			}
+		CallInfo call = new CallInfo(sender, player, args);
+		try {
+			sub.getHandler().handle(call);
+		} catch (MondoMessage m) {
+			player.sendMessage(m.getMessage());
 		}
 		return false;
 	}
@@ -94,7 +95,7 @@ public class Executor implements CommandExecutor {
 	private void setupCommands() {
 		addSub("remove", "mondochest.remove_slave", new SubHandler(){
 			public void handle(CallInfo call) {
-				listener.notify(); // TODO
+				// TODO
 			} 
 		});
 		
@@ -103,10 +104,16 @@ public class Executor implements CommandExecutor {
 			.setUsage("<username>")
 			.setDescription("Allow other users to access a MondoChest")
 			.setHandler(new SubHandler() {
-				public void handle(CallInfo call) {
+				public void handle(CallInfo call) throws MondoMessage {
 					listener.allowAccess(call, call.getArg(1));
 				}
 			});
+		
+		addSub("deny", "mondochest.use")
+			.setMinArgs(1)
+			.setUsage("<username>")
+			.setDescription("Remove users from access")
+			.setHandler(subcommands.get("allow").getHandler());
 		
 		addSub("reload", "mondochest.admin.reload")
 			.allowConsole()
