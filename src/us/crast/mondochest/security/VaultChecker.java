@@ -2,6 +2,7 @@ package us.crast.mondochest.security;
 
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class VaultChecker extends PermissionChecker {
@@ -15,6 +16,11 @@ public class VaultChecker extends PermissionChecker {
 	@Override
 	public boolean check(Player player) {
 		return pmanager.has(player, this.permission);
+	}
+
+	@Override
+	public boolean checkSender(CommandSender sender) {
+		return pmanager.has(sender, this.permission);
 	}
 
 }
