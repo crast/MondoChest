@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
+import us.crast.mondochest.command.CallInfo;
 import us.crast.mondochest.persist.BankManager;
 import us.crast.mondochest.persist.PlayerInfoManager;
 import us.crast.mondochest.persist.PlayerState;
@@ -103,9 +104,9 @@ public class MondoListener implements Listener {
 				state.setLastClickedMaster(block.getLocation());
 			} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
 				Player player = event.getPlayer();
-				Location lastClicked = playerManager.getState(player).getLastClickedMaster();
-				if (lastClicked == null 
-					|| !block.getLocation().getWorld().equals(lastClicked.getWorld())) {
+		
+				Location lastClicked = getLastClicked(player);
+				if (lastClicked == null) {
 					player.sendMessage("To add slaves to a bank, click a master sign first");
 					return;
 				}
@@ -172,6 +173,11 @@ public class MondoListener implements Listener {
 	
 	public void slaveBroken(Cancellable event, Sign sign, Player player) {
 	
+	}
+	
+	public void allowAccess(CallInfo call, String target) {
+		call.getPlayer().getServer().getPlayer(target);
+		call.showHelp();
 	}
 	
 	
@@ -245,5 +251,14 @@ public class MondoListener implements Listener {
 	
 	private String pluralize(int number) {
 		return (number == 1? "": "s");
+	}
+	
+	private Location getLastClicked(Player player) {
+		Location lastClicked = playerManager.getState(player).getLastClickedMaster();
+		if (lastClicked == null 
+			|| !player.getLocation().getWorld().equals(lastClicked.getWorld())) {
+			return null;
+		}
+		return lastClicked;
 	}
 }
