@@ -1,10 +1,12 @@
 Version 0.5: Not yet released
  * Support Vault permissions
  * Radius is deprecated
- * Slave signs add to the nearest chest
+ * Slave signs add to the last clicked chest
  * Multiple chests per item type
  * Optional sign protection
  * slash command support
+ * pretty message coloring
+ * Removing slave signs removes them from masters
 
 Version 0.4.2: 2012-02-29
  * Remove spurious debug output
