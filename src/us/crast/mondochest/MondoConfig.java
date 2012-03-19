@@ -23,6 +23,7 @@ public final class MondoConfig {
 	public static int SLAVE_MAX_ADD_RADIUS = 150;
 
 	public static Permission VAULT_PERMISSIONS = null;
+	public static boolean USE_COMMANDS = false;
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;

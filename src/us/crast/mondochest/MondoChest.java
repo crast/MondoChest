@@ -10,26 +10,21 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 //import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import us.crast.mondochest.command.Executor;
 import us.crast.mondochest.persist.BankManager;
 
 public class MondoChest extends JavaPlugin {
-	Logger log = Logger.getLogger("Minecraft");
+	Logger log;
 	private MondoListener listener = null;
 	private BreakListener break_listener = null;
+	private int num_reloads = 0;
 	private BankManager bankManager;
 
 	//private Economy econ;
 
 	public void onEnable() {
-		if (bankManager == null) {
-			bankManager = new BankManager(this);
-		} else {
-			bankManager.load();
-		}
-		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
-			saveDefaultConfig();
-		}
-		MondoConfig.configure(this, getConfig(), log);
+		this.log = getLogger();
+		this.reloadMondoChest();
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig(), this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		
@@ -38,7 +33,11 @@ public class MondoChest extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(break_listener, this);
 		}
 		
-		log.info("[MondoChest] MondoChest v0.5 ready");
+		if (MondoConfig.USE_COMMANDS) {
+			getCommand("mondochest").setExecutor(new Executor(this, listener));
+		}
+		
+		log.info(String.format("[MondoChest] MondoChest %s ready"));
 		/*
 		if (!setupEconomy()) {
 			log.info("No economy found");
@@ -49,20 +48,35 @@ public class MondoChest extends JavaPlugin {
 
 	}
 	
-	private BlockSearcher getSearcherFromConfig() {
-		FileConfiguration config = getConfig();
-		int x = config.getInt("chest_search.radiusX");
-		int y = config.getInt("chest_search.radiusY");
-		int z = config.getInt("chest_search.radiusZ");
-		return new BlockSearcher(x, y, z);
-	}
-	
 	public void onDisable() {
 		try {
 			bankManager.save();
 		} catch (MondoMessage msg) {
 			log.warning(msg.getMessage());
 		}
+	}
+	
+	public void reloadMondoChest() {
+		if (bankManager == null) {
+			bankManager = new BankManager(this);
+		} else {
+			bankManager.load();
+		}
+		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
+			saveDefaultConfig();
+		}
+		if (++num_reloads > 1) {
+			reloadConfig();
+		}
+		MondoConfig.configure(this, getConfig(), log);
+	}
+
+	private BlockSearcher getSearcherFromConfig() {
+		FileConfiguration config = getConfig();
+		int x = config.getInt("chest_search.radiusX");
+		int y = config.getInt("chest_search.radiusY");
+		int z = config.getInt("chest_search.radiusZ");
+		return new BlockSearcher(x, y, z);
 	}
 	
 	/*
