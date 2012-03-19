@@ -37,7 +37,7 @@ public class MondoChest extends JavaPlugin {
 			getCommand("mondochest").setExecutor(new Executor(this, listener));
 		}
 		
-		log.info(String.format("[MondoChest] MondoChest %s ready"));
+		log.info(String.format("[MondoChest] MondoChest %s ready", MondoConstants.MONDOCHEST_VERSION));
 		/*
 		if (!setupEconomy()) {
 			log.info("No economy found");

@@ -10,6 +10,7 @@ public class SubCommand {
 	private PermissionChecker checker;
 	private SubHandler handler = null;
 	private String description;
+	private String usage = null;
 	
 	public SubCommand(String name, String permission) {
 		this.name = name;
@@ -52,7 +53,12 @@ public class SubCommand {
 		return name;
 	}
 	
+	public String getUsage() {
+		return this.usage;
+	}
+	
 	public SubCommand setUsage(String usage) {
+		this.usage = usage;
 		return this;
 	}
 

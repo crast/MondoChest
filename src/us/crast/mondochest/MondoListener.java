@@ -132,7 +132,7 @@ public class MondoListener implements Listener {
 				try {
 					bankManager.save();
 				} catch (MondoMessage m) {
-					player.sendMessage(m.toString());
+					player.sendMessage(m.getMessage());
 				}
 				if (num_added > 0) {
 					bankManager.markChanged(block.getWorld().getName(), targetBank);
@@ -179,11 +179,13 @@ public class MondoListener implements Listener {
 		Player player = call.getPlayer();
 		BankSet lastClicked = getLastClickedBank(player, true);
 		Player targetPlayer = call.getPlayer().getServer().getPlayer(target);
-		if (targetPlayer == null) throw new MondoMessage("Target not found");
+		if (targetPlayer == null) throw new MondoMessage("Target not found", Status.ERROR);
 		if (call.getArg(0).equalsIgnoreCase("allow")) {
 			lastClicked.addAccess(targetPlayer.getName());
+			call.success(String.format("Player %s allowed", targetPlayer.getName()));
 		} else {
 			lastClicked.removeAccess(targetPlayer.getName());
+			call.success(String.format("Player %s removed", targetPlayer.getName()));
 		}
 	}
 	
@@ -195,7 +197,7 @@ public class MondoListener implements Listener {
 	private BankSet bankFromSign(Sign sign, String owner) throws MondoMessage {
 		java.util.Vector<Chest> chestsFound = SignUtils.nearbyChests(sign);
 		if (chestsFound.isEmpty()) {
-			throw new MondoMessage("No chests found near MondoChest sign");
+			throw new MondoMessage("No chests found near MondoChest sign", Status.ERROR);
 		} else {
 			return new BankSet(
 				chestsFound.elementAt(0), 
@@ -271,14 +273,14 @@ public class MondoListener implements Listener {
 	
 	private BankSet getLastClickedBank(Player player, boolean enforce_ownership) throws MondoMessage{
 		Location lastClicked = getLastClicked(player);
-		if (lastClicked == null) throw new MondoMessage("Needs last clicked");
+		if (lastClicked == null) throw new MondoMessage("Click a MondoChest sign before performing this action", Status.ERROR);
 		
 		BankSet targetBank = bankManager.getBank(lastClicked);
 		if (targetBank == null) {
-			throw new MondoMessage("Wot. No Target " + lastClicked.toString());
+			throw new MondoMessage("Wot. No Target " + lastClicked.toString(), Status.ERROR);
 		}
 		if (enforce_ownership && !targetBank.getOwner().equals(player.getName())) {
-			throw new MondoMessage("No messing with other people's banks");
+			throw new MondoMessage("No messing with other people's banks", Status.WARNING);
 		}
 		return targetBank;
 	}

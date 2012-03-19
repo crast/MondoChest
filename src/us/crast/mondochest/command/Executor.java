@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -44,8 +45,21 @@ public class Executor implements CommandExecutor {
 			if (player == null) {
 				return sendVersion(sender);
 			} else {
+				player.sendMessage("Usage: /mondochest <command> [<args>]");
+	
 				for (SubCommand sub: availableCommands(sender, player)) {
-					player.sendMessage(String.format(" %s: %s", sub.getName(), sub.getDescription()));
+					String usage = "";
+					if (sub.getUsage() != null) {
+						usage = ChatColor.LIGHT_PURPLE.toString() + " " + sub.getUsage();
+					}
+					player.sendMessage(String.format(
+							"%s/%s %s%s %s%s", 
+							ChatColor.GREEN,
+							commandLabel, sub.getName(),
+							usage,
+							ChatColor.BLUE,
+							sub.getDescription()
+					));
 				}
 				return false;
 			}
@@ -55,12 +69,36 @@ public class Executor implements CommandExecutor {
 		if (sub == null) {
 			// TODO return usage
 			return false;
+		} else if (!sub.getChecker().checkSender(sender)) {
+			sender.sendMessage(String.format("MondoChest: %sStop being sneaky.", ChatColor.RED));
+			return false;
+		} else if ((args.length -1 ) < sub.getMinArgs()) {
+			sender.sendMessage(String.format("Usage: /%s %s %s", commandLabel, sub.getName(), sub.getUsage()));
+			return false;
 		}
 		CallInfo call = new CallInfo(sender, player, args);
 		try {
 			sub.getHandler().handle(call);
 		} catch (MondoMessage m) {
-			player.sendMessage(m.getMessage());
+			call.append(m);
+		}
+		for (MondoMessage m: call.getMessages()) {
+			ChatColor color = ChatColor.BLACK;
+			switch(m.getStatus()) {
+			case SUCCESS:
+				color = ChatColor.GREEN;
+				break;
+			case ERROR:
+				color = ChatColor.RED;
+				break;
+			case WARNING:
+				color = ChatColor.DARK_RED;
+				break;
+			case USAGE:
+				color = ChatColor.AQUA;
+				break;
+			}
+			sender.sendMessage(String.format("%sMondoChest: %s%s", ChatColor.GOLD, color, m.getMessage()));
 		}
 		return false;
 	}
@@ -121,6 +159,7 @@ public class Executor implements CommandExecutor {
 			.setHandler(new SubHandler() {
 				public void handle(CallInfo call) {
 					mondoChest.reloadMondoChest();
+					call.success("MondoChest config reloaded");
 				}	
 			});
 	}

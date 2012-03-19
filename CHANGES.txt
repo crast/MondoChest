@@ -4,6 +4,7 @@ Version 0.5: Not yet released
  * Slave signs add to the nearest chest
  * Multiple chests per item type
  * Optional sign protection
+ * slash command support
 
 Version 0.4.2: 2012-02-29
  * Remove spurious debug output

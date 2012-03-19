@@ -32,5 +32,13 @@ permissions:
     mondochest.admin.add_any_slave:
         description: "Add slaves to other's MondoChests"
         default: op
+    mondochest.admin.reload:
+        description: "Reload the MondoChest config"
+        default: op
+
+commands:
+    mondochest:
+        description: "MondoChest commands"
+        aliases: [mondo]
 
 # vim: ts=4 sw=4 sts=4 expandtab
