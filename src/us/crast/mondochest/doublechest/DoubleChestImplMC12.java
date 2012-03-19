@@ -8,9 +8,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
 import us.crast.mondochest.ChestManager;
+import us.crast.mondochest.MondoConfig;
+import us.crast.mondochest.MondoConstants;
 
 public class DoubleChestImplMC12 extends DoubleChestImpl {
-	private static final int DOUBLE_CHEST_SIZE = 54;
+	private static final int DOUBLE_CHEST_SIZE = MondoConstants.DOUBLE_CHEST_SIZE;
+	private static final int SINGLE_CHEST_SIZE = MondoConstants.SINGLE_CHEST_SIZE;
 	
 	@Override
 	public HashMap<Integer, ItemStack> addItem(ChestManager manager, World world, ItemStack stack) {
@@ -32,6 +35,11 @@ public class DoubleChestImplMC12 extends DoubleChestImpl {
 		if (i1 == null) return new Inventory[0];
 		if (i1.getSize() == DOUBLE_CHEST_SIZE) {
 			return new Inventory[] { i1 };
+		} else if (i1.getSize() != SINGLE_CHEST_SIZE) {
+			for (String line: MondoConstants.BAD_CHEST_WARNING) {
+				MondoConfig.getLog().warning("MondoChest: " + line);
+			}
+			return new Inventory[0];
 		}
 		Inventory i2 = null;
 		BlockVector chest2 = manager.getChest2();
