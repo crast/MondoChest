@@ -20,7 +20,7 @@ public class DefaultDict<K, V> extends HashMap<K, V> {
 	public V ensure(K key) {
 		V item = this.get(key);
 		if (item == null) {
-			item = builder.build();
+			item = builder.build(key);
 			this.put(key, item);
 		}
 		return item;
@@ -29,7 +29,7 @@ public class DefaultDict<K, V> extends HashMap<K, V> {
 
 class ListBuilder<T> implements ObjectMaker<List<T>> {
 	@Override
-	public List<T> build() {
+	public List<T> build(Object key) {
 		return new java.util.ArrayList<T>();
 	}
 }
