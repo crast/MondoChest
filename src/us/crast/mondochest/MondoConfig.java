@@ -15,8 +15,11 @@ public final class MondoConfig {
 
 	public static boolean RESTACK_MASTER = false;
 	public static boolean RESTACK_SLAVES = false;
-	public static boolean SIGN_PROTECTION = false;
+	
 	public static Material[] RESTACK_MATERIALS = {};
+	
+	public static boolean PROTECTION_SIGNS = false;
+	public static boolean PROTECTION_CHEST_BREAK = false;
 	
 	public static int CONSTRAINTS_Y_MAX = 127;
 	public static int CONSTRAINTS_Y_MIN = 0;
@@ -29,7 +32,8 @@ public final class MondoConfig {
 		MondoConfig.log = log;
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
-		SIGN_PROTECTION = config.getBoolean("protection.signs");
+		PROTECTION_SIGNS = config.getBoolean("protection.signs");
+		PROTECTION_CHEST_BREAK = config.getBoolean("protection.chest_break");
 		USE_COMMANDS = config.getBoolean("use_commands");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];

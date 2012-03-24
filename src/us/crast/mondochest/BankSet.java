@@ -16,7 +16,6 @@ import org.bukkit.util.BlockVector;
 
 import us.crast.mondochest.util.ChestManagerSet;
 import us.crast.mondochest.util.DefaultDict;
-import us.crast.mondochest.util.ObjectMaker;
 import us.crast.mondochest.util.StringTools;
 
 @SerializableAs("MondoChestSet")
@@ -26,8 +25,8 @@ public class BankSet implements ConfigurationSerializable {
 	private BlockVector masterSign;
 	private ChestManager masterChest;
 	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
-	private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(new ChestManagerSetMaker());
-	private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(new ChestManagerSetMaker());
+	private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(ChestManagerSet.getMaker());
+	private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(ChestManagerSet.getMaker());
 	
 	public BankSet(Chest masterChest, String owner, BlockVector masterSign) {
 		this.owner = owner;
@@ -216,13 +215,5 @@ public class BankSet implements ConfigurationSerializable {
 	public void removeAccess(String name) {
 		// TODO Auto-generated method stub
 		
-	}
-}
-
-
-class ChestManagerSetMaker implements ObjectMaker<ChestManagerSet> {
-	@Override
-	public ChestManagerSet build() {
-		return new ChestManagerSet();
 	}
 }

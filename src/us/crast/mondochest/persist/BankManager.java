@@ -17,11 +17,13 @@ import us.crast.mondochest.BankSet;
 import us.crast.mondochest.ChestManager;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoMessage;
+import us.crast.mondochest.util.DefaultDict;
 import us.crast.mondochest.util.StringTools;
 
 public class BankManager {
 	private Map<String, Map<BlockVector, BankSet>> banks = new HashMap<String, Map<BlockVector, BankSet>>();
 	private Map<String, String> worldHashes = new HashMap<String, String>();
+	private DefaultDict<String, WorldCache> worldCaches = new DefaultDict<String, WorldCache>(WorldCache.getMaker());
 	private Set<BankSet> changed = new HashSet<BankSet>();
 	private File bankFile;
 	private FileConfiguration config;
@@ -79,13 +81,7 @@ public class BankManager {
 	}
 	
 	public Map<ChestManager, BankSet> getWorldSlaves(String world) {
-		Map<ChestManager, BankSet> slaves = new HashMap<ChestManager, BankSet>();
-		for (BankSet bs: getWorldBanks(world).values()) {
-			for (ChestManager cm: bs.listSlaves()) {
-				slaves.put(cm, bs);
-			}
-		}
-		return slaves;
+		return worldCaches.ensure(world).getSlaves(this);
 	}
 	
 	public BankSet getBank(String world, BlockVector vec) {
@@ -93,22 +89,23 @@ public class BankManager {
 	}
 	
 	public BankSet getBank(Location loc) {
-		//java.util.logging.Logger.getLogger("Minecraft").info("Something Something")
 		return getBank(loc.getWorld().getName(), loc.toVector().toBlockVector());
 	}
 	
 	public void addBank(String world, BlockVector vec, BankSet bank) {
 		getWorldBanks(world).put(vec, bank);
-		changed.add(bank);
+		markChanged(world, bank);
 	}
 	
 	public void removeBank(String world, BankSet bank) {
 		getWorldBanks(world).remove(bank.getMasterSign());
 		changed.remove(bank);
+		worldCaches.ensure(world).clear();
 		worldSection(world).set(bank.getKey(), null);
 	}
 	
 	public void markChanged(String world, BankSet bank) {
+		worldCaches.ensure(world).clear();
 		changed.add(bank);
 	}
 	

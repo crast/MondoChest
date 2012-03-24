@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class StringTools {
 	public static String md5String(String input) {
-		try{
+		try {
 			MessageDigest algorithm = MessageDigest.getInstance("MD5");
 			algorithm.reset();
 			algorithm.update(input.getBytes());

@@ -28,7 +28,7 @@ public class MondoChest extends JavaPlugin {
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig(), this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		
-		if (MondoConfig.SIGN_PROTECTION) {
+		if (MondoConfig.PROTECTION_SIGNS || MondoConfig.PROTECTION_CHEST_BREAK) {
 			break_listener = new BreakListener(listener);
 			getServer().getPluginManager().registerEvents(break_listener, this);
 		}
