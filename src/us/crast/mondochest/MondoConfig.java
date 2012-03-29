@@ -49,7 +49,7 @@ public final class MondoConfig {
 			MondoSecurity.setMode("SuperPerms");
 		} else if (perms_config.equals("vault")) {
 			if (loadVaultPermissions(plugin) == null) {
-				log.warning("[MondoChest] Permission system Vault requested, but vault permission system not found.");
+				log.warning("Permission system Vault requested, but vault permission system not found.");
 			} else {
 				MondoSecurity.setMode("Vault");
 			}
@@ -57,7 +57,7 @@ public final class MondoConfig {
 			MondoSecurity.setMode("null");
 		} else {
 			log.warning(String.format(
-				"[MondoChest] Do not know permissions scheme '%s', must be one of "
+				"Do not know permissions scheme '%s', must be one of "
 				+ "none, SuperPerms or Vault.",
 				perms_config
 			));

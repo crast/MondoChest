@@ -194,14 +194,14 @@ public class BankSet implements ConfigurationSerializable {
 					bankset.addChestManager((ChestManager) location);
 				} else {
 					log.warning(String.format(
-							"[MondoChest] when building chestLocations for bankset %s, expected a ChestManager, got a %s",
+							"when building chestLocations for bankset %s, expected a ChestManager, got a %s",
 							bankset.toString(),
 							location.getClass().getName()
 					));
 				}
 			}
 		} else {
-			log.warning("[MondoChest] chestLocations is supposed to be a list, wtf mait");
+			log.warning("chestLocations is supposed to be a list, wtf mait");
 		}
 		
 		return bankset;

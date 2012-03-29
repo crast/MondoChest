@@ -158,7 +158,7 @@ public class MondoListener implements Listener {
 	}
 
 	public void masterBroken(Cancellable event, Sign sign, Player player) {
-		BankSet bank = bankManager.getBank(sign.getLocation());
+		BankSet bank = bankManager.getBank(sign.getBlock().getLocation());
 		if (bank == null) return;
 		if (!bank.getOwner().equals(player.getName())) {
 			if (can_override_break.check(player)) {

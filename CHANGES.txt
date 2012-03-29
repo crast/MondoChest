@@ -1,12 +1,14 @@
 Version 0.5: Not yet released
  * Support Vault permissions
  * Radius is deprecated
+ * MondoChests have "owners"
  * Slave signs add to the last clicked chest
  * Multiple chests per item type
  * Optional sign protection
- * slash command support
+   * Only owners can break signs
+   * Break signs to remove slaves / entire mondochests.
  * pretty message coloring
- * Removing slave signs removes them from masters
+ * slash command support (limited currently)
 
 Version 0.4.2: 2012-02-29
  * Remove spurious debug output
