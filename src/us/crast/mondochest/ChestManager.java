@@ -150,15 +150,19 @@ public class ChestManager implements ConfigurationSerializable {
 		if (chest2 != null) {
 			d.put("chest2", chest2);
 		}
-		d.put("restackAllowed", restackAllowed);
+		if (restackAllowed) d.put("restackAllowed", restackAllowed);
 		return d;
 	}
 	
 	public static ChestManager deserialize(Map<String, Object> d) {
+		boolean restackAllowed = false;
+		if (d.containsKey("restackAllowed")) {
+			restackAllowed = ((Boolean) d.get("restackAllowed")).booleanValue();
+		}
 		return new ChestManager(
 				(BlockVector) d.get("chest1"), 
 				d.containsKey("chest2")? ((BlockVector) d.get("chest2")) : null,
-				((Boolean) d.get("restackAllowed")).booleanValue()
+				restackAllowed
 		);
 	}
 	
