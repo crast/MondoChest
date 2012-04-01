@@ -189,8 +189,8 @@ public class BankSet implements ConfigurationSerializable {
 		);
 		
 		Object locations = d.get("chestLocations");
-		if (locations instanceof List<?>) {
-			for (Object location: (List<?>) d.get("chestLocations")) {
+		if (locations instanceof Collection<?>) {
+			for (Object location: (Collection<?>) d.get("chestLocations")) {
 				if (location instanceof ChestManager) {
 					bankset.addChestManager((ChestManager) location);
 				} else {

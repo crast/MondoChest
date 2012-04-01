@@ -3,7 +3,7 @@ package us.crast.mondochest.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class StringTools {
+public final class StringTools {
 	public static String md5String(String input) {
 		try {
 			MessageDigest algorithm = MessageDigest.getInstance("MD5");

@@ -12,7 +12,7 @@ public class ChestManagerSet extends HashSet<ChestManager> {
 		super();
 	}
 	public ChestManagerSet(ChestManager m) {
-		super();
+		this();
 		this.add(m);
 	}
 	

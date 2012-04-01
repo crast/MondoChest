@@ -8,7 +8,7 @@ import org.bukkit.block.BlockFace;
 
 import us.crast.mondochest.MondoMessage;
 
-public class DirectionalStrings {
+public final class DirectionalStrings {
 	private static Map<String, BlockFace> dirs = new HashMap<String, BlockFace>();
 	
 	public static Block parseDirectional(Block context, String directioninfo) throws MondoMessage {

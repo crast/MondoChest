@@ -27,6 +27,7 @@ import us.crast.mondochest.persist.PlayerState;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
 import us.crast.mondochest.util.DirectionalStrings;
+import us.crast.mondochest.util.SignUtils;
 
 public class MondoListener implements Listener {
 	private static final String MASTER_SIGN_NAME = MondoConstants.MASTER_SIGN_NAME;

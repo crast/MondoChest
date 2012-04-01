@@ -1,4 +1,4 @@
-package us.crast.mondochest;
+package us.crast.mondochest.util;
 
 import java.util.Vector;
 
@@ -8,7 +8,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 
-final class SignUtils {
+import us.crast.mondochest.BlockSearcher;
+
+public final class SignUtils {
 	private static BlockSearcher searcherZ = new BlockSearcher(0, 1, 2);
 	private static BlockSearcher searcherX = new BlockSearcher(2, 1, 0);
 	
