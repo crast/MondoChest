@@ -1,3 +1,8 @@
+Version 0.5.2: Not yet released
+ * Performance improvements: Use O(1) datastructure for slave operations.
+ * Strategies for more compact config
+ * Any parsing errors causes an automatic backup of banks.yml
+
 Version 0.5.1: 2012-04-01
  * Fix bug where a master can contain the same chest again as a slave
 
