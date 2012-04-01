@@ -3,6 +3,7 @@ package us.crast.mondochest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class BankSet implements ConfigurationSerializable {
 	private Set<ChestManager> chestLocations = new java.util.HashSet<ChestManager>();
 	private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(ChestManagerSet.getMaker());
 	private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(ChestManagerSet.getMaker());
+	private Set<String> acl = null;
 	
 	public BankSet(Chest masterChest, String owner, BlockVector masterSign) {
 		this.owner = owner;
@@ -76,7 +78,6 @@ public class BankSet implements ConfigurationSerializable {
 	}
 	
 	public java.util.Set<Material> refreshMaterials(World world) {
-		//Logger log = Logger.getLogger("Minecraft");
 		materialChests.clear();
 		materialDataChests.clear();
 		for (ChestManager m: chestLocations) {
@@ -91,7 +92,6 @@ public class BankSet implements ConfigurationSerializable {
 	public int shelveItems(World world) {
 		int num_shelved = 0;
 		Set<ChestManager> to_restack = new java.util.HashSet<ChestManager>();
-		//Logger log = Logger.getLogger("Minecraft");
 		for (ItemStack stack: masterChest.listItems(world)) {
 			//log.info(String.format("Item: %d of %s", stack.getAmount(), stack.getType().toString()));
 			MaterialWithData md = new MaterialWithData(stack);
@@ -209,13 +209,25 @@ public class BankSet implements ConfigurationSerializable {
 		return bankset;
 	}
 
-	public void addAccess(String name) {
-		// TODO Auto-generated method stub
-		
+	public boolean addAccess(String name) {
+		return getAcl().add(name);
 	}
 
-	public void removeAccess(String name) {
-		// TODO Auto-generated method stub
-		
+	public boolean removeAccess(String name) {
+		return getAcl().remove(name);
+	}
+	
+	public boolean hasAccess(String name) {
+		if (acl == null) return true;
+		return acl.contains(name);
+	}
+	
+	private Set<String> getAcl() {
+		if (acl == null) acl = new HashSet<String>();
+		return acl;
+	}
+	
+	public void setAcl(Set<String> acl) {
+		this.acl = acl;
 	}
 }
