@@ -1,4 +1,7 @@
-Version 0.5: Not yet released
+Version 0.5.1: 2012-04-01
+ * Fix bug where a master can contain the same chest again as a slave
+
+Version 0.5: 2012-03-29
  * Support Vault permissions
  * Radius is deprecated
  * MondoChests have "owners"

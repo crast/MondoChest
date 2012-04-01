@@ -79,17 +79,6 @@ public class ChestManager implements ConfigurationSerializable {
 			return null;
 		}
 	}
-	/*
-	private Inventory[] validInventories(World world) {
-		Inventory i1 = getInventory(world, chest1);
-		Inventory i2 = null;
-		if (chest2 != null) {
-			i2 = getInventory(world, chest2);
-		}
-		if (i1 == null) return new Inventory[0];
-		if (i2 == null) return new Inventory[] { i1 };
-		return new Inventory[] { i1, i2 };
-	}*/
 	
 	public static void printWeirdStack(HashMap<Integer, ItemStack> entries) {
 		if (entries.isEmpty()) return;
@@ -168,7 +157,7 @@ public class ChestManager implements ConfigurationSerializable {
 	public static ChestManager deserialize(Map<String, Object> d) {
 		return new ChestManager(
 				(BlockVector) d.get("chest1"), 
-				d.containsKey("chest2")? ((BlockVector) d.get("chest2")) : null, 
+				d.containsKey("chest2")? ((BlockVector) d.get("chest2")) : null,
 				((Boolean) d.get("restackAllowed")).booleanValue()
 		);
 	}

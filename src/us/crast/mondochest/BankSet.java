@@ -51,6 +51,7 @@ public class BankSet implements ConfigurationSerializable {
 	
 	public boolean addChest(Chest chest, boolean allow_restack) {
 		ChestManager newmanager = new ChestManager(chest, allow_restack);
+		if (newmanager.equals(masterChest)) return false;
 		for (ChestManager m: chestLocations) {
 			if (m.equals(newmanager)) return false;
 		}
@@ -70,6 +71,15 @@ public class BankSet implements ConfigurationSerializable {
 	}
 	
 	private void addChestManager(ChestManager manager) {
+		// XXX de-serializing from version 0.5 might allow a ChestManager to be
+		// added which is equal to the master, so stop it by ignoring its add.
+		if (manager.equals(masterChest)) {
+			MondoConfig.getLog().warning(
+				"Found a slave chest with the same coordinates as a master. " +
+				"Removing it to prevent any future issues."
+			);
+			return;
+		}
 		chestLocations.add(manager);
 	}
 	

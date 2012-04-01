@@ -11,7 +11,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import us.crast.mondochest.security.MondoSecurity;
 
 public final class MondoConfig {
-	private static Logger log;
+	private static Logger log = Logger.getLogger("Minecraft");
 
 	public static boolean RESTACK_MASTER = false;
 	public static boolean RESTACK_SLAVES = false;

@@ -21,13 +21,13 @@ restack_materials:
   - EGG
 
 # Valid values: false/none, SuperPerms, Vault
-permissions: false
+permissions: SuperPerms
 
 # Sign protection.
 # Note that this may interfere with other protection plugins,
 # use with caution.
 protection:
-    signs: false
+    signs: true
 
 # Constraints on the search algorithm's Y coordinate
 # This is here because the Y-max is going to increase
