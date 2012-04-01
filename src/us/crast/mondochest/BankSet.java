@@ -1,10 +1,11 @@
 package us.crast.mondochest;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -24,7 +25,7 @@ public class BankSet implements ConfigurationSerializable {
 	private String owner;
 	private BlockVector masterSign;
 	private ChestManager masterChest;
-	private List<ChestManager> chestLocations = new java.util.Vector<ChestManager>();
+	private Set<ChestManager> chestLocations = new java.util.HashSet<ChestManager>();
 	private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(ChestManagerSet.getMaker());
 	private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(ChestManagerSet.getMaker());
 	
@@ -52,29 +53,21 @@ public class BankSet implements ConfigurationSerializable {
 	public boolean addChest(Chest chest, boolean allow_restack) {
 		ChestManager newmanager = new ChestManager(chest, allow_restack);
 		if (newmanager.equals(masterChest)) return false;
-		for (ChestManager m: chestLocations) {
-			if (m.equals(newmanager)) return false;
-		}
+		if (chestLocations.contains(newmanager)) return false;
 		chestLocations.add(newmanager);
 		return true;
 	}
 	
 	public boolean removeChest(Chest chest) {
 		ChestManager other = new ChestManager(chest, false);
-		for (ChestManager m: chestLocations) {
-			if (m.equals(other)) {
-				chestLocations.remove(m);
-				return true;
-			}
-		}
-		return false;
+		return chestLocations.remove(other);
 	}
 	
 	private void addChestManager(ChestManager manager) {
 		// XXX de-serializing from version 0.5 might allow a ChestManager to be
 		// added which is equal to the master, so stop it by ignoring its add.
 		if (manager.equals(masterChest)) {
-			MondoConfig.getLog().warning(
+			MondoConfig.logDecodeError(
 				"Found a slave chest with the same coordinates as a master. " +
 				"Removing it to prevent any future issues."
 			);
@@ -140,7 +133,7 @@ public class BankSet implements ConfigurationSerializable {
 	
 	/* Getters/setters */
 	
-	public List<ChestManager> listSlaves() {
+	public Collection<ChestManager> listSlaves() {
 		return chestLocations;
 	}
 	
@@ -183,14 +176,12 @@ public class BankSet implements ConfigurationSerializable {
 		Map<String, Object> d = new HashMap<String, Object>();
 		d.put("masterChest", masterChest);
 		d.put("masterSign", masterSign);
-		d.put("chestLocations", chestLocations);
+		d.put("chestLocations", new ArrayList<ChestManager>(chestLocations));
 		d.put("owner", owner);
 		return d;
 	}
 	
 	public static BankSet deserialize(Map<String, Object> d) {
-		Logger log = MondoConfig.getLog();
-
 		BankSet bankset = new BankSet(
 				(ChestManager) d.get("masterChest"),
 				(String) d.get("owner"),
@@ -203,15 +194,17 @@ public class BankSet implements ConfigurationSerializable {
 				if (location instanceof ChestManager) {
 					bankset.addChestManager((ChestManager) location);
 				} else {
-					log.warning(String.format(
+					MondoConfig.logDecodeError(String.format(
 							"when building chestLocations for bankset %s, expected a ChestManager, got a %s",
 							bankset.toString(),
 							location.getClass().getName()
 					));
 				}
 			}
+		} else if (locations == null) {
+			MondoConfig.logDecodeError("chestLocations appears to be null");
 		} else {
-			log.warning("chestLocations is supposed to be a list, wtf mait");
+			MondoConfig.logDecodeError("chestLocations is supposed to be a list, wtf mait, got: " + locations.getClass().getName());
 		}
 		
 		return bankset;
