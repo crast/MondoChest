@@ -24,6 +24,7 @@ public class MondoChest extends JavaPlugin {
 
 	public void onEnable() {
 		this.log = getLogger();
+		MondoConfig.setLog(this.log);
 		this.reloadMondoChest();
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig(), this);
 		getServer().getPluginManager().registerEvents(listener, this);
