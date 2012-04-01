@@ -8,31 +8,38 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 
-import us.crast.mondochest.BlockSearcher;
-
 public final class SignUtils {
-	private static BlockSearcher searcherZ = new BlockSearcher(0, 1, 2);
-	private static BlockSearcher searcherX = new BlockSearcher(2, 1, 0);
 	
 	public static Vector<Chest> nearbyChests(Sign sign) {
-		BlockSearcher searcher;
+		return nearbyBlocks(sign, Material.CHEST);
+	}
+	
+	public static Vector<Chest> nearbyBlocks(Sign sign, Material target) {
+		Block block = sign.getBlock();
+		Vector<Block> searchblocks = new Vector<Block>();
+		searchblocks.add(block.getRelative(BlockFace.UP));
+		searchblocks.add(block.getRelative(BlockFace.DOWN));
 		switch (signFacing(sign)) {
 		case NORTH:
 		case SOUTH:
 			// North/south faces down the X axis so look for chests along Z
-			searcher = searcherZ;
+			searchblocks.add(block.getRelative(BlockFace.EAST));
+			searchblocks.add(block.getRelative(BlockFace.WEST));
 			break;
 		case EAST:
 		case WEST:
 			// East/west faces down the Z axis so look for chests along X
-			searcher = searcherX;
+			searchblocks.add(block.getRelative(BlockFace.NORTH));
+			searchblocks.add(block.getRelative(BlockFace.SOUTH));
 			break;
 		default:
 			return null;
 		}
 		Vector<Chest> chests = new Vector<Chest>();
-		for (Block block: searcher.findBlocks(sign.getBlock(), Material.CHEST)) {
-			chests.add((Chest) block.getState());
+		for (Block b: searchblocks) {
+			if (b.getType() == target) {
+				chests.add((Chest) b.getState());
+			}
 		}
 		return chests;
 	}

@@ -14,7 +14,7 @@ import us.crast.mondochest.command.Executor;
 import us.crast.mondochest.persist.BankManager;
 
 public class MondoChest extends JavaPlugin {
-	Logger log;
+	private Logger log;
 	private MondoListener listener = null;
 	private BreakListener break_listener = null;
 	private int num_reloads = 0;
