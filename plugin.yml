@@ -18,6 +18,7 @@ permissions:
         children:
             mondochest.admin.break_any: true
             mondochest.admin.add_any_slave: true
+            mondochest.admin.reload: true
     mondochest.create_master:
         description: Create a new MondoChest bank
         default: op

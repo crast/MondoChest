@@ -1,7 +1,7 @@
 package us.crast.mondochest.command;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -21,7 +21,7 @@ public class Executor implements CommandExecutor {
 	private MondoListener listener;
 	private MondoChest mondoChest;
 	
-	public java.util.Map<String, SubCommand> subcommands = new HashMap<String, SubCommand>();
+	public java.util.Map<String, SubCommand> subcommands = new LinkedHashMap<String, SubCommand>();
 
 
 	public Executor(MondoChest mondoChest, MondoListener listener) {
@@ -115,13 +115,13 @@ public class Executor implements CommandExecutor {
 		addSub("remove", "mondochest.remove_slave", new SubHandler(){
 			public void handle(CallInfo call) {
 				// TODO
-			} 
+			}
 		});
 		
 		addSub("allow", "mondochest.use")
 			.setMinArgs(1)
-			.setUsage("<username>")
-			.setDescription("Allow other users to access a MondoChest")
+			.setUsage("<player>")
+			.setDescription("Allow users to access a MondoChest")
 			.setHandler(new SubHandler() {
 				public void handle(CallInfo call) throws MondoMessage {
 					listener.allowAccess(call, call.getArg(1));
@@ -130,7 +130,7 @@ public class Executor implements CommandExecutor {
 		
 		addSub("deny", "mondochest.use")
 			.setMinArgs(1)
-			.setUsage("<username>")
+			.setUsage("<player>")
 			.setDescription("Remove users from access")
 			.setHandler(subcommands.get("allow").getHandler());
 		

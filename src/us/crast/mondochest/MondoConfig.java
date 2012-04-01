@@ -37,7 +37,7 @@ public final class MondoConfig {
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
 		PROTECTION_CHEST_BREAK = config.getBoolean("protection.chest_break");
-		USE_COMMANDS = config.getBoolean("use_commands");
+		USE_COMMANDS = config.getBoolean("use_commands", true);
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];
 		for (int i = 0; i < matlist.size(); i++) {
@@ -83,8 +83,9 @@ public final class MondoConfig {
 		return log;
 	}
 	
-	public static void setLog(Logger newLogger) {
+	public static Logger setLog(Logger newLogger) {
 		log = newLogger;
+		return newLogger;
 	}
 
 	public static List<String> getDecodeErrors() {
