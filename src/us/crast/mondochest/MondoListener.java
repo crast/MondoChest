@@ -1,5 +1,6 @@
 package us.crast.mondochest;
 
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -142,7 +143,11 @@ public class MondoListener implements Listener {
 		}
 		int num_added = addNearbyChestsToBank(targetBank, sign);
 		BasicMessage response = null;
-		if (num_added > 0) {
+		if (num_added == -1) {
+			response = new BasicMessage("No nearby chests found", Status.ERROR);
+		} else if (num_added == 0) {
+			response = new BasicMessage("Chests already in bank", Status.ERROR);
+		} else {
 			bankManager.markChanged(block.getWorld().getName(), targetBank);
 			response = new BasicMessage(Status.SUCCESS,
 					"Added %d chest%s to bank",
@@ -150,8 +155,6 @@ public class MondoListener implements Listener {
 					pluralize(num_added)
 			);
 			
-		} else {
-			response = new BasicMessage("Chests already in bank", Status.ERROR);
 		}
 		bankManager.save(); // Propagates MondoMessage on error
 		return response;
@@ -234,7 +237,9 @@ public class MondoListener implements Listener {
 	private int addNearbyChestsToBank(BankSet bank, Sign sign) {
 		int chestsAdded = 0;
 		boolean allow_restack = sign.getLine(1).equals("restack");
-		for (Chest chest: SignUtils.nearbyChests(sign)) {
+		List<Chest> nearby = SignUtils.nearbyChests(sign);
+		if (nearby.isEmpty()) return -1;
+		for (Chest chest: nearby) {
 			if (bank.addChest(chest, allow_restack)) {
 				chestsAdded++;
 			}
@@ -247,7 +252,8 @@ public class MondoListener implements Listener {
 		for (Block block: searcher.findBlocks(search_context, orig.getType())) {
 			Sign sign = SignUtils.signFromBlock(block);
 			if (sign.getLine(0).equals(SLAVE_SIGN_NAME)) {
-				chestsAdded += addNearbyChestsToBank(bank, sign);
+				int nearby = addNearbyChestsToBank(bank, sign);
+				if (nearby > 0) chestsAdded += nearby;
 			}
 		}
 		return chestsAdded;
