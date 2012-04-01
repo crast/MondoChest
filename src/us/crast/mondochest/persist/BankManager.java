@@ -27,6 +27,7 @@ public class BankManager {
 	private Map<String, String> worldHashes = new HashMap<String, String>();
 	private DefaultDict<String, WorldCache> worldCaches = new DefaultDict<String, WorldCache>(WorldCache.getMaker());
 	private Set<BankSet> changed = new HashSet<BankSet>();
+	private boolean should_save = false;
 	private File bankFile;
 	private FileConfiguration config;
 	
@@ -69,6 +70,7 @@ public class BankManager {
 				"There were decode errors noted when loading the banks.yml file." + copyinfo,
 				dest.getAbsolutePath()
 			));
+			should_save = true;
 		}
 	}
 	
@@ -82,6 +84,10 @@ public class BankManager {
 			throw new MondoMessage(String.format("Could not save bank config: %s", e.getMessage()));
 		}
 		changed.clear();
+		should_save = false;
+	}
+	public void saveIfNeeded() throws MondoMessage {
+		if (needsSave()) save();
 	}
 
 	public Map<String, Map<BlockVector, BankSet>> getBanks() {
@@ -151,5 +157,15 @@ public class BankManager {
 		return hash;
 	}
 	
+	public void shutdown() {
+		banks.clear();
+		worldHashes.clear();
+		worldCaches.clear();
+		changed.clear();
+		config = null;
+	}
+	private boolean needsSave() {
+		return (should_save || !changed.isEmpty());
+	}
 
 }

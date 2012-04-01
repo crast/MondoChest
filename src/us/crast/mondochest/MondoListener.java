@@ -176,6 +176,7 @@ public class MondoListener implements Listener {
 		// If we're here, actually delete the bank
 		int num_slaves = bank.numChests();
 		bankManager.removeBank(sign.getWorld().getName(), bank);
+		playerManager.getState(player).setLastClickedMaster(null);
 		BasicMessage.send(player, Status.SUCCESS,
 			"removed bank and %d slave%s",
 			num_slaves,
@@ -237,7 +238,7 @@ public class MondoListener implements Listener {
 	
 	private int addNearbyChestsToBank(BankSet bank, Sign sign) {
 		int chestsAdded = 0;
-		boolean allow_restack = sign.getLine(1).equals("restack");
+		boolean allow_restack = sign.getLine(1).trim().equalsIgnoreCase("restack");
 		List<Chest> nearby = SignUtils.nearbyChests(sign);
 		if (nearby.isEmpty()) return -1;
 		for (Chest chest: nearby) {
@@ -314,5 +315,12 @@ public class MondoListener implements Listener {
 			throw new MondoMessage("No messing with other people's banks", Status.WARNING);
 		}
 		return targetBank;
+	}
+	
+	public void shutdown() {
+		if (playerManager != null) {
+			playerManager.shutdown();
+			playerManager = null;
+		}
 	}
 }

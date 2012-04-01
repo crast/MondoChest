@@ -23,8 +23,7 @@ public class MondoChest extends JavaPlugin {
 	//private Economy econ;
 
 	public void onEnable() {
-		this.log = getLogger();
-		MondoConfig.setLog(this.log);
+		this.log = MondoConfig.setLog(getLogger());
 		this.reloadMondoChest();
 		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig(), this);
 		getServer().getPluginManager().registerEvents(listener, this);
@@ -51,10 +50,12 @@ public class MondoChest extends JavaPlugin {
 	
 	public void onDisable() {
 		try {
-			bankManager.save();
+			bankManager.saveIfNeeded();
 		} catch (MondoMessage msg) {
 			log.warning(msg.getMessage());
 		}
+		bankManager.shutdown();
+		listener.shutdown();
 	}
 	
 	public void reloadMondoChest() {

@@ -21,4 +21,8 @@ public class PlayerInfoManager {
 		}
 		return state;
 	}
+
+	public void shutdown() {
+		playerState.clear();
+	}
 }
