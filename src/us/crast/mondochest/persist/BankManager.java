@@ -16,8 +16,10 @@ import org.bukkit.util.BlockVector;
 import us.crast.mondochest.BankSet;
 import us.crast.mondochest.ChestManager;
 import us.crast.mondochest.MondoChest;
+import us.crast.mondochest.MondoConfig;
 import us.crast.mondochest.MondoMessage;
 import us.crast.mondochest.util.DefaultDict;
+import us.crast.mondochest.util.FileTools;
 import us.crast.mondochest.util.StringTools;
 
 public class BankManager {
@@ -35,6 +37,7 @@ public class BankManager {
 	
 	public void load() {
 		changed.clear();
+		MondoConfig.clearDecodeErrors();
 		config = YamlConfiguration.loadConfiguration(bankFile);
 		config.options().pathSeparator('/');
 		ConfigurationSection worlds = ensureSection(config, "worlds");
@@ -52,6 +55,20 @@ public class BankManager {
 					worldbanks.put(bs.getMasterSign(), bs);
 				}
 			}
+		}
+		if (MondoConfig.getDecodeErrors() != null && MondoConfig.getDecodeErrors().size() > 0) {
+			java.util.logging.Logger log = MondoConfig.getLog();
+			File dest = new File(bankFile.getParentFile(), String.format("error-backup-banks-%d.yml", System.currentTimeMillis() / 1000));
+			String copyinfo = null;
+			if (FileTools.copyFileNoError(bankFile, dest)) {
+				copyinfo = "For safety, the original has been backed up as \"%s\".";
+			} else {
+				copyinfo = "We tried to backup the original as \"%s\", but failed";
+			}
+			log.warning(String.format(
+				"There were decode errors noted when loading the banks.yml file." + copyinfo,
+				dest.getAbsolutePath()
+			));
 		}
 	}
 	

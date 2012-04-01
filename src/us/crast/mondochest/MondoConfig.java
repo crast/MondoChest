@@ -1,5 +1,6 @@
 package us.crast.mondochest;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
@@ -27,6 +28,8 @@ public final class MondoConfig {
 
 	public static Permission VAULT_PERMISSIONS = null;
 	public static boolean USE_COMMANDS = false;
+
+	private static List<String> decodeErrors = null;
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
@@ -78,5 +81,23 @@ public final class MondoConfig {
 
 	public static Logger getLog() {
 		return log;
+	}
+	
+	public static void setLog(Logger newLogger) {
+		log = newLogger;
+	}
+
+	public static List<String> getDecodeErrors() {
+		return decodeErrors;
+	}
+	
+	public static void clearDecodeErrors() {
+		decodeErrors = null;
+	}
+
+	public static void logDecodeError(String error) {
+		if (decodeErrors == null) decodeErrors = new java.util.ArrayList<String>();
+		log.warning(error);
+		decodeErrors.add(error);
 	}
 }
