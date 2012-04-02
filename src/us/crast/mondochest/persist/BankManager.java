@@ -22,7 +22,7 @@ import us.crast.mondochest.util.DefaultDict;
 import us.crast.mondochest.util.FileTools;
 import us.crast.mondochest.util.StringTools;
 
-public class BankManager {
+public final class BankManager {
 	private Map<String, Map<BlockVector, BankSet>> banks = new HashMap<String, Map<BlockVector, BankSet>>();
 	private Map<String, String> worldHashes = new HashMap<String, String>();
 	private DefaultDict<String, WorldCache> worldCaches = new DefaultDict<String, WorldCache>(WorldCache.getMaker());

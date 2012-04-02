@@ -11,7 +11,7 @@ import us.crast.mondochest.ChestManager;
 import us.crast.mondochest.MondoConfig;
 import us.crast.mondochest.MondoConstants;
 
-public class DoubleChestImplMC12 extends DoubleChestImpl {
+public final class DoubleChestImplMC12 extends DoubleChestImpl {
 	private static final int DOUBLE_CHEST_SIZE = MondoConstants.DOUBLE_CHEST_SIZE;
 	private static final int SINGLE_CHEST_SIZE = MondoConstants.SINGLE_CHEST_SIZE;
 	

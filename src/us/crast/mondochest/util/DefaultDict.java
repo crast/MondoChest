@@ -5,7 +5,7 @@ import java.util.List;
 
 public class DefaultDict<K, V> extends HashMap<K, V> {
 	private static final long serialVersionUID = -5131836669351168996L;
-	ObjectMaker<V> builder;
+	final ObjectMaker<V> builder;
 	
 	public DefaultDict(ObjectMaker<V> builder) {
 		super();
@@ -17,7 +17,7 @@ public class DefaultDict<K, V> extends HashMap<K, V> {
 	 *     DefaultDict<String, ArrayList> somemap = new DefaultDict<String, ArrayList>();
 	 *     somemap.ensure(key).add(foo);
 	 */
-	public V ensure(K key) {
+	public V ensure(final K key) {
 		V item = this.get(key);
 		if (item == null) {
 			item = builder.build(key);

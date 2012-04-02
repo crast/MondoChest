@@ -9,7 +9,7 @@ import org.bukkit.util.BlockVector;
 
 import us.crast.mondochest.ChestManager;
 
-public class DoubleChestImplMC11 extends DoubleChestImpl {
+public final class DoubleChestImplMC11 extends DoubleChestImpl {
 	@Override
 	public HashMap<Integer, ItemStack> addItem(ChestManager manager, World world, ItemStack stack) {
 		HashMap<Integer, ItemStack> failures = manager.getInventory(world, manager.getChest1()).addItem(stack);

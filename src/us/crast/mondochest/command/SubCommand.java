@@ -3,8 +3,8 @@ package us.crast.mondochest.command;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
 
-public class SubCommand {
-	private String name;
+public final class SubCommand {
+	private final String name;
 	private boolean allow_console = false;
 	private int minArgs = 0;
 	private PermissionChecker checker;

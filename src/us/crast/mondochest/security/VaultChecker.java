@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class VaultChecker extends PermissionChecker {
-	private Permission pmanager;
+	private final Permission pmanager;
 	
 	public VaultChecker(Permission pmanager, String permission) {
 		super(permission);

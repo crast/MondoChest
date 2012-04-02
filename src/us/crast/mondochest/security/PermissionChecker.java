@@ -4,9 +4,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public abstract class PermissionChecker {
-	protected String permission;
+	protected final String permission;
 	
-	PermissionChecker(String permission) {
+	PermissionChecker(final String permission) {
 		this.permission = permission;
 	}
 	

@@ -8,7 +8,7 @@ import us.crast.mondochest.ChestManager;
 import us.crast.mondochest.util.ObjectMaker;
 
 public class WorldCache {
-	private String world;
+	private final String world;
 	
 	private Map<ChestManager, BankSet> slaves = null;
 
