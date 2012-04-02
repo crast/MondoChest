@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
-public class Restacker {	
+public final class Restacker {	
 	public static void restackChestManager(World world, ChestManager manager) {
 		restack(new RestackerContextChestManager(manager, world));
 	}

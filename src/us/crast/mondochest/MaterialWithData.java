@@ -3,7 +3,7 @@ package us.crast.mondochest;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class MaterialWithData {
+public final class MaterialWithData {
 	private Material material;
 	private byte data;
 	
@@ -19,7 +19,7 @@ public class MaterialWithData {
 	}
 	
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(final Object other) {
 		if (other instanceof MaterialWithData) {
 			MaterialWithData o = (MaterialWithData) other;
 			return this.material.equals(o.getMaterial()) && (this.data == o.getData());

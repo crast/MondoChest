@@ -9,7 +9,7 @@ import org.bukkit.block.Sign;
 
 import us.crast.mondochest.util.SignUtils;
 
-public class BreakListener implements Listener {
+public final class BreakListener implements Listener {
 	private static final String MASTER_SIGN_NAME = MondoConstants.MASTER_SIGN_NAME;
 	private static final String SLAVE_SIGN_NAME = MondoConstants.SLAVE_SIGN_NAME;
 	

@@ -20,7 +20,7 @@ import us.crast.mondochest.doublechest.DoubleChestImpl;
 import us.crast.mondochest.doublechest.DoubleChestImplMC12;
 
 @SerializableAs("ChestManager")
-public class ChestManager implements ConfigurationSerializable {
+public final class ChestManager implements ConfigurationSerializable {
 	private static final BlockFace[] cardinals = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
 	private BlockVector chest1 = null;
 	private BlockVector chest2 = null;

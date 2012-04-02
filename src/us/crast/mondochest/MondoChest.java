@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import us.crast.mondochest.command.Executor;
 import us.crast.mondochest.persist.BankManager;
 
-public class MondoChest extends JavaPlugin {
+public final class MondoChest extends JavaPlugin {
 	private Logger log;
 	private MondoListener listener = null;
 	private BreakListener break_listener = null;
@@ -25,7 +25,7 @@ public class MondoChest extends JavaPlugin {
 	public void onEnable() {
 		this.log = MondoConfig.setLog(getLogger());
 		this.reloadMondoChest();
-		if (listener == null) listener = new MondoListener(log, getSearcherFromConfig(), this);
+		if (listener == null) listener = new MondoListener(getSearcherFromConfig(), this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		
 		if (MondoConfig.PROTECTION_SIGNS || MondoConfig.PROTECTION_CHEST_BREAK) {

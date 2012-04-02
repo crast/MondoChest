@@ -20,7 +20,7 @@ import us.crast.mondochest.util.DefaultDict;
 import us.crast.mondochest.util.StringTools;
 
 @SerializableAs("MondoChestSet")
-public class BankSet implements ConfigurationSerializable {
+public final class BankSet implements ConfigurationSerializable {
 	private String world;
 	private String owner;
 	private BlockVector masterSign;

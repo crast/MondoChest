@@ -164,6 +164,7 @@ public class BankManager {
 		changed.clear();
 		config = null;
 	}
+	
 	private boolean needsSave() {
 		return (should_save || !changed.isEmpty());
 	}

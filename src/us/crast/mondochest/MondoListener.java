@@ -29,7 +29,7 @@ import us.crast.mondochest.security.PermissionChecker;
 import us.crast.mondochest.util.DirectionalStrings;
 import us.crast.mondochest.util.SignUtils;
 
-public class MondoListener implements Listener {
+public final class MondoListener implements Listener {
 	private static final String MASTER_SIGN_NAME = MondoConstants.MASTER_SIGN_NAME;
 	private static final String SLAVE_SIGN_NAME = MondoConstants.SLAVE_SIGN_NAME;
 	
@@ -39,13 +39,13 @@ public class MondoListener implements Listener {
 	private PermissionChecker can_override_break;
 	private PermissionChecker can_override_add_slave;
 	
-	private java.util.logging.Logger log;
-	private BlockSearcher searcher;
-	private BankManager bankManager;
+	private final java.util.logging.Logger log;
+	private final BlockSearcher searcher;
+	private final BankManager bankManager;
 	private PlayerInfoManager playerManager = new PlayerInfoManager();
 	
-	public MondoListener(java.util.logging.Logger log, BlockSearcher searcher, MondoChest plugin) {
-		this.log = log;
+	public MondoListener(BlockSearcher searcher, final MondoChest plugin) {
+		this.log = plugin.getLogger();
 		this.searcher = searcher;
 		this.can_use = MondoSecurity.getChecker("mondochest.use");
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
@@ -56,7 +56,7 @@ public class MondoListener implements Listener {
 	}
 	
 	@EventHandler
-    public void playerInteract(PlayerInteractEvent event) {
+    public void playerInteract(final PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
 		Material blockType = block.getType();

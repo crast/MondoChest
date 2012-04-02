@@ -1,6 +1,6 @@
 package us.crast.mondochest;
 
-public class MondoConstants {
+public final class MondoConstants {
 	public static final String APP_NAME = "MondoChest";
 	public static final String MONDOCHEST_VERSION = "0.5.2-pre";
 	
