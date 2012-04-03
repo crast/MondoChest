@@ -27,7 +27,7 @@ public class DefaultDict<K, V> extends HashMap<K, V> {
 	}
 }
 
-class ListBuilder<T> implements ObjectMaker<List<T>> {
+final class ListBuilder<T> implements ObjectMaker<List<T>> {
 	@Override
 	public List<T> build(Object key) {
 		return new java.util.ArrayList<T>();

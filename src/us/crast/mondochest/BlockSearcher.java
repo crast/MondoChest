@@ -6,9 +6,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public class BlockSearcher {
-	private int radiusX;
-	private int radiusY;
-	private int radiusZ;
+	private final int radiusX;
+	private final int radiusY;
+	private final int radiusZ;
 	
 	public BlockSearcher(int radiusX, int radiusY, int radiusZ) {
 		this.radiusX = radiusX;
