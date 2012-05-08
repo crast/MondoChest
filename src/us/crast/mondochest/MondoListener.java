@@ -27,7 +27,6 @@ import us.crast.mondochest.persist.PlayerInfoManager;
 import us.crast.mondochest.persist.PlayerState;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
-import us.crast.mondochest.util.DirectionalStrings;
 import us.crast.mondochest.util.SignUtils;
 
 public final class MondoListener implements Listener {
@@ -41,13 +40,11 @@ public final class MondoListener implements Listener {
 	private PermissionChecker can_override_add_slave;
 	
 	private final java.util.logging.Logger log;
-	private final BlockSearcher searcher;
 	private final BankManager bankManager;
 	private PlayerInfoManager playerManager = new PlayerInfoManager();
 	
-	public MondoListener(BlockSearcher searcher, final MondoChest plugin) {
+	public MondoListener(final MondoChest plugin) {
 		this.log = plugin.getLogger();
-		this.searcher = searcher;
 		this.can_use = MondoSecurity.getChecker("mondochest.use");
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
 		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
@@ -96,30 +93,26 @@ public final class MondoListener implements Listener {
 			if (!can_create_bank.check(player)) {
 				return new BasicMessage("No permissions to create new bank", Status.WARNING);
 			}
-			Block bank_context = block;
 			
 			bank = bankFromSign(sign, player.getName()); // propagates MondoMessage
-			if (!sign.getLine(1).isEmpty()) {
-				bank_context = DirectionalStrings.parseDirectional(block, sign.getLine(1)); // propagates MondoMessage
-			}
 			bankManager.addBank(world.getName(), vec, bank);
-			initBank(bank, block, bank_context);
 			bankManager.save(); // propagates MondoMessage
-			BasicMessage.send(player, Status.INFO, "Created bank with %d chest%s", bank.numChests(), pluralize(bank.numChests()));
+			BasicMessage.send(player, Status.SUCCESS, "Created new MondoChest bank");
+			return new BasicMessage("right-click slave signs to add them", Status.INFO);
 		}
-		BasicMessage response = null;
 		bank.refreshMaterials(world);
 		int num_shelved = bank.shelveItems(world);
-		if (num_shelved > 0) {
-			response = new BasicMessage(Status.SUCCESS, "Shelved %d item%s", num_shelved, pluralize(num_shelved));
-		}
 		if (MondoConfig.RESTACK_MASTER) {
 			bank.restackSpecial(world);
 		}
 		// Store the last clicked bank
 		PlayerState state = playerManager.getState(player);
 		state.setLastClickedMaster(block.getLocation());
-		return response;
+	    if (num_shelved > 0) {
+	        return new BasicMessage(Status.SUCCESS, "Shelved %d item%s", num_shelved, pluralize(num_shelved));
+	    } else {
+	        return new BasicMessage("Nothing to shelve", Status.WARNING);
+	    }
 	}
 
 	private MessageWithStatus slaveSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
@@ -250,18 +243,6 @@ public final class MondoListener implements Listener {
 		return chestsAdded;
 	}
 	
-	private int initBank(BankSet bank, Block orig, Block search_context) {
-		int chestsAdded = 0;
-		for (Block block: searcher.findBlocks(search_context, orig.getType())) {
-			Sign sign = SignUtils.signFromBlock(block);
-			if (sign.getLine(0).equals(SLAVE_SIGN_NAME)) {
-				int nearby = addNearbyChestsToBank(bank, sign);
-				if (nearby > 0) chestsAdded += nearby;
-			}
-		}
-		return chestsAdded;
-	}
-	
 	@SuppressWarnings("unused")
 	private void listInventory(Inventory inv) {
 		for(ItemStack stack: inv.getContents()) {
@@ -329,7 +310,8 @@ public final class MondoListener implements Listener {
         Material mat = Material.matchMaterial(item_name);
         World world = player.getWorld();
         BankSet bank = getLastClickedBank(player, false);
-        if (player.getLocation().toVector().distance(bank.getMasterSign()) > MondoConfig.FIND_MAX_RADIUS) {
+        if (MondoConfig.FIND_MAX_RADIUS != -1 
+                && player.getLocation().toVector().distance(bank.getMasterSign()) > MondoConfig.FIND_MAX_RADIUS) {
             call.append(new BasicMessage("Too far away from chest bank", Status.ERROR));
             return;
         }

@@ -22,6 +22,19 @@ protection:
     signs: true
     chest_break: false
 
+# Limits to keep performance sane.
+# 'radius' limits are in number of blocks.
+# Setting any limit to -1 or 'unlimited' makes it infinite.
+limits:
+    # How far away you can be when doing a /mondo find
+    find_max_radius: 300
+
+    slaves:
+        # How many slaves can be added per master.
+        per_master: unlimited
+        # How far away from a mondo chest the slave can be
+        max_add_radius: 150
+
 
 # ---------------------------------------------------------
 # Old, deprecated config options.

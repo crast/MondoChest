@@ -22,10 +22,9 @@ public final class MondoConfig {
 	public static boolean PROTECTION_SIGNS = false;
 	public static boolean PROTECTION_CHEST_BREAK = false;
 	
-	public static int CONSTRAINTS_Y_MAX = 127;
-	public static int CONSTRAINTS_Y_MIN = 0;
 	public static int SLAVE_MAX_ADD_RADIUS = 150;
 	public static int FIND_MAX_RADIUS = 300;
+	public static int SLAVES_PER_MASTER = -1;
 
 	public static Permission VAULT_PERMISSIONS = null;
 	public static boolean USE_COMMANDS = true;
@@ -34,6 +33,9 @@ public final class MondoConfig {
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
+		SLAVE_MAX_ADD_RADIUS = getLimit(config, "limits.slaves.max_add_radius");
+		FIND_MAX_RADIUS = getLimit(config, "limits.find_max_radius");
+		SLAVES_PER_MASTER = getLimit(config, "limits.slaves.per_master");
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
@@ -44,9 +46,7 @@ public final class MondoConfig {
 		for (int i = 0; i < matlist.size(); i++) {
 			RESTACK_MATERIALS[i] = Material.matchMaterial(matlist.get(i));
 		}
-		
-		CONSTRAINTS_Y_MAX = config.getInt("world_constraints.Ymax");
-		CONSTRAINTS_Y_MIN = config.getInt("world_constraints.Ymin");
+
 		MondoSecurity.setMode("null");
 		String perms_config = config.getString("permissions").toLowerCase();
 		if (perms_config.equals("superperms") || perms_config.equals("true")) {
@@ -79,6 +79,17 @@ public final class MondoConfig {
         }
         return null;
     }
+	
+	private static int getLimit(FileConfiguration config, String path) {
+	    String val = config.getString(path);
+	    if (val == null) {
+	        return -1;
+	    } else if (val.equals("unlimited") || val.equals("inf")) {
+	        return -1;
+	    } else {
+	        return Integer.parseInt(val);
+	    }
+	}
 
 	public static Logger getLog() {
 		return log;

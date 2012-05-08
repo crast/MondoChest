@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 //import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 //import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,7 +24,7 @@ public final class MondoChest extends JavaPlugin {
 	public void onEnable() {
 		this.log = MondoConfig.setLog(getLogger());
 		this.reloadMondoChest();
-		if (listener == null) listener = new MondoListener(getSearcherFromConfig(), this);
+		if (listener == null) listener = new MondoListener(this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		
 		if (MondoConfig.PROTECTION_SIGNS || MondoConfig.PROTECTION_CHEST_BREAK) {
@@ -71,14 +70,6 @@ public final class MondoChest extends JavaPlugin {
 			reloadConfig();
 		}
 		MondoConfig.configure(this, getConfig(), log);
-	}
-
-	private BlockSearcher getSearcherFromConfig() {
-		FileConfiguration config = getConfig();
-		int x = config.getInt("chest_search.radiusX");
-		int y = config.getInt("chest_search.radiusY");
-		int z = config.getInt("chest_search.radiusZ");
-		return new BlockSearcher(x, y, z);
 	}
 	
 	/*

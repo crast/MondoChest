@@ -1,5 +1,7 @@
 Version 0.5.3: Not yet released
  * Add new /mondo find command
+ * Remove deprecated search radius
+ * Make various performance settings more configurable
 
 Version 0.5.2: 2012-04-03
  * Fix bug where master signs pick up chests 2 away from the sign, not just adjacent.
