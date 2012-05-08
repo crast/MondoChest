@@ -28,7 +28,7 @@ public final class BankManager {
 	private DefaultDict<String, WorldCache> worldCaches = new DefaultDict<String, WorldCache>(WorldCache.getMaker());
 	private Set<BankSet> changed = new HashSet<BankSet>();
 	private boolean should_save = false;
-	private File bankFile;
+	private final File bankFile;
 	private FileConfiguration config;
 	
 	public BankManager(MondoChest plugin) {

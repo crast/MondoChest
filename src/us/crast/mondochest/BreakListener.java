@@ -19,7 +19,7 @@ public final class BreakListener implements Listener {
 		this.listener = listener;
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled=true)
     public void blockBroken(BlockBreakEvent event) {
 		Block block = event.getBlock();
 		if (block.getType() != Material.WALL_SIGN) return;
