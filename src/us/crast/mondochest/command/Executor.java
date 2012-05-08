@@ -143,6 +143,19 @@ public class Executor implements CommandExecutor {
 					call.success("MondoChest config reloaded");
 				}	
 			});
+		
+		addSub("find", "mondochest.find")
+		    .setMinArgs(1)
+		    .setUsage("<item name>")
+		    .setDescription("Find how much of an item you have.")
+		    .setHandler(new SubHandler() {
+
+                @Override
+                public void handle(CallInfo call) throws MondoMessage {
+                    listener.findItems(call, call.getPlayer(), call.getArg(1));
+                }
+		        
+		    });
 	}
 
 }

@@ -3,6 +3,7 @@ package us.crast.mondochest;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -55,7 +56,7 @@ public final class MondoListener implements Listener {
 		this.bankManager = plugin.getBankManager();
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled=true)
     public void playerInteract(final PlayerInteractEvent event) {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
@@ -68,7 +69,7 @@ public final class MondoListener implements Listener {
 				MessageWithStatus response = null;
 				try {
 					if (firstLine.equals(MASTER_SIGN_NAME)) {
-						response = masterSignClicked(block, sign, event.getPlayer());	
+						response = masterSignClicked(block, sign, event.getPlayer());
 					} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
 						response = slaveSignClicked(block, sign, event.getPlayer());
 					}
@@ -323,4 +324,38 @@ public final class MondoListener implements Listener {
 			playerManager = null;
 		}
 	}
+
+    public void findItems(CallInfo call, Player player, String item_name) throws MondoMessage {
+        Material mat = Material.matchMaterial(item_name);
+        World world = player.getWorld();
+        BankSet bank = getLastClickedBank(player, false);
+        if (player.getLocation().toVector().distance(bank.getMasterSign()) > MondoConfig.FIND_MAX_RADIUS) {
+            call.append(new BasicMessage("Too far away from chest bank", Status.ERROR));
+            return;
+        }
+        boolean found = false;
+        for (ChestManager chest: bank.listSlaves()) {
+            int quantity = 0;
+            for (ItemStack item: chest.listItems(world)) {
+                if (item.getType() == mat) {
+                    quantity += item.getAmount();
+                }
+            }
+            if (quantity > 0) {
+                BlockVector chest1 = chest.getChest1();
+                call.append(new BasicMessage(Status.INFO, 
+                        "%d in chest at %sx=%s%d%s, y=%s%d%s, z=%s%d",
+                        quantity,
+                        ChatColor.BLUE,
+                        ChatColor.RED, chest1.getBlockX(), ChatColor.BLUE,
+                        ChatColor.RED, chest1.getBlockY(), ChatColor.BLUE,
+                        ChatColor.RED, chest1.getBlockZ()
+                ));
+                found = true;
+            }
+        }
+        if (!found) {
+            call.append(new BasicMessage("No items found", Status.ERROR));
+        }
+    }
 }
