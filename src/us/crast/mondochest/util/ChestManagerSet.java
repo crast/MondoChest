@@ -2,6 +2,7 @@ package us.crast.mondochest.util;
 
 import java.util.HashSet;
 
+import us.crast.datastructures.ObjectMaker;
 import us.crast.mondochest.ChestManager;
 
 public class ChestManagerSet extends HashSet<ChestManager> {
