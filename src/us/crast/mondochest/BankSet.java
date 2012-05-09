@@ -15,9 +15,9 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
+import us.crast.datastructures.DefaultDict;
 import us.crast.mondochest.util.ChestManagerSet;
-import us.crast.mondochest.util.DefaultDict;
-import us.crast.mondochest.util.StringTools;
+import us.crast.utils.StringTools;
 
 @SerializableAs("MondoChestSet")
 public final class BankSet implements ConfigurationSerializable {

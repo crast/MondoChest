@@ -3,9 +3,9 @@ package us.crast.mondochest.persist;
 import java.util.HashMap;
 import java.util.Map;
 
+import us.crast.datastructures.ObjectMaker;
 import us.crast.mondochest.BankSet;
 import us.crast.mondochest.ChestManager;
-import us.crast.mondochest.util.ObjectMaker;
 
 public class WorldCache {
 	private final String world;
