@@ -3,6 +3,7 @@ package us.crast.mondochest;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -306,8 +307,14 @@ public final class MondoListener implements Listener {
 		}
 	}
 
-    public void findItems(CallInfo call, Player player, String item_name) throws MondoMessage {
+    public void findItems(CallInfo call, Player player) throws MondoMessage {
+        String[] all_args = call.getArgs();
+        String item_name = StringUtils.join(all_args, ' ', 1, all_args.length);
         Material mat = Material.matchMaterial(item_name);
+        if (mat == null) {
+            call.append(new BasicMessage(Status.ERROR, "Unidentified material '%s'", item_name));
+            return;
+        }
         World world = player.getWorld();
         BankSet bank = getLastClickedBank(player, false);
         if (MondoConfig.FIND_MAX_RADIUS != -1 

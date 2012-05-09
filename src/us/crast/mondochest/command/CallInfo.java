@@ -33,6 +33,10 @@ public class CallInfo {
 	public String getArg(int n) {
 		return this.args[n];
 	}
+	
+	public String[] getArgs() {
+	    return this.args;
+	}
 
 	public void success(String message) {
 		append(new BasicMessage(message, Status.SUCCESS));
