@@ -35,25 +35,3 @@ limits:
         # How far away from a mondo chest the slave can be
         max_add_radius: 150
 
-
-# ---------------------------------------------------------
-# Old, deprecated config options.
-# These config options are from older features and only 
-# kept for legacy reasons. Best if left untouched.
-
-# Constraints on the search algorithm's Y coordinate
-# This is here because the Y-max increase from MC 1.1-1.2.
-world_constraints:
-    Ymin: 0
-    # Set Ymax to -1 to have the code use world.getMaxHeight(). This should
-    # work in 1.1 and 1.2 just fine, but the option exists to override just in
-    # case you want different behavior.
-    Ymax: -1
-
-# How far from the master chest to search for slave chests.
-# Radius is deprecated and not recommended, will be removed soon.
-chest_search:
-    radiusX: 0
-    radiusY: 0
-    radiusZ: 0
-

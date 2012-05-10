@@ -177,6 +177,9 @@ public final class BankSet implements ConfigurationSerializable {
 		d.put("masterSign", masterSign);
 		d.put("chestLocations", new ArrayList<ChestManager>(chestLocations));
 		d.put("owner", owner);
+		if (acl != null) {
+            d.put("acl", new ArrayList<String>(acl));
+        }
 		return d;
 	}
 	
@@ -205,6 +208,20 @@ public final class BankSet implements ConfigurationSerializable {
 		} else {
 			MondoConfig.logDecodeError("chestLocations is supposed to be a list, wtf mait, got: " + locations.getClass().getName());
 		}
+		Object acl = d.get("acl");
+		if (acl != null) {
+		    if (acl instanceof Collection<?>) {
+		        for (Object user: (Collection<?>) acl) {
+		            if (user instanceof String) {
+		                bankset.addAccess((String) user);
+		            } else {
+		                MondoConfig.logDecodeError("ACL entries should be strings");
+		            }
+		        }
+		    } else {
+		        MondoConfig.logDecodeError("ACL is supposed to be a collection");
+		    }
+		}
 		
 		return bankset;
 	}
@@ -218,7 +235,7 @@ public final class BankSet implements ConfigurationSerializable {
 	}
 	
 	public boolean hasAccess(String name) {
-		if (acl == null) return true;
+		if (acl == null || acl.isEmpty()) return true;
 		return acl.contains(name);
 	}
 	
