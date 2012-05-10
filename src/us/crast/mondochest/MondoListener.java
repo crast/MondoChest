@@ -40,12 +40,10 @@ public final class MondoListener implements Listener {
 	private PermissionChecker can_override_break;
 	private PermissionChecker can_override_add_slave;
 	
-	private final java.util.logging.Logger log;
 	private final BankManager bankManager;
 	private PlayerInfoManager playerManager = new PlayerInfoManager();
 	
 	public MondoListener(final MondoChest plugin) {
-		this.log = plugin.getLogger();
 		this.can_use = MondoSecurity.getChecker("mondochest.use");
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
 		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
