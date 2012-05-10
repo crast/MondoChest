@@ -244,35 +244,6 @@ public final class MondoListener implements Listener {
 		return chestsAdded;
 	}
 	
-	@SuppressWarnings("unused")
-	private void listInventory(Inventory inv) {
-		for(ItemStack stack: inv.getContents()) {
-			if (stack == null) continue;
-			int amount = stack.getAmount();
-			String itype = stack.getType().toString();
-			log.info("->" + amount + " of " + itype);
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	private BlockVector closestVector(BlockVector v, java.util.Collection<BlockVector> candidates) {
-		BlockVector other = null;
-		double otherdistance = 0;
-		for (BlockVector candidate: candidates) {
-			if (other == null) {
-				other = candidate;
-				otherdistance = v.distance(candidate);
-			} else {
-				double curdistance = v.distance(candidate);
-				if (curdistance < otherdistance) {
-					otherdistance = curdistance;
-					other = candidate;
-				}
-			}
-		}
-		return other;
-	}
-	
 	private String pluralize(int number) {
 		return (number == 1? "": "s");
 	}
