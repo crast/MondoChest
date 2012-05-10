@@ -24,9 +24,7 @@ public final class ChestManager implements ConfigurationSerializable {
 	private static final BlockFace[] cardinals = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
 	private BlockVector chest1 = null;
 	private BlockVector chest2 = null;
-	private boolean restackAllowed;
-	@SuppressWarnings("unused")
-	private static java.util.logging.Logger log = Logger.getLogger("Minecraft"); 
+	private boolean restackAllowed; 
 	private static DoubleChestImpl impl = new DoubleChestImplMC12();
 	
 	public ChestManager(Chest chest, boolean allow_restack) { 
@@ -82,7 +80,7 @@ public final class ChestManager implements ConfigurationSerializable {
 	
 	public static void printWeirdStack(HashMap<Integer, ItemStack> entries) {
 		if (entries.isEmpty()) return;
-		Logger logger = Logger.getLogger("Minecraft");
+		Logger logger = MondoConfig.getLog();
 		logger.info("Printing Weird Hashmap:");
 		for (Map.Entry<Integer, ItemStack> entry: entries.entrySet()) {
 			logger.info(
