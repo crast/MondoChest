@@ -57,7 +57,7 @@ public final class BankManager {
 				}
 			}
 		}
-		if (MondoConfig.getDecodeErrors() != null && MondoConfig.getDecodeErrors().size() > 0) {
+		if (MondoConfig.getDecodeErrors() != null && !MondoConfig.getDecodeErrors().isEmpty()) {
 			java.util.logging.Logger log = MondoConfig.getLog();
 			File dest = new File(bankFile.getParentFile(), String.format("error-backup-banks-%d.yml", System.currentTimeMillis() / 1000));
 			String copyinfo = null;

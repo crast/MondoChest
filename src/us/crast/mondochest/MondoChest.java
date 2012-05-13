@@ -3,10 +3,8 @@ package us.crast.mondochest;
 import java.io.File;
 import java.util.logging.Logger;
 
-//import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-//import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.crast.mondochest.command.Executor;
@@ -18,8 +16,6 @@ public final class MondoChest extends JavaPlugin {
 	private BreakListener break_listener = null;
 	private int num_reloads = 0;
 	private BankManager bankManager;
-
-	//private Economy econ;
 
 	public void onEnable() {
 		this.log = MondoConfig.setLog(getLogger());
@@ -72,19 +68,6 @@ public final class MondoChest extends JavaPlugin {
 		MondoConfig.configure(this, getConfig(), log);
 	}
 	
-	/*
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return false;
-        }
-        econ = rsp.getProvider();
-        return econ != null;
-    }
-    */
 	
 	public BankManager getBankManager() {
 		return bankManager;

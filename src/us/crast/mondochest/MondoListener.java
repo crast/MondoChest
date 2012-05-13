@@ -17,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
@@ -54,6 +53,7 @@ public final class MondoListener implements Listener {
 	
 	@EventHandler(ignoreCancelled=true)
     public void playerInteract(final PlayerInteractEvent event) {
+	    
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
 		Material blockType = block.getType();
@@ -309,6 +309,7 @@ public final class MondoListener implements Listener {
                         ChatColor.RED, chest1.getBlockY(), ChatColor.BLUE,
                         ChatColor.RED, chest1.getBlockZ()
                 ));
+                if (!found) player.openInventory(chest.getInventory(world, chest.getChest1()));
                 found = true;
             }
         }
