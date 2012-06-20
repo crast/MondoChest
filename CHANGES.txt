@@ -1,8 +1,9 @@
-Version 0.5.3: Not yet released
+Version 0.5.3: 2012-05-12
  * Add new /mondo find command
  * Remove deprecated search radius
  * Make various performance settings more configurable
  * Remove a lot of old code and general code cleanup
+ * This is the first version which no longer supports Bukkit 1.1
 
 Version 0.5.2: 2012-04-03
  * Fix bug where master signs pick up chests 2 away from the sign, not just adjacent.
