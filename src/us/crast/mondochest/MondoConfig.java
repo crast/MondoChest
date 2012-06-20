@@ -21,6 +21,7 @@ public final class MondoConfig {
 	
 	public static boolean PROTECTION_SIGNS = false;
 	public static boolean PROTECTION_CHEST_BREAK = false;
+	public static boolean SLAVE_VERTICAL_TWO = false;
 	
 	public static int SLAVE_MAX_ADD_RADIUS = 150;
 	public static int FIND_MAX_RADIUS = 300;
@@ -41,6 +42,7 @@ public final class MondoConfig {
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
 		PROTECTION_CHEST_BREAK = config.getBoolean("protection.chest_break");
 		USE_COMMANDS = config.getBoolean("use_commands", true);
+		SLAVE_VERTICAL_TWO = config.getBoolean("special.slave_vertical_two");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];
 		for (int i = 0; i < matlist.size(); i++) {

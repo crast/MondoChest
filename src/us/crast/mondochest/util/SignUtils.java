@@ -9,12 +9,19 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 
 public final class SignUtils {
-	
-	public static Vector<Chest> nearbyChests(Sign sign) {
-		return nearbyBlocks(sign, Material.CHEST);
+    public static Vector<Chest> nearbyChests(Sign sign) {
+        return nearbyChests(sign, false);
+    }
+    
+	public static Vector<Chest> nearbyChests(Sign sign, boolean verticalTwo) {
+		return nearbyBlocks(sign, Material.CHEST, verticalTwo);
 	}
 	
 	public static Vector<Chest> nearbyBlocks(Sign sign, Material target) {
+	    return nearbyBlocks(sign, target, false);
+	}
+	
+	public static Vector<Chest> nearbyBlocks(Sign sign, Material target, boolean verticalTwo) {
 		Block block = sign.getBlock();
 		Vector<Block> searchblocks = new Vector<Block>();
 		searchblocks.add(block.getRelative(BlockFace.UP));
@@ -35,6 +42,12 @@ public final class SignUtils {
 		default:
 			return null;
 		}
+
+		if (verticalTwo) {
+            searchblocks.add(block.getRelative(BlockFace.UP, 2));
+            searchblocks.add(block.getRelative(BlockFace.DOWN, 2));
+        }
+
 		Vector<Chest> chests = new Vector<Chest>();
 		for (Block b: searchblocks) {
 			if (b.getType() == target) {

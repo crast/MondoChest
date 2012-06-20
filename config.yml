@@ -1,18 +1,8 @@
-# Allow restacking of materials for the master chest.  Restacking will allow
-# various materials which can't stack or stack to less than 64 to be stacked to
-# the maximum value.
-restack_master: false
+########################
+## Basic Configuration
 
-# Restack materials for the slave chests if 'restack' is on the second line.
-restack_slaves: false
 
-# What materials to restack to the maximum 64
-restack_materials:
-  - SIGN
-  - SNOW_BALL
-  - EGG
-
-# Valid values: false/none, SuperPerms, Vault
+# Valid values: SuperPerms, Vault
 permissions: SuperPerms
 
 # Sign protection.
@@ -35,3 +25,29 @@ limits:
         # How far away from a mondo chest the slave can be
         max_add_radius: 150
 
+
+#######################
+## Restacking feature
+
+# Allow restacking of materials for the master chest.  Restacking will allow
+# various materials which can't stack or stack to less than 64 to be stacked to
+# the maximum value.
+restack_master: false
+
+# Restack materials for the slave chests if 'restack' is on the second line.
+restack_slaves: false
+
+# What materials to restack to the maximum 64
+restack_materials:
+  - SIGN
+  - SNOW_BALL
+  - EGG
+
+
+#####################
+## Specialty options
+
+special:
+    # signs look for slaves up and down two from the sign.
+    # This allows you to hide signs in the floor or ceiling.
+    slave_vertical_two: false

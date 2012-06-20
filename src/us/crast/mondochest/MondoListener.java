@@ -232,7 +232,7 @@ public final class MondoListener implements Listener {
 	private int addNearbyChestsToBank(BankSet bank, Sign sign) {
 		int chestsAdded = 0;
 		boolean allow_restack = sign.getLine(1).trim().equalsIgnoreCase("restack");
-		List<Chest> nearby = SignUtils.nearbyChests(sign);
+		List<Chest> nearby = SignUtils.nearbyChests(sign, MondoConfig.SLAVE_VERTICAL_TWO);
 		if (nearby.isEmpty()) return -1;
 		for (Chest chest: nearby) {
 			if (bank.addChest(chest, allow_restack)) {
