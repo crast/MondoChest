@@ -22,14 +22,18 @@ public final class BreakListener implements Listener {
 	@EventHandler(ignoreCancelled=true)
     public void blockBroken(BlockBreakEvent event) {
 		Block block = event.getBlock();
-		if (block.getType() != Material.WALL_SIGN) return;
-		Sign sign = SignUtils.signFromBlock(block);
-		String firstLine = sign.getLine(0);
-		if (firstLine.equals(MASTER_SIGN_NAME)) {
-			this.listener.masterBroken(event, sign, event.getPlayer());
-		} else if (firstLine.equals(SLAVE_SIGN_NAME)) {
-			this.listener.slaveBroken(event, sign, event.getPlayer());
-			
+		switch (block.getType()) {
+		case WALL_SIGN:
+	        Sign sign = SignUtils.signFromBlock(block);
+	        String firstLine = sign.getLine(0);
+	        if (firstLine.equals(MASTER_SIGN_NAME)) {
+	            this.listener.masterBroken(event, sign, event.getPlayer());
+	        } else if (firstLine.equals(SLAVE_SIGN_NAME)) {
+	            this.listener.slaveBroken(event, sign, event.getPlayer());
+	        }		    
+		    break;
+		case CHEST:
+		    break;
 		}
 	}
 	

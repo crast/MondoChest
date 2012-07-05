@@ -129,6 +129,12 @@ public final class BankSet implements ConfigurationSerializable {
 	public int numChests() {
 		return chestLocations.size();
 	}
+
+	public Collection<ChestManager> allChestManagers() {
+	    ArrayList<ChestManager> managers = new ArrayList<ChestManager>(chestLocations);
+	    managers.add(masterChest);
+	    return managers;
+    }
 	
 	/* Getters/setters */
 	

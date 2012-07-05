@@ -32,6 +32,7 @@ import us.crast.mondochest.util.SignUtils;
 public final class MondoListener implements Listener {
 	private static final String MASTER_SIGN_NAME = MondoConstants.MASTER_SIGN_NAME;
 	private static final String SLAVE_SIGN_NAME = MondoConstants.SLAVE_SIGN_NAME;
+	private static final String RELOAD_SIGN_NAME = MondoConstants.RELOAD_SIGN_NAME;
 	
 	private PermissionChecker can_use;
 	private PermissionChecker can_create_bank;
@@ -68,6 +69,8 @@ public final class MondoListener implements Listener {
 						response = masterSignClicked(block, sign, event.getPlayer());
 					} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
 						response = slaveSignClicked(block, sign, event.getPlayer());
+					} else if (firstLine.equals(RELOAD_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
+					    response = reloadSignClicked(block, sign, event.getPlayer());
 					}
 				} catch (MondoMessage m) {
 					response = m;
@@ -80,7 +83,7 @@ public final class MondoListener implements Listener {
 		}
 	}
 
-	private MessageWithStatus masterSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
+    private MessageWithStatus masterSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
 		if (!can_use.check(player)) {
 			return new BasicMessage("No permissions to use MondoChest", Status.WARNING);
 		}
@@ -114,7 +117,7 @@ public final class MondoListener implements Listener {
 	    }
 	}
 
-	private MessageWithStatus slaveSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
+	private MessageWithStatus slaveClickedCommon(Block block, Sign sign, Player player, String noun, Material material) throws MondoMessage {
 
 		Location lastClicked = getLastClicked(player);
 		if (lastClicked == null) {
@@ -135,12 +138,12 @@ public final class MondoListener implements Listener {
 				return new BasicMessage(String.format("Only this bank's owner, %s, can add slaves to the bank", targetBank.getOwner()), Status.WARNING);
 			}
 		}
-		int num_added = addNearbyChestsToBank(targetBank, sign);
+		int num_added = addNearbyObjectsToBank(targetBank, sign, material);
 		BasicMessage response = null;
 		if (num_added == -1) {
-			response = new BasicMessage("No nearby chests found", Status.ERROR);
+			response = new BasicMessage("No nearby " + noun + "s found", Status.ERROR);
 		} else if (num_added == 0) {
-			response = new BasicMessage("Chests already in bank", Status.ERROR);
+			response = new BasicMessage(noun + "s already in bank", Status.ERROR);
 		} else {
 			bankManager.markChanged(block.getWorld().getName(), targetBank);
 			response = new BasicMessage(Status.SUCCESS,
@@ -153,8 +156,15 @@ public final class MondoListener implements Listener {
 		bankManager.save(); // Propagates MondoMessage on error
 		return response;
 	}
+	
+	private MessageWithStatus slaveSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
+	    return slaveClickedCommon(block, sign, player, "chest", Material.CHEST);
+	}
+	private MessageWithStatus reloadSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
+        return slaveClickedCommon(block, sign, player, "dispenser", Material.DISPENSER);
+    }
 
-	public void masterBroken(Cancellable event, Sign sign, Player player) {
+    public void masterBroken(Cancellable event, Sign sign, Player player) {
 		BankSet bank = bankManager.getBank(sign.getBlock().getLocation());
 		if (bank == null) return;
 		if (!bank.getOwner().equals(player.getName())) {
@@ -229,10 +239,10 @@ public final class MondoListener implements Listener {
 		}
 	}
 	
-	private int addNearbyChestsToBank(BankSet bank, Sign sign) {
+	private int addNearbyObjectsToBank(BankSet bank, Sign sign, Material material) {
 		int chestsAdded = 0;
 		boolean allow_restack = sign.getLine(1).trim().equalsIgnoreCase("restack");
-		List<Chest> nearby = SignUtils.nearbyChests(sign, MondoConfig.SLAVE_VERTICAL_TWO);
+		List<Chest> nearby = SignUtils.nearbyBlocks(sign, material, MondoConfig.SLAVE_VERTICAL_TWO);
 		if (nearby.isEmpty()) return -1;
 		for (Chest chest: nearby) {
 			if (bank.addChest(chest, allow_restack)) {
