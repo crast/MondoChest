@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -57,6 +58,7 @@ public final class MondoListener implements Listener {
 	    
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
+        Player player = event.getPlayer();
 		Material blockType = block.getType();
 		switch (blockType) {
 		case WALL_SIGN:
@@ -66,20 +68,26 @@ public final class MondoListener implements Listener {
 				MessageWithStatus response = null;
 				try {
 					if (firstLine.equals(MASTER_SIGN_NAME)) {
-						response = masterSignClicked(block, sign, event.getPlayer());
-					} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
-						response = slaveSignClicked(block, sign, event.getPlayer());
-					} else if (firstLine.equals(RELOAD_SIGN_NAME) && can_add_slave.check(event.getPlayer())) {
-					    response = reloadSignClicked(block, sign, event.getPlayer());
+						response = masterSignClicked(block, sign, player);
+					} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(player)) {
+						response = slaveSignClicked(block, sign, player);
+					} else if (firstLine.equals(RELOAD_SIGN_NAME) && can_add_slave.check(player)) {
+					    response = reloadSignClicked(block, sign, player);
 					}
 				} catch (MondoMessage m) {
 					response = m;
 				}
 				if (response != null) {
-					event.getPlayer().sendMessage(BasicMessage.render(response, true));
+					player.sendMessage(BasicMessage.render(response, true));
 				}
 			}
 			break;
+		case CHEST:
+		    PlayerState state = playerManager.getState(player);
+		    if (state.isManagingChest()) {
+		        // TODO
+		    }
+		    break;
 		}
 	}
 
@@ -89,7 +97,9 @@ public final class MondoListener implements Listener {
 		}
 		World world = block.getWorld();
 		BlockVector vec = block.getLocation().toVector().toBlockVector();
-		BankSet bank = getWorldBanks(world).get(vec);;
+		BankSet bank = getWorldBanks(world).get(vec);
+		PlayerState state = playerManager.getState(player);
+
 		
 		if (bank == null) {
 			if (!can_create_bank.check(player)) {
@@ -100,6 +110,8 @@ public final class MondoListener implements Listener {
 			bankManager.addBank(world.getName(), vec, bank);
 			bankManager.save(); // propagates MondoMessage
 			BasicMessage.send(player, Status.SUCCESS, "Created new MondoChest bank");
+			// Store the last clicked bank
+	        state.setLastClickedMaster(block.getLocation());
 			return new BasicMessage("right-click slave signs to add them", Status.INFO);
 		}
 		bank.refreshMaterials(world);
@@ -108,7 +120,6 @@ public final class MondoListener implements Listener {
 			bank.restackSpecial(world);
 		}
 		// Store the last clicked bank
-		PlayerState state = playerManager.getState(player);
 		state.setLastClickedMaster(block.getLocation());
 	    if (num_shelved > 0) {
 	        return new BasicMessage(Status.SUCCESS, "Shelved %d item%s", num_shelved, pluralize(num_shelved));
@@ -118,7 +129,6 @@ public final class MondoListener implements Listener {
 	}
 
 	private MessageWithStatus slaveClickedCommon(Block block, Sign sign, Player player, String noun, Material material) throws MondoMessage {
-
 		Location lastClicked = getLastClicked(player);
 		if (lastClicked == null) {
 			return new BasicMessage("To add slaves to a bank, click a master sign first", Status.USAGE);
@@ -240,16 +250,18 @@ public final class MondoListener implements Listener {
 	}
 	
 	private int addNearbyObjectsToBank(BankSet bank, Sign sign, Material material) {
-		int chestsAdded = 0;
+		int objectsAdded = 0;
 		boolean allow_restack = sign.getLine(1).trim().equalsIgnoreCase("restack");
-		List<Chest> nearby = SignUtils.nearbyBlocks(sign, material, MondoConfig.SLAVE_VERTICAL_TWO);
-		if (nearby.isEmpty()) return -1;
-		for (Chest chest: nearby) {
-			if (bank.addChest(chest, allow_restack)) {
-				chestsAdded++;
-			}
-		}
-		return chestsAdded;
+		
+	    List<BlockState> nearby = SignUtils.nearbyBlocks(sign, material, MondoConfig.SLAVE_VERTICAL_TWO);
+        if (nearby.isEmpty()) return -1;
+        for (BlockState block: nearby) {
+            if (bank.add(block, allow_restack)) {
+                objectsAdded++;
+            }
+        }
+        
+		return objectsAdded;
 	}
 	
 	private String pluralize(int number) {
