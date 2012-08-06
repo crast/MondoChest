@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 
@@ -17,11 +18,11 @@ public final class SignUtils {
 		return nearbyBlocks(sign, Material.CHEST, verticalTwo);
 	}
 	
-	public static Vector<Chest> nearbyBlocks(Sign sign, Material target) {
+	public static <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target) {
 	    return nearbyBlocks(sign, target, false);
 	}
 	
-	public static Vector<Chest> nearbyBlocks(Sign sign, Material target, boolean verticalTwo) {
+	public static <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target, boolean verticalTwo) {
 		Block block = sign.getBlock();
 		Vector<Block> searchblocks = new Vector<Block>();
 		searchblocks.add(block.getRelative(BlockFace.UP));
@@ -48,13 +49,13 @@ public final class SignUtils {
             searchblocks.add(block.getRelative(BlockFace.DOWN, 2));
         }
 
-		Vector<Chest> chests = new Vector<Chest>();
+		Vector<T> targets = new Vector<T>();
 		for (Block b: searchblocks) {
 			if (b.getType() == target) {
-				chests.add((Chest) b.getState());
+				targets.add(GenericUtil.<T>cast(b.getState()));
 			}
 		}
-		return chests;
+		return targets;
 	}
 	public static BlockFace signFacing(Sign sign) {
 		org.bukkit.material.Sign signData = (org.bukkit.material.Sign) sign.getData();
