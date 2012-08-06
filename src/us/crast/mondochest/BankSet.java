@@ -9,7 +9,9 @@ import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Dispenser;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
@@ -46,8 +48,23 @@ public final class BankSet implements ConfigurationSerializable {
 	public void restackSpecial(World world) {
 		masterChest.restackSpecial(world);
 	}
+
+	public boolean add(BlockState block, boolean allow_restack) {
+        if (block.getType() == Material.CHEST) {
+            return addChest((Chest) block, allow_restack);
+        } else if (block.getType() == Material.DISPENSER) {
+            return addDispenser((Dispenser) block, allow_restack);
+        } else {
+            return false;
+        }
+    }
 	
-	public boolean addChest(Chest chest) {
+	public boolean addDispenser(Dispenser block, boolean allow_restack) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public boolean addChest(Chest chest) {
 		return addChest(chest, false);
 	}
 	
@@ -253,4 +270,5 @@ public final class BankSet implements ConfigurationSerializable {
 	public void setAcl(Set<String> acl) {
 		this.acl = acl;
 	}
+
 }
