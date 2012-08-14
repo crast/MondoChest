@@ -335,6 +335,10 @@ public final class MondoListener implements Listener {
         }
         World world = player.getWorld();
         BankSet bank = getLastClickedBank(player, false);
+        if (!bank.hasAccess(player)) {
+            call.append(new BasicMessage("Not allowed to access this MondoChest", Status.WARNING));
+            return;
+        }
         if (MondoConfig.FIND_MAX_RADIUS != -1 
                 && player.getLocation().toVector().distance(bank.getMasterSign()) > MondoConfig.FIND_MAX_RADIUS) {
             call.append(new BasicMessage("Too far away from chest bank", Status.ERROR));
