@@ -21,7 +21,10 @@ public final class MondoConfig {
 	
 	public static boolean PROTECTION_SIGNS = false;
 	public static boolean PROTECTION_CHEST_BREAK = false;
+    public static boolean PROTECTION_CHEST_OPEN = false;
 	public static boolean SLAVE_VERTICAL_TWO = false;
+    public static boolean SLAVE_HORIZONTAL_TWO = false;
+
 	
 	public static int SLAVE_MAX_ADD_RADIUS = 150;
 	public static int FIND_MAX_RADIUS = 300;
@@ -31,6 +34,7 @@ public final class MondoConfig {
 	public static boolean USE_COMMANDS = true;
 
 	private static List<String> decodeErrors = null;
+
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
@@ -41,8 +45,10 @@ public final class MondoConfig {
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
 		PROTECTION_CHEST_BREAK = config.getBoolean("protection.chest_break");
+		PROTECTION_CHEST_OPEN = config.getBoolean("protection.chest_open");
 		USE_COMMANDS = config.getBoolean("use_commands", true);
 		SLAVE_VERTICAL_TWO = config.getBoolean("special.slave_vertical_two");
+		SLAVE_HORIZONTAL_TWO = config.getBoolean("special.slave_horizontal_two");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];
 		for (int i = 0; i < matlist.size(); i++) {

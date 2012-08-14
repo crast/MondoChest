@@ -11,18 +11,18 @@ import org.bukkit.block.Sign;
 
 public final class SignUtils {
     public static Vector<Chest> nearbyChests(Sign sign) {
-        return nearbyChests(sign, false);
+        return nearbyChests(sign, false, false);
     }
     
-	public static Vector<Chest> nearbyChests(Sign sign, boolean verticalTwo) {
-		return nearbyBlocks(sign, Material.CHEST, verticalTwo);
+	public static Vector<Chest> nearbyChests(Sign sign, boolean verticalTwo, boolean horizontalTwo) {
+		return nearbyBlocks(sign, Material.CHEST, verticalTwo, horizontalTwo);
 	}
 	
 	public static <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target) {
-	    return nearbyBlocks(sign, target, false);
+	    return nearbyBlocks(sign, target, false, false);
 	}
 	
-	public static <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target, boolean verticalTwo) {
+	public static <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target, boolean verticalTwo, boolean horizontalTwo) {
 		Block block = sign.getBlock();
 		Vector<Block> searchblocks = new Vector<Block>();
 		searchblocks.add(block.getRelative(BlockFace.UP));
@@ -33,12 +33,20 @@ public final class SignUtils {
 			// North/south faces down the X axis so look for chests along Z
 			searchblocks.add(block.getRelative(BlockFace.EAST));
 			searchblocks.add(block.getRelative(BlockFace.WEST));
+			if (horizontalTwo) {
+			    searchblocks.add(block.getRelative(BlockFace.EAST, 2));
+			    searchblocks.add(block.getRelative(BlockFace.WEST, 2));
+			}
 			break;
 		case EAST:
 		case WEST:
 			// East/west faces down the Z axis so look for chests along X
 			searchblocks.add(block.getRelative(BlockFace.NORTH));
 			searchblocks.add(block.getRelative(BlockFace.SOUTH));
+			if (horizontalTwo) {
+			    searchblocks.add(block.getRelative(BlockFace.NORTH, 2));
+			    searchblocks.add(block.getRelative(BlockFace.SOUTH, 2));
+			}
 			break;
 		default:
 			return null;

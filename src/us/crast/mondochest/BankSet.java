@@ -14,6 +14,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
@@ -260,6 +261,10 @@ public final class BankSet implements ConfigurationSerializable {
 	public boolean hasAccess(String name) {
 		if (acl == null || acl.isEmpty()) return true;
 		return acl.contains(name);
+	}
+	
+	public boolean hasAccess(Player player) {
+	    return hasAccess(player.getName());
 	}
 	
 	private Set<String> getAcl() {

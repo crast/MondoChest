@@ -107,6 +107,10 @@ public final class BankManager {
 		return worldCaches.ensure(world).getSlaves(this);
 	}
 	
+	public Map<BlockVector, BankSet> getChestLocMap(String world) {
+	    return worldCaches.ensure(world).getChestLocMap(this);
+	}
+	
 	public BankSet getBank(String world, BlockVector vec) {
 		return getWorldBanks(world).get(vec);
 	}

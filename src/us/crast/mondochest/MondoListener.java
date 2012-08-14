@@ -40,6 +40,8 @@ public final class MondoListener implements Listener {
 	private PermissionChecker can_add_slave;
 	private PermissionChecker can_override_break;
 	private PermissionChecker can_override_add_slave;
+    private PermissionChecker can_override_open;
+
 	
 	private final BankManager bankManager;
 	private PlayerInfoManager playerManager = new PlayerInfoManager();
@@ -49,13 +51,13 @@ public final class MondoListener implements Listener {
 		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
 		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
 		this.can_override_break = MondoSecurity.getChecker("mondochest.admin.break_any");
+		this.can_override_open = MondoSecurity.getChecker("mondochest.admin.open_any");
 		this.can_override_add_slave = MondoSecurity.getChecker("mondochest.admin.add_any_slave");
 		this.bankManager = plugin.getBankManager();
 	}
 	
 	@EventHandler(ignoreCancelled=true)
     public void playerInteract(final PlayerInteractEvent event) {
-	    
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.getClickedBlock();
         Player player = event.getPlayer();
@@ -83,13 +85,14 @@ public final class MondoListener implements Listener {
 			}
 			break;
 		case CHEST:
-		    PlayerState state = playerManager.getState(player);
-		    if (state.isManagingChest()) {
-		        // TODO
+		    MessageWithStatus response = chestClicked(event, block, player);
+		    if (response != null) {
+		        player.sendMessage(BasicMessage.render(response, true));
 		    }
 		    break;
 		}
 	}
+
 
     private MessageWithStatus masterSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
 		if (!can_use.check(player)) {
@@ -98,8 +101,6 @@ public final class MondoListener implements Listener {
 		World world = block.getWorld();
 		BlockVector vec = block.getLocation().toVector().toBlockVector();
 		BankSet bank = getWorldBanks(world).get(vec);
-		PlayerState state = playerManager.getState(player);
-
 		
 		if (bank == null) {
 			if (!can_create_bank.check(player)) {
@@ -111,8 +112,11 @@ public final class MondoListener implements Listener {
 			bankManager.save(); // propagates MondoMessage
 			BasicMessage.send(player, Status.SUCCESS, "Created new MondoChest bank");
 			// Store the last clicked bank
+		    PlayerState state = playerManager.getState(player);
 	        state.setLastClickedMaster(block.getLocation());
 			return new BasicMessage("right-click slave signs to add them", Status.INFO);
+		} else if (!bank.hasAccess(player)) {
+		    return new BasicMessage(Status.WARNING, "You do not have access to this MondoChest");
 		}
 		bank.refreshMaterials(world);
 		int num_shelved = bank.shelveItems(world);
@@ -120,6 +124,7 @@ public final class MondoListener implements Listener {
 			bank.restackSpecial(world);
 		}
 		// Store the last clicked bank
+		PlayerState state = playerManager.getState(player);
 		state.setLastClickedMaster(block.getLocation());
 	    if (num_shelved > 0) {
 	        return new BasicMessage(Status.SUCCESS, "Shelved %d item%s", num_shelved, pluralize(num_shelved));
@@ -145,7 +150,7 @@ public final class MondoListener implements Listener {
 			if (can_override_add_slave.check(player)) {
 				BasicMessage.send(player, Status.INFO, "admin override allowed");
 			} else {
-				return new BasicMessage(String.format("Only this bank's owner, %s, can add slaves to the bank", targetBank.getOwner()), Status.WARNING);
+				return new BasicMessage(Status.WARNING, "Only this bank's owner, %s, can add slaves to the bank", targetBank.getOwner());
 			}
 		}
 		int num_added = addNearbyObjectsToBank(targetBank, sign, material);
@@ -200,7 +205,7 @@ public final class MondoListener implements Listener {
 	public void slaveBroken(Cancellable event, Sign sign, Player player) {
 		Map<ChestManager, BankSet> slaves = bankManager.getWorldSlaves(sign.getWorld().getName());
 		int removed = 0;
-		for (Chest chest: SignUtils.nearbyChests(sign)) {
+		for (Chest chest: SignUtils.nearbyChests(sign, MondoConfig.SLAVE_VERTICAL_TWO, MondoConfig.SLAVE_HORIZONTAL_TWO)) {
 			ChestManager info = new ChestManager(chest, false);
 			if (slaves.containsKey(info)) {
 				BankSet bs = slaves.get(info);
@@ -216,6 +221,25 @@ public final class MondoListener implements Listener {
 		}
 		BasicMessage.send(player, Status.SUCCESS, "Removed %d chests", removed);
 	}
+	
+
+    private MessageWithStatus chestClicked(Cancellable event, Block block, Player player) {
+        if (MondoConfig.PROTECTION_CHEST_OPEN) {
+            BlockVector vec = block.getLocation().toVector().toBlockVector();
+            BankSet bank = bankManager.getChestLocMap(block.getWorld().getName()).get(vec);
+            if (bank == null) return null;
+            if (!bank.hasAccess(player) && !can_override_open.check(player)) {
+                event.setCancelled(true);
+                return new BasicMessage(Status.WARNING, "You do not have access to this MondoChest");
+            }
+        }
+        /*
+        PlayerState state = playerManager.getState(player);
+        if (state.isManagingChest()) {
+            // TODO
+        }*/
+        return null;
+    }
 	
 	public void allowAccess(CallInfo call, String target) throws MondoMessage {
 		Player player = call.getPlayer();
@@ -253,7 +277,7 @@ public final class MondoListener implements Listener {
 		int objectsAdded = 0;
 		boolean allow_restack = sign.getLine(1).trim().equalsIgnoreCase("restack");
 		
-	    List<BlockState> nearby = SignUtils.nearbyBlocks(sign, material, MondoConfig.SLAVE_VERTICAL_TWO);
+	    List<BlockState> nearby = SignUtils.nearbyBlocks(sign, material, MondoConfig.SLAVE_VERTICAL_TWO, MondoConfig.SLAVE_HORIZONTAL_TWO);
         if (nearby.isEmpty()) return -1;
         for (BlockState block: nearby) {
             if (bank.add(block, allow_restack)) {

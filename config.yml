@@ -51,3 +51,6 @@ special:
     # signs look for slaves up and down two from the sign.
     # This allows you to hide signs in the floor or ceiling.
     slave_vertical_two: false
+
+    # signs look 2 to the left and right.
+    slave_horizontal_two: false
