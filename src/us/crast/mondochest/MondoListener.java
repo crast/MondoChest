@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -243,8 +244,8 @@ public final class MondoListener implements Listener {
 	public void allowAccess(CallInfo call, String target) throws MondoMessage {
 		Player player = call.getPlayer();
 		BankSet lastClicked = getLastClickedBank(player, true);
-		Player targetPlayer = call.getPlayer().getServer().getPlayer(target);
-		if (targetPlayer == null) throw new MondoMessage("Target not found", Status.ERROR);
+		OfflinePlayer targetPlayer = call.getPlayer().getServer().getOfflinePlayer(target);
+		if (targetPlayer == null || !targetPlayer.hasPlayedBefore()) throw new MondoMessage("Target not found", Status.ERROR);
 		if (call.getArg(0).equalsIgnoreCase("allow")) {
 			lastClicked.addAccess(targetPlayer.getName());
 			bankManager.markChanged(lastClicked.getWorld(), lastClicked);
@@ -257,7 +258,16 @@ public final class MondoListener implements Listener {
 			call.success(String.format("Player %s removed", targetPlayer.getName()));
 		}
 	}
-	
+
+    public void listAccess(CallInfo call, Player player) throws MondoMessage {
+        BankSet bank = getLastClickedBank(player, true);
+        if (bank.getAcl().isEmpty()) {
+            call.success("Allowed Users: EVERYONE");
+        } else {
+            String allowed = StringUtils.join(bank.getAcl(), ", ");
+            call.success("Allowed Users: " + ChatColor.LIGHT_PURPLE + allowed);
+        }
+    }
 	
 	private Map<BlockVector, BankSet> getWorldBanks(World world) {
 		return bankManager.getWorldBanks(world.getName());
@@ -379,4 +389,5 @@ public final class MondoListener implements Listener {
         this.can_override_open = MondoSecurity.getChecker("mondochest.admin.open_any");
         this.can_override_add_slave = MondoSecurity.getChecker("mondochest.admin.add_any_slave");
     }
+
 }

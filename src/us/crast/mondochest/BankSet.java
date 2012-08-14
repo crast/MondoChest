@@ -267,7 +267,7 @@ public final class BankSet implements ConfigurationSerializable {
 	    return hasAccess(player.getName());
 	}
 	
-	private Set<String> getAcl() {
+	public Set<String> getAcl() {
 		if (acl == null) acl = new HashSet<String>();
 		return acl;
 	}

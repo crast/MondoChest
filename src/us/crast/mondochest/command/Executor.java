@@ -34,12 +34,14 @@ public class Executor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = null;
+		String slash = "";
 		if (sender instanceof Player) {
 			player = (Player) sender;
+			slash = "/";
 		}
 		
 		if (args.length == 0) {
-			sender.sendMessage("Usage: /mondochest <command> [<args>]");
+			sender.sendMessage("Usage: " + slash +  commandLabel + " <command> [<args>]");
 
 			for (SubCommand sub: availableCommands(sender, player)) {
 				String usage = "";
@@ -47,8 +49,8 @@ public class Executor implements CommandExecutor {
 					usage = ChatColor.LIGHT_PURPLE.toString() + " " + sub.getUsage();
 				}
 				sender.sendMessage(String.format(
-						"%s/%s %s%s %s%s", 
-						ChatColor.GREEN,
+						"%s%s%s %s%s %s%s", 
+						ChatColor.GREEN, slash,
 						commandLabel, sub.getName(),
 						usage,
 						ChatColor.BLUE,
@@ -63,10 +65,10 @@ public class Executor implements CommandExecutor {
 			// TODO return usage
 			return false;
 		} else if (!sub.getChecker().checkSender(sender)) {
-			sender.sendMessage(String.format("MondoChest: %sStop being sneaky.", ChatColor.RED));
+			sender.sendMessage(String.format("%sMondoChest: %sStop being sneaky.", ChatColor.GOLD, ChatColor.RED));
 			return false;
 		} else if ((args.length -1 ) < sub.getMinArgs()) {
-			sender.sendMessage(String.format("%sUsage: %s/%s %s %s%s", ChatColor.GOLD, ChatColor.GREEN, commandLabel, sub.getName(), ChatColor.LIGHT_PURPLE, sub.getUsage()));
+			sender.sendMessage(String.format("%sUsage: %s%s%s %s %s%s", ChatColor.GOLD, ChatColor.GREEN, slash, commandLabel, sub.getName(), ChatColor.LIGHT_PURPLE, sub.getUsage()));
 			return false;
 		}
 		CallInfo call = new CallInfo(sender, player, args);
@@ -110,6 +112,14 @@ public class Executor implements CommandExecutor {
 			}
 		});
 		
+		addSub("access", "mondochest.use")
+		    .setDescription("List who can access a MondoChest")
+		    .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoMessage {
+                    listener.listAccess(call, call.getPlayer());
+                }
+		    });
+		
 		addSub("allow", "mondochest.use")
 			.setMinArgs(1)
 			.setUsage("<player>")
@@ -147,7 +157,7 @@ public class Executor implements CommandExecutor {
                 }
 		    });
 		
-		addSub("version", "mondochest.admin.reload")
+		addSub("version", "mondochest.admin.console")
 		    .allowConsole()
 		    .setDescription("Version Info")
 		    .setHandler(new SubHandler() {
