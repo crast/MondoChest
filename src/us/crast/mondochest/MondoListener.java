@@ -47,13 +47,8 @@ public final class MondoListener implements Listener {
 	private PlayerInfoManager playerManager = new PlayerInfoManager();
 	
 	public MondoListener(final MondoChest plugin) {
-		this.can_use = MondoSecurity.getChecker("mondochest.use");
-		this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
-		this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
-		this.can_override_break = MondoSecurity.getChecker("mondochest.admin.break_any");
-		this.can_override_open = MondoSecurity.getChecker("mondochest.admin.open_any");
-		this.can_override_add_slave = MondoSecurity.getChecker("mondochest.admin.add_any_slave");
 		this.bankManager = plugin.getBankManager();
+		this.reloadConfig();
 	}
 	
 	@EventHandler(ignoreCancelled=true)
@@ -362,5 +357,14 @@ public final class MondoListener implements Listener {
         if (!found) {
             call.append(new BasicMessage("No items found", Status.ERROR));
         }
+    }
+    
+    public void reloadConfig() {
+        this.can_use = MondoSecurity.getChecker("mondochest.use");
+        this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
+        this.can_create_bank = MondoSecurity.getChecker("mondochest.create_master");
+        this.can_override_break = MondoSecurity.getChecker("mondochest.admin.break_any");
+        this.can_override_open = MondoSecurity.getChecker("mondochest.admin.open_any");
+        this.can_override_add_slave = MondoSecurity.getChecker("mondochest.admin.add_any_slave");
     }
 }

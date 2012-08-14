@@ -5,12 +5,13 @@
 # Valid values: SuperPerms, Vault
 permissions: SuperPerms
 
-# Sign protection.
+# Sign/Chest protection.
 # Note that this may interfere with other protection plugins,
 # use with caution.
 protection:
     signs: true
     chest_break: false
+    chest_open: false
 
 # Limits to keep performance sane.
 # 'radius' limits are in number of blocks.

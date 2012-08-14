@@ -8,6 +8,7 @@ public class MondoSecurity {
 	public static void setMode(String mode) {
 		MondoSecurity.mode = mode;
 	}
+
 	public static PermissionChecker getChecker(String permission) {
 		if (mode.equals("null")) {
 			return new NullChecker(permission);

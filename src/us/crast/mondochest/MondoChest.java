@@ -66,6 +66,10 @@ public final class MondoChest extends JavaPlugin {
 			reloadConfig();
 		}
 		MondoConfig.configure(this, getConfig(), log);
+		
+		if (listener != null) {
+		    listener.reloadConfig();
+		}
 	}
 	
 	
