@@ -15,6 +15,7 @@ import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoConstants;
 import us.crast.mondochest.MondoListener;
 import us.crast.mondochest.MondoMessage;
+import us.crast.mondochest.Status;
 
 public class Executor implements CommandExecutor {
 	
@@ -38,27 +39,23 @@ public class Executor implements CommandExecutor {
 		}
 		
 		if (args.length == 0) {
-			if (player == null) {
-				return sendVersion(sender);
-			} else {
-				player.sendMessage("Usage: /mondochest <command> [<args>]");
-	
-				for (SubCommand sub: availableCommands(sender, player)) {
-					String usage = "";
-					if (sub.getUsage() != null) {
-						usage = ChatColor.LIGHT_PURPLE.toString() + " " + sub.getUsage();
-					}
-					player.sendMessage(String.format(
-							"%s/%s %s%s %s%s", 
-							ChatColor.GREEN,
-							commandLabel, sub.getName(),
-							usage,
-							ChatColor.BLUE,
-							sub.getDescription()
-					));
+			sender.sendMessage("Usage: /mondochest <command> [<args>]");
+
+			for (SubCommand sub: availableCommands(sender, player)) {
+				String usage = "";
+				if (sub.getUsage() != null) {
+					usage = ChatColor.LIGHT_PURPLE.toString() + " " + sub.getUsage();
 				}
-				return false;
+				sender.sendMessage(String.format(
+						"%s/%s %s%s %s%s", 
+						ChatColor.GREEN,
+						commandLabel, sub.getName(),
+						usage,
+						ChatColor.BLUE,
+						sub.getDescription()
+				));
 			}
+			return false;
 		}
 		String subcommandName = args[0].toLowerCase();
 		SubCommand sub = subcommands.get(subcommandName);
@@ -69,7 +66,7 @@ public class Executor implements CommandExecutor {
 			sender.sendMessage(String.format("MondoChest: %sStop being sneaky.", ChatColor.RED));
 			return false;
 		} else if ((args.length -1 ) < sub.getMinArgs()) {
-			sender.sendMessage(String.format("Usage: /%s %s %s", commandLabel, sub.getName(), sub.getUsage()));
+			sender.sendMessage(String.format("%sUsage: %s/%s %s %s%s", ChatColor.GOLD, ChatColor.GREEN, commandLabel, sub.getName(), ChatColor.LIGHT_PURPLE, sub.getUsage()));
 			return false;
 		}
 		CallInfo call = new CallInfo(sender, player, args);
@@ -82,11 +79,6 @@ public class Executor implements CommandExecutor {
 			sender.sendMessage(BasicMessage.render(m, true));
 		}
 		return false;
-	}
-	
-	private boolean sendVersion(CommandSender sender) {
-		sender.sendMessage(String.format("%s version %s", MondoConstants.APP_NAME, MondoConstants.MONDOCHEST_VERSION));
-		return true;
 	}
 	
 	private SubCommand addSub(String name, String permission, SubHandler handler) {
@@ -153,6 +145,15 @@ public class Executor implements CommandExecutor {
                 public void handle(CallInfo call) throws MondoMessage {
                     listener.findItems(call, call.getPlayer());
                 }
+		    });
+		
+		addSub("version", "mondochest.admin.reload")
+		    .allowConsole()
+		    .setDescription("Version Info")
+		    .setHandler(new SubHandler() {
+                public void handle(CallInfo call) throws MondoMessage {
+                    call.append(new BasicMessage(Status.SUCCESS, "%s version %s", MondoConstants.APP_NAME, MondoConstants.MONDOCHEST_VERSION));
+                }    
 		    });
 	}
 
