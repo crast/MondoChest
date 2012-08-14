@@ -110,7 +110,13 @@ public final class MondoListener implements Listener {
 		    PlayerState state = playerManager.getState(player);
 	        state.setLastClickedMaster(block.getLocation());
 			return new BasicMessage("right-click slave signs to add them", Status.INFO);
-		} else if (!bank.hasAccess(player)) {
+		} 
+	    
+		// Store the last clicked bank
+        PlayerState state = playerManager.getState(player);
+        state.setLastClickedMaster(block.getLocation());
+		
+        if (!bank.hasAccess(player)) {
 		    return new BasicMessage(Status.WARNING, "You do not have access to this MondoChest");
 		}
 		bank.refreshMaterials(world);
@@ -118,9 +124,7 @@ public final class MondoListener implements Listener {
 		if (MondoConfig.RESTACK_MASTER) {
 			bank.restackSpecial(world);
 		}
-		// Store the last clicked bank
-		PlayerState state = playerManager.getState(player);
-		state.setLastClickedMaster(block.getLocation());
+
 	    if (num_shelved > 0) {
 	        return new BasicMessage(Status.SUCCESS, "Shelved %d item%s", num_shelved, pluralize(num_shelved));
 	    } else {
@@ -225,7 +229,7 @@ public final class MondoListener implements Listener {
             if (bank == null) return null;
             if (!bank.hasAccess(player) && !can_override_open.check(player)) {
                 event.setCancelled(true);
-                return new BasicMessage(Status.WARNING, "You do not have access to this MondoChest");
+                return new BasicMessage("You do not have access to this MondoChest", Status.WARNING);
             }
         }
         /*
@@ -243,9 +247,13 @@ public final class MondoListener implements Listener {
 		if (targetPlayer == null) throw new MondoMessage("Target not found", Status.ERROR);
 		if (call.getArg(0).equalsIgnoreCase("allow")) {
 			lastClicked.addAccess(targetPlayer.getName());
+			bankManager.markChanged(lastClicked.getWorld(), lastClicked);
+			bankManager.saveIfNeeded();
 			call.success(String.format("Player %s allowed", targetPlayer.getName()));
 		} else {
 			lastClicked.removeAccess(targetPlayer.getName());
+	         bankManager.markChanged(lastClicked.getWorld(), lastClicked);
+	         bankManager.saveIfNeeded();
 			call.success(String.format("Player %s removed", targetPlayer.getName()));
 		}
 	}

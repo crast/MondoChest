@@ -121,6 +121,7 @@ public final class BankManager {
 	
 	public void addBank(String world, BlockVector vec, BankSet bank) {
 		getWorldBanks(world).put(vec, bank);
+		bank.setWorld(world);
 		markChanged(world, bank);
 	}
 	
