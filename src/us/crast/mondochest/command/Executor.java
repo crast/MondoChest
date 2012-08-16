@@ -16,6 +16,7 @@ import us.crast.mondochest.MondoConstants;
 import us.crast.mondochest.MondoListener;
 import us.crast.mondochest.MondoMessage;
 import us.crast.mondochest.Status;
+import us.crast.mondochest.util.ChatMagic;
 
 public class Executor implements CommandExecutor {
 	
@@ -48,12 +49,11 @@ public class Executor implements CommandExecutor {
 				if (sub.getUsage() != null) {
 					usage = ChatColor.LIGHT_PURPLE.toString() + " " + sub.getUsage();
 				}
-				sender.sendMessage(String.format(
-						"%s%s%s %s%s %s%s", 
-						ChatColor.GREEN, slash,
-						commandLabel, sub.getName(),
+				sender.sendMessage(ChatMagic.colorize(
+						"{GREEN}%s%s %s%s {BLUE}%s", 
+						slash, commandLabel, 
+						sub.getName(),
 						usage,
-						ChatColor.BLUE,
 						sub.getDescription()
 				));
 			}
@@ -65,10 +65,10 @@ public class Executor implements CommandExecutor {
 			// TODO return usage
 			return false;
 		} else if (!sub.getChecker().checkSender(sender)) {
-			sender.sendMessage(String.format("%sMondoChest: %sStop being sneaky.", ChatColor.GOLD, ChatColor.RED));
+			sender.sendMessage(ChatMagic.colorize("{GOLD}MondoChest: {WARNING}Stop being sneaky."));
 			return false;
 		} else if ((args.length -1 ) < sub.getMinArgs()) {
-			sender.sendMessage(String.format("%sUsage: %s%s%s %s %s%s", ChatColor.GOLD, ChatColor.GREEN, slash, commandLabel, sub.getName(), ChatColor.LIGHT_PURPLE, sub.getUsage()));
+			sender.sendMessage(ChatMagic.colorize("{GOLD}Usage: {GREEN}%s%s %s {USAGE}%s", slash, commandLabel, sub.getName(), sub.getUsage()));
 			return false;
 		}
 		CallInfo call = new CallInfo(sender, player, args);
