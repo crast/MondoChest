@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 
 import us.crast.mondochest.MessageWithStatus;
 import us.crast.mondochest.Status;
+import us.crast.mondochest.util.ChatMagic;
 
 public class BasicMessage implements MessageWithStatus {
 	
@@ -17,7 +18,7 @@ public class BasicMessage implements MessageWithStatus {
 	}
 	
 	public BasicMessage(Status status, String message, Object...args) {
-		this(String.format(message, args), status);
+		this(ChatMagic.colorize(message, args), status);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -29,6 +28,7 @@ import us.crast.mondochest.persist.PlayerInfoManager;
 import us.crast.mondochest.persist.PlayerState;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
+import us.crast.mondochest.util.ChatMagic;
 import us.crast.mondochest.util.SignUtils;
 
 public final class MondoListener implements Listener {
@@ -265,7 +265,7 @@ public final class MondoListener implements Listener {
             call.success("Allowed Users: EVERYONE");
         } else {
             String allowed = StringUtils.join(bank.getAcl(), ", ");
-            call.success("Allowed Users: " + ChatColor.LIGHT_PURPLE + allowed);
+            call.success(ChatMagic.colorize("Allowed Users: {PURPLE}%s", allowed));
         }
     }
 	
@@ -365,12 +365,11 @@ public final class MondoListener implements Listener {
             if (quantity > 0) {
                 BlockVector chest1 = chest.getChest1();
                 call.append(new BasicMessage(Status.INFO, 
-                        "%d in chest at %sx=%s%d%s, y=%s%d%s, z=%s%d",
+                        "%d in chest at {BLUE}x={RED}%d{BLUE}, y={RED}%d{BLUE}, z={RED}%d",
                         quantity,
-                        ChatColor.BLUE,
-                        ChatColor.RED, chest1.getBlockX(), ChatColor.BLUE,
-                        ChatColor.RED, chest1.getBlockY(), ChatColor.BLUE,
-                        ChatColor.RED, chest1.getBlockZ()
+                        chest1.getBlockX(),
+                        chest1.getBlockY(),
+                        chest1.getBlockZ()
                 ));
                 if (!found) player.openInventory(chest.getInventory(world, chest.getChest1()));
                 found = true;

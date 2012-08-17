@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -47,7 +46,7 @@ public class Executor implements CommandExecutor {
 			for (SubCommand sub: availableCommands(sender, player)) {
 				String usage = "";
 				if (sub.getUsage() != null) {
-					usage = ChatColor.LIGHT_PURPLE.toString() + " " + sub.getUsage();
+					usage = ChatMagic.colorize(" {LIGHT_PURPLE}%s", sub.getUsage());
 				}
 				sender.sendMessage(ChatMagic.colorize(
 						"{GREEN}%s%s %s%s {BLUE}%s", 
