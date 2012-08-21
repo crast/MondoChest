@@ -118,7 +118,7 @@ public final class MondoListener implements Listener {
         state.setLastClickedMaster(block.getLocation());
 		
         if (!bank.hasAccess(player)) {
-		    return new BasicMessage(Status.WARNING, "You do not have access to this MondoChest");
+		    return new BasicMessage("You do not have access to this MondoChest", Status.WARNING);
 		}
 		bank.refreshMaterials(world);
 		int num_shelved = bank.shelveItems(world);

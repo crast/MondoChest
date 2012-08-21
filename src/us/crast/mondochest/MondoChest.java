@@ -1,14 +1,15 @@
 package us.crast.mondochest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
-
 
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import us.crast.mondochest.command.Executor;
 import us.crast.mondochest.persist.BankManager;
+import us.crast.mondochest.util.MetricsLite;
 
 public final class MondoChest extends JavaPlugin {
 	private Logger log;
@@ -40,6 +41,12 @@ public final class MondoChest extends JavaPlugin {
 			log.info("I think I have an economy!");
 		}
 		*/
+		try {
+		    MetricsLite metrics = new MetricsLite(this);
+		    metrics.start();
+		} catch (IOException e) {
+		    // Failed to submit the stats :-(
+		}
 
 	}
 	
