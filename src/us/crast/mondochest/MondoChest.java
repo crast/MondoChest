@@ -58,6 +58,8 @@ public final class MondoChest extends JavaPlugin {
 		}
 		bankManager.shutdown();
 		listener.shutdown();
+		bankManager = null;
+		listener = null;
 	}
 	
 	public void reloadMondoChest() {
