@@ -23,15 +23,15 @@ import us.crast.utils.FileTools;
 import us.crast.utils.StringTools;
 
 public final class BankManager {
-	private Map<String, Map<BlockVector, BankSet>> banks = new HashMap<String, Map<BlockVector, BankSet>>();
-	private Map<String, String> worldHashes = new HashMap<String, String>();
-	private DefaultDict<String, WorldCache> worldCaches = new DefaultDict<String, WorldCache>(WorldCache.getMaker());
-	private Set<BankSet> changed = new HashSet<BankSet>();
+	private final Map<String, Map<BlockVector, BankSet>> banks = new HashMap<String, Map<BlockVector, BankSet>>();
+	private final Map<String, String> worldHashes = new HashMap<String, String>();
+	private final DefaultDict<String, WorldCache> worldCaches = new DefaultDict<String, WorldCache>(WorldCache.getMaker());
+	private final Set<BankSet> changed = new HashSet<BankSet>();
 	private boolean should_save = false;
 	private final File bankFile;
 	private FileConfiguration config;
 	
-	public BankManager(MondoChest plugin) {
+	public BankManager(final MondoChest plugin) {
 		bankFile = new File(plugin.getDataFolder(), "banks.yml");
 		load();
 	}
@@ -86,6 +86,7 @@ public final class BankManager {
 		changed.clear();
 		should_save = false;
 	}
+
 	public void saveIfNeeded() throws MondoMessage {
 		if (needsSave()) save();
 	}
@@ -94,7 +95,7 @@ public final class BankManager {
 		return banks;
 	}
 	
-	public Map<BlockVector, BankSet> getWorldBanks(String world) {
+	public Map<BlockVector, BankSet> getWorldBanks(final String world) {
 		Map<BlockVector, BankSet> banksByCoords = banks.get(world);
 		if (banksByCoords == null) {
 			banksByCoords = new HashMap<BlockVector, BankSet>();
@@ -103,36 +104,36 @@ public final class BankManager {
 		return banksByCoords;
 	}
 	
-	public Map<ChestManager, BankSet> getWorldSlaves(String world) {
+	public Map<ChestManager, BankSet> getWorldSlaves(final String world) {
 		return worldCaches.ensure(world).getSlaves(this);
 	}
 	
-	public Map<BlockVector, BankSet> getChestLocMap(String world) {
+	public Map<BlockVector, BankSet> getChestLocMap(final String world) {
 	    return worldCaches.ensure(world).getChestLocMap(this);
 	}
 	
-	public BankSet getBank(String world, BlockVector vec) {
+	public BankSet getBank(final String world, final BlockVector vec) {
 		return getWorldBanks(world).get(vec);
 	}
 	
-	public BankSet getBank(Location loc) {
+	public BankSet getBank(final Location loc) {
 		return getBank(loc.getWorld().getName(), loc.toVector().toBlockVector());
 	}
 	
-	public void addBank(String world, BlockVector vec, BankSet bank) {
+	public void addBank(final String world, final BlockVector vec, final BankSet bank) {
 		getWorldBanks(world).put(vec, bank);
 		bank.setWorld(world);
 		markChanged(world, bank);
 	}
 	
-	public void removeBank(String world, BankSet bank) {
+	public void removeBank(final String world, final BankSet bank) {
 		getWorldBanks(world).remove(bank.getMasterSign());
 		changed.remove(bank);
 		worldCaches.ensure(world).clear();
 		worldSection(world).set(bank.getKey(), null);
 	}
 	
-	public void markChanged(String world, BankSet bank) {
+	public void markChanged(final String world, final BankSet bank) {
 		worldCaches.ensure(world).clear();
 		changed.add(bank);
 	}
@@ -145,7 +146,7 @@ public final class BankManager {
 		return section;
 	}
 	
-	private ConfigurationSection worldSection(String world) {
+	private ConfigurationSection worldSection(final String world) {
 		ConfigurationSection section = ensureSection(config.getConfigurationSection("worlds"), worldHash(world));
 		if (!section.contains("_name")) {
 			section.set("_name", world);
@@ -153,7 +154,7 @@ public final class BankManager {
 		return section;
 	}
 	
-	private String worldHash(String world) {
+	private String worldHash(final String world) {
 		String hash = worldHashes.get(world);
 		if (hash == null) {
 			hash = StringTools.md5String(world);
