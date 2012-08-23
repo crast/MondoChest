@@ -265,7 +265,7 @@ public final class MondoListener implements Listener {
             call.success("Allowed Users: EVERYONE");
         } else {
             String allowed = StringUtils.join(bank.getAcl(), ", ");
-            call.success(ChatMagic.colorize("Allowed Users: {PURPLE}%s", allowed));
+            call.success(ChatMagic.colorize("Allowed Users: {LIGHT_PURPLE}%s", allowed));
         }
     }
 	
