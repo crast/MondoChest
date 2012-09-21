@@ -2,9 +2,12 @@ package us.crast.mondochest.persist;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -136,6 +139,16 @@ public final class BankManager {
 	public void markChanged(final String world, final BankSet bank) {
 		worldCaches.ensure(world).clear();
 		changed.add(bank);
+	}
+	
+	public List<BankSet> listAllBanks() {
+	    List<BankSet> items = new ArrayList<BankSet>();
+	    for (Entry<String, Map<BlockVector, BankSet>> e: banks.entrySet()) {
+	        for (BankSet bs : e.getValue().values()) {
+	            items.add(bs);
+	        }
+	    }
+	    return items;
 	}
 	
 	private ConfigurationSection ensureSection(ConfigurationSection base, String name) {

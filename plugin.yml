@@ -1,6 +1,6 @@
 name: MondoChest
 main: us.crast.mondochest.MondoChest
-version: 0.6
+version: 0.6.1-pre1
 author: Crast
 description: "Sort your items into appropriate chests"
 website: "http://dev.bukkit.org/server-mods/mondochest/"
@@ -21,17 +21,19 @@ permissions:
             mondochest.admin.break_any: true
             mondochest.admin.add_any_slave: true
             mondochest.admin.reload: true
+            mondochest.admin.no_master_limit: true
     mondochest.create_master:
         description: Create a new MondoChest bank
         default: op
     mondochest.add_slave:
-        description: Manually add new MondoSlaves
+        description: Add MondoSlaves to a MondoChest bank
         default: op
     mondochest.use:
+        description: Use MondoChest sign
         default: true
     mondochest.find:
         description: "Find items in a mondochest set"
-        default: true
+        default: op
     mondochest.admin.break_any:
         description: "Break anybody's MondoChest signs"
         default: op
@@ -43,6 +45,9 @@ permissions:
         default: op
     mondochest.admin.reload:
         description: "Reload the MondoChest config"
+        default: op
+    mondochest.admin.no_master_limit:
+        description: "Can make unlimited MondoChests"
         default: op
 
 commands:

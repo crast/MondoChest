@@ -42,6 +42,7 @@ public final class MondoListener implements Listener {
 	private PermissionChecker can_override_break;
 	private PermissionChecker can_override_add_slave;
     private PermissionChecker can_override_open;
+    private PermissionChecker can_override_master_limit;
 
 	
 	private final BankManager bankManager;
@@ -103,6 +104,13 @@ public final class MondoListener implements Listener {
 				return new BasicMessage("No permissions to create new bank", Status.WARNING);
 			}
 			
+			// Deal with masters per user limit.
+			if (MondoConfig.MASTERS_PER_USER != -1 && !can_override_master_limit.check(player)) {
+			    if (numBanks(player) >= MondoConfig.MASTERS_PER_USER) {
+			        return new BasicMessage(Status.WARNING, "You have passed the limit of {RED}%d{WARNING} banks", MondoConfig.MASTERS_PER_USER);
+			    }
+			}
+			
 			bank = bankFromSign(sign, player.getName()); // propagates MondoMessage
 			bankManager.addBank(world.getName(), vec, bank);
 			bankManager.save(); // propagates MondoMessage
@@ -133,8 +141,8 @@ public final class MondoListener implements Listener {
 	    }
 	}
 
-	private MessageWithStatus slaveClickedCommon(Block block, Sign sign, Player player, String noun, Material material) throws MondoMessage {
-		Location lastClicked = getLastClicked(player);
+    private MessageWithStatus slaveClickedCommon(Block block, Sign sign, Player player, String noun, Material material) throws MondoMessage {
+	    Location lastClicked = getLastClicked(player);
 		if (lastClicked == null) {
 			return new BasicMessage("To add slaves to a bank, click a master sign first", Status.USAGE);
 		}
@@ -380,6 +388,20 @@ public final class MondoListener implements Listener {
         }
     }
     
+    /**
+     * Find out how many banks a player has owned by them.
+     * @return number of banks, zero if none are owned by this player.
+     */
+    private int numBanks(final Player player) {
+        int myBanks = 0;
+        for (BankSet bs: bankManager.listAllBanks()) {
+            if (player.getName().equalsIgnoreCase(bs.getOwner())) {
+                myBanks++;
+            }
+        }
+        return myBanks;
+    }
+    
     public void reloadConfig() {
         this.can_use = MondoSecurity.getChecker("mondochest.use");
         this.can_add_slave = MondoSecurity.getChecker("mondochest.add_slave");
@@ -387,6 +409,7 @@ public final class MondoListener implements Listener {
         this.can_override_break = MondoSecurity.getChecker("mondochest.admin.break_any");
         this.can_override_open = MondoSecurity.getChecker("mondochest.admin.open_any");
         this.can_override_add_slave = MondoSecurity.getChecker("mondochest.admin.add_any_slave");
+        this.can_override_master_limit = MondoSecurity.getChecker("mondochest.admin.no_master_limit");
     }
 
 }

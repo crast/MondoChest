@@ -29,6 +29,7 @@ public final class MondoConfig {
 	public static int SLAVE_MAX_ADD_RADIUS = 150;
 	public static int FIND_MAX_RADIUS = 300;
 	public static int SLAVES_PER_MASTER = -1;
+	public static int MASTERS_PER_USER = -1;
 
 	public static Permission VAULT_PERMISSIONS = null;
 	public static boolean USE_COMMANDS = true;
@@ -41,6 +42,7 @@ public final class MondoConfig {
 		SLAVE_MAX_ADD_RADIUS = getLimit(config, "limits.slaves.max_add_radius");
 		FIND_MAX_RADIUS = getLimit(config, "limits.find_max_radius");
 		SLAVES_PER_MASTER = getLimit(config, "limits.slaves.per_master");
+		MASTERS_PER_USER = getLimit(config, "limits.mondochests.per_user");
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");

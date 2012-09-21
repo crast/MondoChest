@@ -1,3 +1,6 @@
+Version 0.6.1: Not yet released.
+ * Allow setting maximum number of MondoChests per player.
+
 Version 0.6: 2012-08-22
  * Add ability to define the users who can access a MondoChest
  * Add in MCStats metrics.

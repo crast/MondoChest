@@ -26,6 +26,10 @@ limits:
         # How far away from a mondo chest the slave can be
         max_add_radius: 150
 
+    mondochests:
+        # Allows limiting how many MondoChests(masters)  a given user can make.
+        per_user: unlimited
+
 
 #######################
 ## Restacking feature
