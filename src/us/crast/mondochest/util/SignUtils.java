@@ -27,7 +27,8 @@ public final class SignUtils {
 		Vector<Block> searchblocks = new Vector<Block>();
 		searchblocks.add(block.getRelative(BlockFace.UP));
 		searchblocks.add(block.getRelative(BlockFace.DOWN));
-		switch (signFacing(sign)) {
+		BlockFace facing = signFacing(sign);
+		switch (facing) {
 		case NORTH:
 		case SOUTH:
 			// North/south faces down the X axis so look for chests along Z
@@ -51,6 +52,9 @@ public final class SignUtils {
 		default:
 			return null;
 		}
+		
+		// Add chests behind the sign as well
+		searchblocks.add(block.getRelative(facing.getOppositeFace()));
 
 		if (verticalTwo) {
             searchblocks.add(block.getRelative(BlockFace.UP, 2));
