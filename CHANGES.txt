@@ -1,4 +1,7 @@
-Version 0.6.1: Not yet released.
+Version 0.6.2: Not yet released.
+ * Play nice with SignThatChest by allowing signs right in front of a chest.
+
+Version 0.6.1: 2012-09-21
  * Allow setting maximum number of MondoChests per player.
 
 Version 0.6: 2012-08-22
