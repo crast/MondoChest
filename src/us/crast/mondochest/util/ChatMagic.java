@@ -23,7 +23,7 @@ public final class ChatMagic {
 		}
 		//colorMap.put("{TEXT}", ChatColor.LIGHT_PURPLE.toString());
 		colorMap.put("{USAGE}", ChatColor.LIGHT_PURPLE.toString());
-		colorMap.put("{WARNING}", ChatColor.RED.toString());
+		colorMap.put("{WARNING}", ChatColor.DARK_RED.toString());
 		//colorMap.put("{VERB}", ChatColor.GREEN.toString());
 	}
 	

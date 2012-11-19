@@ -107,7 +107,7 @@ public final class MondoListener implements Listener {
 			// Deal with masters per user limit.
 			if (MondoConfig.MASTERS_PER_USER != -1 && !can_override_master_limit.check(player)) {
 			    if (numBanks(player) >= MondoConfig.MASTERS_PER_USER) {
-			        return new BasicMessage(Status.WARNING, "You have passed the limit of {RED}%d{WARNING} banks", MondoConfig.MASTERS_PER_USER);
+			        return new BasicMessage(Status.WARNING, "{WARNING}You have passed the limit of {GREEN}%d{WARNING} banks", MondoConfig.MASTERS_PER_USER);
 			    }
 			}
 			
