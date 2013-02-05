@@ -6,11 +6,12 @@
 permissions: SuperPerms
 
 # Sign/Chest protection.
-# Note that this may interfere with other protection plugins,
-# use with caution.
+# You probably want to use the defaults, the only reason the options are
+# provided is if you have some other protection and definitely don't want
+# MondoChest protection.
 protection:
     signs: true
-    chest_break: false
+    chest_break: true
     chest_open: false
 
 # Limits to keep performance sane.
