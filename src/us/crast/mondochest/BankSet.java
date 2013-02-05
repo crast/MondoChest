@@ -267,6 +267,14 @@ public final class BankSet implements ConfigurationSerializable {
 	    return hasAccess(player.getName());
 	}
 	
+	public boolean hasAdminAccess(String name) {
+	    return (this.owner.equalsIgnoreCase(name));
+	}
+	
+	public boolean hasAdminAccess(Player player) {
+	    return hasAdminAccess(player.getName());
+	}
+	
 	public Set<String> getAcl() {
 		if (acl == null) acl = new HashSet<String>();
 		return acl;

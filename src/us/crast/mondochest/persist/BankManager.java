@@ -141,6 +141,10 @@ public final class BankManager {
 		changed.add(bank);
 	}
 	
+	public void markChanged(final BankSet bank) {
+	    markChanged(bank.getWorld(), bank);
+	}
+	
 	public List<BankSet> listAllBanks() {
 	    List<BankSet> items = new ArrayList<BankSet>();
 	    for (Entry<String, Map<BlockVector, BankSet>> e: banks.entrySet()) {

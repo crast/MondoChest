@@ -17,6 +17,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
@@ -168,7 +169,7 @@ public final class MondoListener implements Listener {
 		} else if (num_added == 0) {
 			response = new BasicMessage(noun + "s already in bank", Status.ERROR);
 		} else {
-			bankManager.markChanged(block.getWorld().getName(), targetBank);
+			bankManager.markChanged(targetBank);
 			response = new BasicMessage(Status.SUCCESS,
 					"Added %d chest%s to bank",
 					num_added,
@@ -187,54 +188,74 @@ public final class MondoListener implements Listener {
         return slaveClickedCommon(block, sign, player, "dispenser", Material.DISPENSER);
     }
 
-    public void masterBroken(Cancellable event, Sign sign, Player player) {
+    public MessageWithStatus masterBroken(Cancellable event, Sign sign, Player player) {
 		BankSet bank = bankManager.getBank(sign.getBlock().getLocation());
-		if (bank == null) return;
+		if (bank == null) return null;
 		if (!bank.getOwner().equals(player.getName())) {
 			if (can_override_break.check(player)) {
-				BasicMessage.send(player, Status.INFO, "break override allowed");
+				return new BasicMessage("break override allowed", Status.INFO);
 			} else {
 				event.setCancelled(true);
-				BasicMessage.send(player,  Status.WARNING, "Cannot destroy a MondoChest which does not belong to you");
-				return;
+				return new BasicMessage(Status.WARNING, "Cannot destroy a MondoChest which does not belong to you");
 			}
 		}
 		// If we're here, actually delete the bank
 		int num_slaves = bank.numChests();
 		bankManager.removeBank(sign.getWorld().getName(), bank);
 		playerManager.getState(player).setLastClickedMaster(null);
-		BasicMessage.send(player, Status.SUCCESS,
+		return new BasicMessage(Status.SUCCESS,
 			"removed bank and %d slave%s",
 			num_slaves,
 			pluralize(num_slaves)
 		);
 	}
 	
-	public void slaveBroken(Cancellable event, Sign sign, Player player) {
+	public MessageWithStatus slaveBroken(Cancellable event, Sign sign, Player player) {
 		Map<ChestManager, BankSet> slaves = bankManager.getWorldSlaves(sign.getWorld().getName());
 		int removed = 0;
 		for (Chest chest: SignUtils.nearbyChests(sign, MondoConfig.SLAVE_VERTICAL_TWO, MondoConfig.SLAVE_HORIZONTAL_TWO)) {
 			ChestManager info = new ChestManager(chest, false);
 			if (slaves.containsKey(info)) {
 				BankSet bs = slaves.get(info);
-				if (bs.getOwner().equals(player.getName()) || can_override_break.check(player)) {
-					bs.removeChest(chest);
+				if (bs.hasAdminAccess(player) || can_override_break.check(player)) {
+					if (bs.removeChest(chest)) {
+					    bankManager.markChanged(bs);
+					}
 					removed++;
 				} else {
-					BasicMessage.send(player, Status.WARNING, "No access to remove this slave sign");
 					event.setCancelled(true);
-					return;
+					return new BasicMessage(Status.WARNING, "No access to remove this slave sign");
+
 				}
 			}
 		}
-		BasicMessage.send(player, Status.SUCCESS, "Removed %d chests", removed);
+		return new BasicMessage(Status.SUCCESS, "Removed %d chests", removed);
 	}
-	
+
+    public MessageWithStatus chestBroken(BlockBreakEvent event, Block block, Player player) {
+        BankSet bank;
+        int removed = 0;
+        while ((bank = bankFromChest(block)) != null) {
+            if (MondoConfig.PROTECTION_CHEST_BREAK) {
+                if (!bank.hasAdminAccess(player) && !can_override_break.check(player)) {
+                    event.setCancelled(true);
+                    return new BasicMessage(Status.WARNING, "Only the chest's owner, %s, can remove chests.", bank.getOwner());
+                }
+            }
+            if (bank.removeChest((Chest) block.getState())) {
+                bankManager.markChanged(bank);
+                removed++;
+            }
+        }
+        if (removed > 0) {
+           return new BasicMessage(Status.SUCCESS, "Removed chest from %d banks", removed);
+        }
+        return null;
+    }
 
     private MessageWithStatus chestClicked(Cancellable event, Block block, Player player) {
         if (MondoConfig.PROTECTION_CHEST_OPEN) {
-            BlockVector vec = block.getLocation().toVector().toBlockVector();
-            BankSet bank = bankManager.getChestLocMap(block.getWorld().getName()).get(vec);
+            BankSet bank = bankFromChest(block);
             if (bank == null) return null;
             if (!bank.hasAccess(player) && !can_override_open.check(player)) {
                 event.setCancelled(true);
@@ -248,20 +269,20 @@ public final class MondoListener implements Listener {
         }*/
         return null;
     }
-	
-	public void allowAccess(CallInfo call, String target) throws MondoMessage {
+
+    public void allowAccess(CallInfo call, String target) throws MondoMessage {
 		Player player = call.getPlayer();
 		BankSet lastClicked = getLastClickedBank(player, true);
 		OfflinePlayer targetPlayer = call.getPlayer().getServer().getOfflinePlayer(target);
 		if (targetPlayer == null || !targetPlayer.hasPlayedBefore()) throw new MondoMessage("Target not found", Status.ERROR);
 		if (call.getArg(0).equalsIgnoreCase("allow")) {
 			lastClicked.addAccess(targetPlayer.getName());
-			bankManager.markChanged(lastClicked.getWorld(), lastClicked);
+			bankManager.markChanged(lastClicked);
 			bankManager.saveIfNeeded();
 			call.success(String.format("Player %s allowed", targetPlayer.getName()));
 		} else {
 			lastClicked.removeAccess(targetPlayer.getName());
-	         bankManager.markChanged(lastClicked.getWorld(), lastClicked);
+	         bankManager.markChanged(lastClicked);
 	         bankManager.saveIfNeeded();
 			call.success(String.format("Player %s removed", targetPlayer.getName()));
 		}
@@ -292,6 +313,12 @@ public final class MondoListener implements Listener {
 				sign.getBlock().getLocation().toVector().toBlockVector()
 			);
 		}
+	}
+
+	private BankSet bankFromChest(Block block) {
+	    BlockVector vec = block.getLocation().toVector().toBlockVector();
+	    BankSet bank = bankManager.getChestLocMap(block.getWorld().getName()).get(vec);
+	    return bank;
 	}
 	
 	private int addNearbyObjectsToBank(BankSet bank, Sign sign, Material material) {
@@ -411,5 +438,4 @@ public final class MondoListener implements Listener {
         this.can_override_add_slave = MondoSecurity.getChecker("mondochest.admin.add_any_slave");
         this.can_override_master_limit = MondoSecurity.getChecker("mondochest.admin.no_master_limit");
     }
-
 }
