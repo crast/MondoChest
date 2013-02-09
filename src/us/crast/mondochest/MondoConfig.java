@@ -33,6 +33,7 @@ public final class MondoConfig {
 
 	public static Permission VAULT_PERMISSIONS = null;
 	public static boolean USE_COMMANDS = true;
+	public static String FALLBACK_ROLE = MondoConstants.ROLE_NONE;
 
 	private static List<String> decodeErrors = null;
 

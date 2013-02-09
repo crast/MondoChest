@@ -247,13 +247,13 @@ public final class BankSet implements ConfigurationSerializable {
 		if (locations instanceof Collection<?>) {
             DecodeResults<ChestManager> results = GenericUtil.decodeCollection(locations, ChestManager.class);
             for (ChestManager location : results.validValues) {
-                bankset.addChestManager((ChestManager) location);
+                bankset.addChestManager(location);
             }
             for (Object badValue : results.failedValues) {
 				MondoConfig.logDecodeError(String.format(
-						"when building chestLocations for bankset %s, expected a ChestManager, got a %s",
-						bankset.toString(),
-						badValue.getClass().getName()
+					"when building chestLocations for bankset %s, expected a ChestManager, got a %s",
+					bankset.toString(),
+					badValue.getClass().getName()
 				));
 			}
 		} else if (locations == null) {
@@ -295,18 +295,9 @@ public final class BankSet implements ConfigurationSerializable {
 		return getAcl().remove(name) != null;
 	}
 	
-	public boolean hasAccess(String name) {
-		if (acl == null || acl.isEmpty()) return true;
-		return acl.containsKey(name);
-	}
-	
-	public boolean hasAccess(Player player) {
-	    return hasAccess(player.getName());
-	}
-	
 	public Role getAccess(String name) {
 	     Role role = acl.get(name);
-	     if (role == null) role = Role.find(MondoConstants.ROLE_NONE);
+	     if (role == null) role = Role.find(MondoConfig.FALLBACK_ROLE);
 	     return role;
 	}
 	    
@@ -316,8 +307,6 @@ public final class BankSet implements ConfigurationSerializable {
 	
 	public Map<String, Role> getAcl() {
 		if (acl == null) acl = new HashMap<String, Role>();
-		for (Map.Entry<?, ?> entry : acl.entrySet())
-	        MondoConfig.logDecodeError(String.format("Role: %s => %s", entry.getKey(), entry.getValue()));
 		return acl;
 	}
 

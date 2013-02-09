@@ -129,7 +129,7 @@ public final class MondoListener implements Listener {
         PlayerState state = playerManager.getState(player);
         state.setLastClickedMaster(block.getLocation());
 		
-        if (!bank.hasAccess(player)) {
+        if (!bank.getAccess(player).canShelve()) {
 		    return new BasicMessage("You do not have access to this MondoChest", Status.WARNING);
 		}
 		bank.refreshMaterials(world);
@@ -158,12 +158,8 @@ public final class MondoListener implements Listener {
 		BankSet targetBank = bankManager.getBank(lastClicked);
 		if (targetBank == null) {
 			return new BasicMessage("Wot. No Target " + lastClicked.toString(), Status.ERROR);
-		} else if (!targetBank.getOwner().equals(player.getName())) {
-			if (can_override_add_slave.check(player)) {
-				BasicMessage.send(player, Status.INFO, "admin override allowed");
-			} else {
-				return new BasicMessage(Status.WARNING, "Only this bank's owner, %s, can add slaves to the bank", targetBank.getOwner());
-			}
+		} else if (!targetBank.getAccess(player).canAddChests() && !can_override_add_slave.check(player)) {
+			return new BasicMessage(Status.WARNING, "You do not have permission to add slaves to this MondoChest");
 		}
 		int num_added = addNearbyObjectsToBank(targetBank, sign, material);
 		BasicMessage response = null;
@@ -400,7 +396,7 @@ public final class MondoListener implements Listener {
         }
         World world = player.getWorld();
         BankSet bank = getLastClickedBank(player, false);
-        if (!bank.hasAccess(player)) {
+        if (!bank.getAccess(player).canFind()) {
             call.append(new BasicMessage("Not allowed to access this MondoChest", Status.WARNING));
             return;
         }

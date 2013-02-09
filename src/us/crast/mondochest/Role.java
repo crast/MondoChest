@@ -64,7 +64,10 @@ public class Role {
     public boolean canRemoveChests() {
         return this.remove_chests;
     }
-    
+ 
+    public boolean canFind() {
+        return this.open_chest; // XXX no find role permission currently
+    }
 
     public String getName() {
         return name;
