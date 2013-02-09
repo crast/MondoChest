@@ -220,7 +220,7 @@ public final class MondoListener implements Listener {
 			ChestManager info = new ChestManager(chest, false);
 			if (slaves.containsKey(info)) {
 				BankSet bs = slaves.get(info);
-				if (bs.hasAdminAccess(player) || can_override_break.check(player)) {
+				if (bs.getAccess(player).canRemoveChests() || can_override_break.check(player)) {
 					if (bs.removeChest(chest)) {
 					    bankManager.markChanged(bs);
 					}
@@ -240,7 +240,7 @@ public final class MondoListener implements Listener {
         int errors = 0;
         for (BankSet bank : banksFromChest(block)) {
             if (MondoConfig.PROTECTION_CHEST_BREAK) {
-                if (!bank.hasAdminAccess(player) && !can_override_break.check(player)) {
+                if (!bank.getAccess(player).canRemoveChests() && !can_override_break.check(player)) {
                     event.setCancelled(true);
                     return new BasicMessage(Status.WARNING, "Only the chest's owner, %s, can remove chests.", bank.getOwner());
                 }
@@ -266,7 +266,7 @@ public final class MondoListener implements Listener {
     private MessageWithStatus chestClicked(Cancellable event, Block block, Player player) {
         if (MondoConfig.PROTECTION_CHEST_OPEN) {
             for (BankSet bank : banksFromChest(block)) {
-                if (!bank.hasAccess(player) && !can_override_open.check(player)) {
+                if (!bank.getAccess(player).canOpenChest() && !can_override_open.check(player)) {
                     event.setCancelled(true);
                     return new BasicMessage("You do not have access to this MondoChest", Status.WARNING);
                 }

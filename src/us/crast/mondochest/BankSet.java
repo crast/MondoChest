@@ -19,8 +19,8 @@ import org.bukkit.util.BlockVector;
 
 import us.crast.datastructures.DefaultDict;
 import us.crast.mondochest.util.ChestManagerSet;
-import us.crast.mondochest.util.DecodeResults;
-import us.crast.mondochest.util.GenericUtil;
+import us.crast.utils.DecodeResults;
+import us.crast.utils.GenericUtil;
 import us.crast.utils.StringTools;
 
 @SerializableAs("MondoChestSet")
@@ -267,10 +267,7 @@ public final class BankSet implements ConfigurationSerializable {
 		        MondoConfig.getLog().warning("Handling ACL as a collection");
 		        DecodeResults<String> results = GenericUtil.decodeCollection(acl, String.class);
 		        for (String user : results.validValues) {
-		            MondoConfig.getLog().warning("Decoding user " + user);
-		            if (!bankset.addAccess(user, "user")) {
-		                MondoConfig.logDecodeError("Invalid role???");
-		            }
+		            if (!bankset.addAccess(user, "user")) MondoConfig.logDecodeError("Invalid role???");
 		        }
 		        if (results.hasFailures()) {
 		            MondoConfig.logDecodeError("ACL entries should be strings.");
@@ -307,13 +304,15 @@ public final class BankSet implements ConfigurationSerializable {
 	    return hasAccess(player.getName());
 	}
 	
-	public boolean hasAdminAccess(String name) {
-	    return (this.owner.equalsIgnoreCase(name));
+	public Role getAccess(String name) {
+	     Role role = acl.get(name);
+	     if (role == null) role = Role.find(MondoConstants.ROLE_NONE);
+	     return role;
 	}
-	
-	public boolean hasAdminAccess(Player player) {
-	    return hasAdminAccess(player.getName());
-	}
+	    
+	 public Role getAccess(Player player) {
+	     return getAccess(player.getName());
+	 }
 	
 	public Map<String, Role> getAcl() {
 		if (acl == null) acl = new HashMap<String, Role>();

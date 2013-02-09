@@ -9,6 +9,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 
+import us.crast.utils.GenericUtil;
+
 public final class SignUtils {
     public static Vector<Chest> nearbyChests(Sign sign) {
         return nearbyChests(sign, false, false);

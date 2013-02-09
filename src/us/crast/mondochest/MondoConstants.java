@@ -17,4 +17,6 @@ public final class MondoConstants {
 		"(maybe you're running MondoChest against the wrong version?)",
 		"make sure that MondoChest supports the game version you are using."
 	};
+    public static final String ROLE_NONE = "none";
+    public static final String ROLE_USER = "user";
 }
