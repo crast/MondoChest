@@ -25,22 +25,26 @@ public final class BreakListener implements Listener {
 		Block block = event.getBlock();
 		MessageWithStatus message = null;
 		Player player = event.getPlayer();
-		switch (block.getType()) {
-		case WALL_SIGN:
-	        Sign sign = SignUtils.signFromBlock(block);
-	        String firstLine = sign.getLine(0);
-	        if (firstLine.equals(MASTER_SIGN_NAME)) {
-	            message = this.listener.masterBroken(event, sign, player);
-	        } else if (firstLine.equals(SLAVE_SIGN_NAME)) {
-	            message = this.listener.slaveBroken(event, sign, player);
-	        }		    
-		    break;
-		case CHEST:
-		    message = this.listener.chestBroken(event, block, player);
-		    break;
-		default:
-		    return;
-		}
+		try {
+    		switch (block.getType()) {
+    		case WALL_SIGN:
+    	        Sign sign = SignUtils.signFromBlock(block);
+    	        String firstLine = sign.getLine(0);
+    	        if (firstLine.equals(MASTER_SIGN_NAME)) {
+    	            message = this.listener.masterBroken(event, sign, player);
+    	        } else if (firstLine.equals(SLAVE_SIGN_NAME)) {
+    	            message = this.listener.slaveBroken(event, sign, player);
+    	        }		    
+    		    break;
+    		case CHEST:
+    		    message = this.listener.chestBroken(event, block, player);
+    		    break;
+    		default:
+    		    return;
+    		}
+		} catch (MondoMessage e) {
+		    message = e;
+    	}
 		if (message != null) {
 		    player.sendMessage(BasicMessage.render(message, true));
 		}

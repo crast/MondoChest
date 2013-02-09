@@ -37,6 +37,10 @@ public class CallInfo {
 	public String[] getArgs() {
 	    return this.args;
 	}
+	
+	public int maxArgNum() {
+	    return this.args.length - 1;
+	}
 
 	public void success(String message) {
 		append(new BasicMessage(message, Status.SUCCESS));

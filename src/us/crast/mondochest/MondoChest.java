@@ -63,6 +63,7 @@ public final class MondoChest extends JavaPlugin {
 	}
 	
 	public void reloadMondoChest() {
+	    MondoConfig.setupRoles();
 		if (bankManager == null) {
 			bankManager = new BankManager(this);
 		} else {

@@ -1,7 +1,10 @@
 package us.crast.mondochest;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -232,11 +235,10 @@ public final class MondoListener implements Listener {
 		return new BasicMessage(Status.SUCCESS, "Removed %d chests", removed);
 	}
 
-    public MessageWithStatus chestBroken(BlockBreakEvent event, Block block, Player player) {
-        BankSet bank;
+    public MessageWithStatus chestBroken(BlockBreakEvent event, Block block, Player player) throws MondoMessage {
         int removed = 0;
         int errors = 0;
-        while ((bank = bankFromChest(block)) != null) {
+        for (BankSet bank : banksFromChest(block)) {
             if (MondoConfig.PROTECTION_CHEST_BREAK) {
                 if (!bank.hasAdminAccess(player) && !can_override_break.check(player)) {
                     event.setCancelled(true);
@@ -255,6 +257,7 @@ public final class MondoListener implements Listener {
             }
         }
         if (removed > 0) {
+            bankManager.save();
            return new BasicMessage(Status.SUCCESS, "Removed chest from %d banks", removed);
         }
         return null;
@@ -262,11 +265,11 @@ public final class MondoListener implements Listener {
 
     private MessageWithStatus chestClicked(Cancellable event, Block block, Player player) {
         if (MondoConfig.PROTECTION_CHEST_OPEN) {
-            BankSet bank = bankFromChest(block);
-            if (bank == null) return null;
-            if (!bank.hasAccess(player) && !can_override_open.check(player)) {
-                event.setCancelled(true);
-                return new BasicMessage("You do not have access to this MondoChest", Status.WARNING);
+            for (BankSet bank : banksFromChest(block)) {
+                if (!bank.hasAccess(player) && !can_override_open.check(player)) {
+                    event.setCancelled(true);
+                    return new BasicMessage("You do not have access to this MondoChest", Status.WARNING);
+                }
             }
         }
         /*
@@ -283,14 +286,17 @@ public final class MondoListener implements Listener {
 		OfflinePlayer targetPlayer = call.getPlayer().getServer().getOfflinePlayer(target);
 		if (targetPlayer == null || !targetPlayer.hasPlayedBefore()) throw new MondoMessage("Target not found", Status.ERROR);
 		if (call.getArg(0).equalsIgnoreCase("allow")) {
-			lastClicked.addAccess(targetPlayer.getName());
+		    String role = (call.maxArgNum() == 2)? call.getArg(2) : "user";
+		    if (!lastClicked.addAccess(targetPlayer.getName(), role)) {
+		        throw new MondoMessage(ChatMagic.colorize("Unknown Role {RED}%s", role));
+		    }
 			bankManager.markChanged(lastClicked);
 			bankManager.saveIfNeeded();
 			call.success(String.format("Player %s allowed", targetPlayer.getName()));
 		} else {
 			lastClicked.removeAccess(targetPlayer.getName());
-	         bankManager.markChanged(lastClicked);
-	         bankManager.saveIfNeeded();
+	        bankManager.markChanged(lastClicked);
+	        bankManager.saveIfNeeded();
 			call.success(String.format("Player %s removed", targetPlayer.getName()));
 		}
 	}
@@ -300,7 +306,11 @@ public final class MondoListener implements Listener {
         if (bank.getAcl().isEmpty()) {
             call.success("Allowed Users: EVERYONE");
         } else {
-            String allowed = StringUtils.join(bank.getAcl(), ", ");
+            List<String> users = new ArrayList<String>();
+            for (Map.Entry<String, String> entry : bank.stringAcl().entrySet()) {
+                users.add(ChatMagic.colorize("{LIGHT_PURPLE}%s {RED}(%s){GOLD}", entry.getKey(), entry.getValue()));
+            }
+            String allowed = StringUtils.join(users, ", ");
             call.success(ChatMagic.colorize("Allowed Users: {LIGHT_PURPLE}%s", allowed));
         }
     }
@@ -322,10 +332,13 @@ public final class MondoListener implements Listener {
 		}
 	}
 
-	private BankSet bankFromChest(Block block) {
+	private Set<BankSet> banksFromChest(Block block) {
 	    BlockVector vec = block.getLocation().toVector().toBlockVector();
-	    BankSet bank = bankManager.getChestLocMap(block.getWorld().getName()).get(vec);
-	    return bank;
+	    Set<BankSet> results = bankManager.getChestLocMap(block.getWorld().getName()).get(vec);
+	    if (results == null) {
+	        return Collections.emptySet();
+	    }
+	    return results;
 	}
 	
 	private int addNearbyObjectsToBank(BankSet bank, Sign sign, Material material) {

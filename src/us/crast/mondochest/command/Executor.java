@@ -121,7 +121,7 @@ public class Executor implements CommandExecutor {
 		
 		addSub("allow", "mondochest.use")
 			.setMinArgs(1)
-			.setUsage("<player>")
+			.setUsage("<player> [role]")
 			.setDescription("Allow users to access a MondoChest")
 			.setHandler(new SubHandler() {
 				public void handle(CallInfo call) throws MondoMessage {
