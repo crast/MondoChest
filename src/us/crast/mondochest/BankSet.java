@@ -3,7 +3,6 @@ package us.crast.mondochest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +19,8 @@ import org.bukkit.util.BlockVector;
 
 import us.crast.datastructures.DefaultDict;
 import us.crast.mondochest.util.ChestManagerSet;
+import us.crast.mondochest.util.DecodeResults;
+import us.crast.mondochest.util.GenericUtil;
 import us.crast.utils.StringTools;
 
 @SerializableAs("MondoChestSet")
@@ -31,7 +32,7 @@ public final class BankSet implements ConfigurationSerializable {
 	private Set<ChestManager> chestLocations = new java.util.HashSet<ChestManager>();
 	private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(ChestManagerSet.getMaker());
 	private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(ChestManagerSet.getMaker());
-	private Set<String> acl = null;
+	private Map<String, Role> acl = null;
 	
 	public BankSet(Chest masterChest, String owner, BlockVector masterSign) {
 		this.owner = owner;
@@ -73,7 +74,7 @@ public final class BankSet implements ConfigurationSerializable {
 		ChestManager newmanager = new ChestManager(chest, allow_restack);
 		if (newmanager.equals(masterChest)) return false;
 		if (chestLocations.contains(newmanager)) return false;
-		clearDuplicates(newmanager);
+		//clearDuplicates(newmanager);
 		chestLocations.add(newmanager);
 		return true;
 	}
@@ -221,10 +222,18 @@ public final class BankSet implements ConfigurationSerializable {
 		d.put("masterSign", masterSign);
 		d.put("chestLocations", new ArrayList<ChestManager>(chestLocations));
 		d.put("owner", owner);
-		if (acl != null) {
-            d.put("acl", new ArrayList<String>(acl));
+		if (acl != null && !acl.isEmpty()) {
+            d.put("acl", stringAcl());
         }
 		return d;
+	}
+	
+	public Map<String, String> stringAcl() {
+	    Map<String, String> sAcl = new HashMap<String, String>();
+        for (Map.Entry<String, Role> e: acl.entrySet()) {
+            sAcl.put(e.getKey(), e.getValue().getName());
+        }
+        return sAcl;
 	}
 	
 	public static BankSet deserialize(Map<String, Object> d) {
@@ -236,16 +245,16 @@ public final class BankSet implements ConfigurationSerializable {
 		
 		Object locations = d.get("chestLocations");
 		if (locations instanceof Collection<?>) {
-			for (Object location: (Collection<?>) d.get("chestLocations")) {
-				if (location instanceof ChestManager) {
-					bankset.addChestManager((ChestManager) location);
-				} else {
-					MondoConfig.logDecodeError(String.format(
-							"when building chestLocations for bankset %s, expected a ChestManager, got a %s",
-							bankset.toString(),
-							location.getClass().getName()
-					));
-				}
+            DecodeResults<ChestManager> results = GenericUtil.decodeCollection(locations, ChestManager.class);
+            for (ChestManager location : results.validValues) {
+                bankset.addChestManager((ChestManager) location);
+            }
+            for (Object badValue : results.failedValues) {
+				MondoConfig.logDecodeError(String.format(
+						"when building chestLocations for bankset %s, expected a ChestManager, got a %s",
+						bankset.toString(),
+						badValue.getClass().getName()
+				));
 			}
 		} else if (locations == null) {
 			MondoConfig.logDecodeError("chestLocations appears to be null");
@@ -255,12 +264,20 @@ public final class BankSet implements ConfigurationSerializable {
 		Object acl = d.get("acl");
 		if (acl != null) {
 		    if (acl instanceof Collection<?>) {
-		        for (Object user: (Collection<?>) acl) {
-		            if (user instanceof String) {
-		                bankset.addAccess((String) user);
-		            } else {
-		                MondoConfig.logDecodeError("ACL entries should be strings");
+		        MondoConfig.getLog().warning("Handling ACL as a collection");
+		        DecodeResults<String> results = GenericUtil.decodeCollection(acl, String.class);
+		        for (String user : results.validValues) {
+		            MondoConfig.getLog().warning("Decoding user " + user);
+		            if (!bankset.addAccess(user, "user")) {
+		                MondoConfig.logDecodeError("Invalid role???");
 		            }
+		        }
+		        if (results.hasFailures()) {
+		            MondoConfig.logDecodeError("ACL entries should be strings.");
+		        }
+		    } else if(acl instanceof Map<?, ?>) {
+		        for (Map.Entry<?, ?> entry: ((Map<?, ?>) acl).entrySet()) {
+		            bankset.addAccess((String) entry.getKey(), (String) entry.getValue());
 		        }
 		    } else {
 		        MondoConfig.logDecodeError("ACL is supposed to be a collection");
@@ -270,17 +287,20 @@ public final class BankSet implements ConfigurationSerializable {
 		return bankset;
 	}
 
-	public boolean addAccess(String name) {
-		return getAcl().add(name);
+	public boolean addAccess(String name, String role) {
+	    Role mrole = Role.find(role);
+	    if (mrole == null) return false;
+		getAcl().put(name, mrole);
+		return true;
 	}
 
 	public boolean removeAccess(String name) {
-		return getAcl().remove(name);
+		return getAcl().remove(name) != null;
 	}
 	
 	public boolean hasAccess(String name) {
 		if (acl == null || acl.isEmpty()) return true;
-		return acl.contains(name);
+		return acl.containsKey(name);
 	}
 	
 	public boolean hasAccess(Player player) {
@@ -295,13 +315,11 @@ public final class BankSet implements ConfigurationSerializable {
 	    return hasAdminAccess(player.getName());
 	}
 	
-	public Set<String> getAcl() {
-		if (acl == null) acl = new HashSet<String>();
+	public Map<String, Role> getAcl() {
+		if (acl == null) acl = new HashMap<String, Role>();
+		for (Map.Entry<?, ?> entry : acl.entrySet())
+	        MondoConfig.logDecodeError(String.format("Role: %s => %s", entry.getKey(), entry.getValue()));
 		return acl;
-	}
-	
-	public void setAcl(Set<String> acl) {
-		this.acl = acl;
 	}
 
 }
