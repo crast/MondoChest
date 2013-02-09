@@ -78,7 +78,29 @@ public final class MondoConfig {
 		}
 	}
 	
-	private static Permission loadVaultPermissions(MondoChest plugin) {
+	public static void setupRoles() {
+        /** Create roles hard-coded for now*/
+        Role.create("none");
+        
+        Role.create("user")
+            .grantShelve()
+            .grantOpenChest();
+        
+        Role.create("manager")
+            .grantShelve()
+            .grantOpenChest()
+            .grantAddChests()
+            .grantRemoveChests();
+
+        Role.create("admin")
+            .grantShelve()
+            .grantOpenChest()
+            .grantAddChests()
+            .grantRemoveChests()
+            .grantManageAccess();        
+    }
+
+    private static Permission loadVaultPermissions(MondoChest plugin) {
     	if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) {
             return null;
         }
