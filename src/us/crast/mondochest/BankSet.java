@@ -296,7 +296,7 @@ public final class BankSet implements ConfigurationSerializable {
 	}
 	
 	public Role getAccess(String name) {
-	     Role role = acl.get(name);
+	     Role role = getAcl().get(name);
 	     if (role == null) role = Role.find(MondoConfig.FALLBACK_ROLE);
 	     return role;
 	}

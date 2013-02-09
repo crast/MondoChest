@@ -14,7 +14,18 @@ protection:
     chest_break: true
     chest_open: false
 
-# Limits to keep performance sane.
+
+#######################
+## Access Control Lists
+# MondoChest 0.7 adds fine-grained access control to each MondoChest.
+# See ACL documentation on website: http://goo.gl/tB44w
+
+acl_fallback_role: configure_me
+
+
+###################################
+## Limits to keep performance sane.
+
 # 'radius' limits are in number of blocks.
 # Setting any limit to -1 or 'unlimited' makes it infinite.
 limits:

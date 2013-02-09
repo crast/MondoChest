@@ -34,6 +34,7 @@ public final class MondoConfig {
 	public static Permission VAULT_PERMISSIONS = null;
 	public static boolean USE_COMMANDS = true;
 	public static String FALLBACK_ROLE = MondoConstants.ROLE_NONE;
+    public static boolean ACL_ENABLED = true;
 
 	private static List<String> decodeErrors = null;
 
@@ -58,6 +59,7 @@ public final class MondoConfig {
 			RESTACK_MATERIALS[i] = Material.matchMaterial(matlist.get(i));
 		}
 
+		// Permissions Config
 		MondoSecurity.setMode("null");
 		String perms_config = config.getString("permissions").toLowerCase();
 		if (perms_config.equals("superperms") || perms_config.equals("true")) {
@@ -77,6 +79,11 @@ public final class MondoConfig {
 				perms_config
 			));
 		}
+	    FALLBACK_ROLE = config.getString("acl_fallback_role").toLowerCase();
+	    if (FALLBACK_ROLE == null || "configure_me".equals(FALLBACK_ROLE)) {
+	        FALLBACK_ROLE = MondoConstants.ROLE_NONE;
+	        ACL_ENABLED = false;
+	    }
 	}
 	
 	public static void setupRoles() {

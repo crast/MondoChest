@@ -277,6 +277,9 @@ public final class MondoListener implements Listener {
     }
 
     public void allowAccess(CallInfo call, String target) throws MondoMessage {
+        if (!MondoConfig.ACL_ENABLED) {
+            throw new MondoMessage(MondoConstants.ACL_ENABLED_MESSAGE, Status.ERROR);
+        }
 		Player player = call.getPlayer();
 		BankSet lastClicked = getLastClickedBank(player, true);
 		OfflinePlayer targetPlayer = call.getPlayer().getServer().getOfflinePlayer(target);
@@ -298,6 +301,9 @@ public final class MondoListener implements Listener {
 	}
 
     public void listAccess(CallInfo call, Player player) throws MondoMessage {
+        if (!MondoConfig.ACL_ENABLED) {
+            throw new MondoMessage(MondoConstants.ACL_ENABLED_MESSAGE, Status.ERROR);
+        }
         BankSet bank = getLastClickedBank(player, true);
         if (bank.getAcl().isEmpty()) {
             call.success("Allowed Users: EVERYONE");

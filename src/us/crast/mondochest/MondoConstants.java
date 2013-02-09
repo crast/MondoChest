@@ -1,5 +1,7 @@
 package us.crast.mondochest;
 
+import us.crast.mondochest.util.ChatMagic;
+
 public final class MondoConstants {
 	public static final String APP_NAME = "MondoChest";
 	public static final String MONDOCHEST_VERSION = "0.6.3-pre2";
@@ -19,4 +21,9 @@ public final class MondoConstants {
 	};
     public static final String ROLE_NONE = "none";
     public static final String ROLE_USER = "user";
+    public static final String ACL_ENABLED_MESSAGE = ChatMagic.colorize(
+        "MondoChest 0.7 has changed ACL configuration, you must make sure to"
+        + " set the {GREEN}acl_fallback_role{ERROR} variable or you will not"
+        + " be allowed to use ACL commands until it's set."
+    );
 }
