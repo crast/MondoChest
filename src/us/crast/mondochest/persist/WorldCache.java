@@ -1,18 +1,21 @@
 package us.crast.mondochest.persist;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.util.BlockVector;
 
+import us.crast.datastructures.DefaultDict;
 import us.crast.datastructures.ObjectMaker;
 import us.crast.mondochest.BankSet;
 import us.crast.mondochest.ChestManager;
 
-public class WorldCache {
+public final class WorldCache {
 	private final String world;
 	private Map<ChestManager, BankSet> slaves = null;
-	private Map<BlockVector, BankSet> banksByChest = null;
+	private DefaultDict<BlockVector, Set<BankSet>> banksByChest = null;
 
 	public WorldCache(String world) {
 		this.world = world;
@@ -36,9 +39,9 @@ public class WorldCache {
 		
 	}
 	
-	public Map<BlockVector, BankSet> getChestLocMap(BankManager bankManager) {
+	public Map<BlockVector, Set<BankSet>> getChestLocMap(BankManager bankManager) {
 	    if (this.banksByChest == null) {
-	        this.banksByChest = new HashMap<BlockVector, BankSet>();
+	        this.banksByChest = new DefaultDict<BlockVector, Set<BankSet>>(new BankSetMaker());
 	        for (BankSet bs: bankManager.getWorldBanks(world).values()) {
 	            addLocs(bs.getMasterChest(), bs);
 	            for (ChestManager cm: bs.listSlaves()) {
@@ -50,8 +53,10 @@ public class WorldCache {
 	}
 	
 	private void addLocs(ChestManager cm, BankSet bs) {
-	    banksByChest.put(cm.getChest1(), bs);
-	    banksByChest.put(cm.getChest2(), bs);
+	    banksByChest.ensure(cm.getChest1()).add(bs);
+	    if (cm.getChest2() != null) {
+	        banksByChest.ensure(cm.getChest2()).add(bs);
+	    }
 	}
 	
 	public static ObjectMaker<WorldCache> getMaker() {
@@ -71,4 +76,12 @@ class Maker implements ObjectMaker<WorldCache> {
 		return new WorldCache(world);
 	}
 	
+}
+
+class BankSetMaker implements ObjectMaker<Set<BankSet>> {
+
+    @Override
+    public Set<BankSet> build(Object key) {
+        return new HashSet<BankSet>();
+    }
 }
