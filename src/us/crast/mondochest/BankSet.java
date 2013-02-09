@@ -73,11 +73,31 @@ public final class BankSet implements ConfigurationSerializable {
 		ChestManager newmanager = new ChestManager(chest, allow_restack);
 		if (newmanager.equals(masterChest)) return false;
 		if (chestLocations.contains(newmanager)) return false;
+		clearDuplicates(newmanager);
 		chestLocations.add(newmanager);
 		return true;
 	}
 	
-	public boolean removeChest(Chest chest) {
+	private void clearDuplicates(ChestManager newmanager) {
+	    // Deal with a specialty case if we add a double chest where there was previously a single, or vice versa.
+        if (newmanager.getChest2() != null) {
+            for (BlockVector vec : newmanager.internalBlockLocations()) {
+                ChestManager test = new ChestManager(vec, null, false);
+                chestLocations.remove(test);
+            }
+        } else {
+            BlockVector candidate = newmanager.getChest1();
+            for (ChestManager cm : chestLocations) {
+                if (candidate.equals(cm.getChest1()) || candidate.equals(cm.getChest2())) {
+                    chestLocations.remove(cm);
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public boolean removeChest(Chest chest) {
 		ChestManager other = new ChestManager(chest, false);
 		return chestLocations.remove(other);
 	}

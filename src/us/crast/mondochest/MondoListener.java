@@ -235,6 +235,7 @@ public final class MondoListener implements Listener {
     public MessageWithStatus chestBroken(BlockBreakEvent event, Block block, Player player) {
         BankSet bank;
         int removed = 0;
+        int errors = 0;
         while ((bank = bankFromChest(block)) != null) {
             if (MondoConfig.PROTECTION_CHEST_BREAK) {
                 if (!bank.hasAdminAccess(player) && !can_override_break.check(player)) {
@@ -245,6 +246,12 @@ public final class MondoListener implements Listener {
             if (bank.removeChest((Chest) block.getState())) {
                 bankManager.markChanged(bank);
                 removed++;
+            } else {
+                errors++;
+                BasicMessage.send(player, Status.ERROR, "Had some problems removing a chest.");
+                if (errors >= 3) {
+                    return new BasicMessage("Total fail. stopping", Status.ERROR);
+                }
             }
         }
         if (removed > 0) {

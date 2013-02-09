@@ -95,6 +95,13 @@ public final class ChestManager implements ConfigurationSerializable {
 		Restacker.restackChestManager(world, this);
 	}
 	
+	public BlockVector[] internalBlockLocations() {
+	    if (chest2 == null) {
+	        return new BlockVector[]{chest1};
+	    }
+	    return new BlockVector[]{chest1, chest2};
+	}
+	
 	/* Object Primitives */
 	public int hashCode() {
 		int code = chest1.hashCode();
