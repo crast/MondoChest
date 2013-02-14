@@ -106,7 +106,13 @@ public final class AccessConvo implements ConversationAbandonedListener {
 
         @Override
         public String getPromptText(ConversationContext ctx) {
-            return ChatMagic.colorize("{RED}Commands: {AQUA}list{GOLD}, {AQUA}add{GOLD}, {AQUA}remove");
+            Object response = ctx.getSessionData("next_response");
+            if (response != null && response instanceof MessageWithStatus) {
+                ctx.setSessionData("next_response", null);
+                return BasicMessage.render((MessageWithStatus) response, false);
+            } else {
+                return ChatMagic.colorize("{USAGE}Commands: {AQUA}list{GOLD}, {AQUA}add{GOLD}, {AQUA}remove{GOLD}, {AQUA}quit");
+            }
         }
 
         @Override
@@ -139,7 +145,7 @@ public final class AccessConvo implements ConversationAbandonedListener {
                 response = m;
             }
             if (response != null) {
-                player.sendMessage(BasicMessage.render(response, false));
+                ctx.setSessionData("next_response", response);
             }
             return this;
         }
@@ -152,10 +158,9 @@ public final class AccessConvo implements ConversationAbandonedListener {
     }
     
     public class ConvoPrefix implements ConversationPrefix {
-
         @Override
         public String getPrefix(ConversationContext arg0) {
-            return ChatMagic.colorize("{RED}access> {RESET}");
+            return ChatMagic.colorize("{GOLD}access{RED}> {RESET}");
         }
 
     }
