@@ -112,28 +112,12 @@ public class Executor implements CommandExecutor {
 		});
 		
 		addSub("access", "mondochest.use")
-		    .setDescription("List who can access a MondoChest")
+		    .setDescription("Manage access to a MondoChest")
 		    .setHandler(new SubHandler() {
                 public void handle(CallInfo call) throws MondoMessage {
-                    listener.listAccess(call, call.getPlayer());
+                    listener.manageAccess(call, call.getPlayer());
                 }
 		    });
-		
-		addSub("allow", "mondochest.use")
-			.setMinArgs(1)
-			.setUsage("<player> [role]")
-			.setDescription("Allow users to access a MondoChest")
-			.setHandler(new SubHandler() {
-				public void handle(CallInfo call) throws MondoMessage {
-					listener.allowAccess(call, call.getArg(1));
-				}
-			});
-		
-		addSub("deny", "mondochest.use")
-			.setMinArgs(1)
-			.setUsage("<player>")
-			.setDescription("Remove users from access")
-			.setHandler(subcommands.get("allow").getHandler());
 		
 		addSub("reload", "mondochest.admin.reload")
 			.allowConsole()

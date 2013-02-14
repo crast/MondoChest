@@ -1,6 +1,6 @@
 Version 0.6.3: Not yet released.
- * Implement better chest open protection
- * Start implementing a more stringent ACL
+ * Fix bug in chest break protection
+ * Implement a more stringent and specific ACL
 
 Version 0.6.2: 2013-02-04
  * Play nice with SignThatChest by allowing signs right in front of a chest.

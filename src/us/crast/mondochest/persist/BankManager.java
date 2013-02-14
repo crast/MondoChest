@@ -144,6 +144,11 @@ public final class BankManager {
 	public void markChanged(final BankSet bank) {
 	    markChanged(bank.getWorld(), bank);
 	}
+
+	public void markChanged(BankSet bank, boolean saveIfNeeded) throws MondoMessage {
+	    markChanged(bank);
+	    if (saveIfNeeded) this.saveIfNeeded();
+    }
 	
 	public List<BankSet> listAllBanks() {
 	    List<BankSet> items = new ArrayList<BankSet>();

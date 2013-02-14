@@ -58,7 +58,11 @@ public class BasicMessage implements MessageWithStatus {
 			color = ChatColor.GRAY;
 			break;
 		}
-		return String.format("%sMondoChest: %s%s", ChatColor.GOLD, color, message);
+		if (prefix) {
+		    return String.format("%sMondoChest: %s%s", ChatColor.GOLD, color, message);
+		} else {
+		    return color.toString() + message;
+		}
 	}
 	
 	public static void send(CommandSender sender, Status status, String format, Object... args) {

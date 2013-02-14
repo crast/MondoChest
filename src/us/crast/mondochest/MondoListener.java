@@ -1,6 +1,5 @@
 package us.crast.mondochest;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -27,12 +25,12 @@ import org.bukkit.util.BlockVector;
 
 import us.crast.mondochest.command.BasicMessage;
 import us.crast.mondochest.command.CallInfo;
+import us.crast.mondochest.dialogue.AccessConvo;
 import us.crast.mondochest.persist.BankManager;
 import us.crast.mondochest.persist.PlayerInfoManager;
 import us.crast.mondochest.persist.PlayerState;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
-import us.crast.mondochest.util.ChatMagic;
 import us.crast.mondochest.util.SignUtils;
 
 public final class MondoListener implements Listener {
@@ -51,8 +49,10 @@ public final class MondoListener implements Listener {
 	
 	private final BankManager bankManager;
 	private PlayerInfoManager playerManager = new PlayerInfoManager();
+    private AccessConvo accessConvo;
 	
 	public MondoListener(final MondoChest plugin) {
+	    this.accessConvo = new AccessConvo(plugin, this);
 		this.bankManager = plugin.getBankManager();
 		this.reloadConfig();
 	}
@@ -276,45 +276,12 @@ public final class MondoListener implements Listener {
         return null;
     }
 
-    public void allowAccess(CallInfo call, String target) throws MondoMessage {
+    public void manageAccess(CallInfo call, Player player) throws MondoMessage {
         if (!MondoConfig.ACL_ENABLED) {
             throw new MondoMessage(MondoConstants.ACL_ENABLED_MESSAGE, Status.ERROR);
         }
-		Player player = call.getPlayer();
-		BankSet lastClicked = getLastClickedBank(player, true);
-		OfflinePlayer targetPlayer = call.getPlayer().getServer().getOfflinePlayer(target);
-		if (targetPlayer == null || !targetPlayer.hasPlayedBefore()) throw new MondoMessage("Target not found", Status.ERROR);
-		if (call.getArg(0).equalsIgnoreCase("allow")) {
-		    String role = (call.maxArgNum() == 2)? call.getArg(2) : "user";
-		    if (!lastClicked.addAccess(targetPlayer.getName(), role)) {
-		        throw new MondoMessage(ChatMagic.colorize("Unknown Role {RED}%s", role));
-		    }
-			bankManager.markChanged(lastClicked);
-			bankManager.saveIfNeeded();
-			call.success(String.format("Player %s allowed", targetPlayer.getName()));
-		} else {
-			lastClicked.removeAccess(targetPlayer.getName());
-	        bankManager.markChanged(lastClicked);
-	        bankManager.saveIfNeeded();
-			call.success(String.format("Player %s removed", targetPlayer.getName()));
-		}
-	}
-
-    public void listAccess(CallInfo call, Player player) throws MondoMessage {
-        if (!MondoConfig.ACL_ENABLED) {
-            throw new MondoMessage(MondoConstants.ACL_ENABLED_MESSAGE, Status.ERROR);
-        }
-        BankSet bank = getLastClickedBank(player, true);
-        if (bank.getAcl().isEmpty()) {
-            call.success("Allowed Users: EVERYONE");
-        } else {
-            List<String> users = new ArrayList<String>();
-            for (Map.Entry<String, String> entry : bank.stringAcl().entrySet()) {
-                users.add(ChatMagic.colorize("{LIGHT_PURPLE}%s {RED}(%s){GOLD}", entry.getKey(), entry.getValue()));
-            }
-            String allowed = StringUtils.join(users, ", ");
-            call.success(ChatMagic.colorize("Allowed Users: {LIGHT_PURPLE}%s", allowed));
-        }
+        player.sendMessage("Entering Conversation");
+        accessConvo.begin(player);
     }
 	
 	private Map<BlockVector, BankSet> getWorldBanks(World world) {
@@ -371,7 +338,7 @@ public final class MondoListener implements Listener {
 		return lastClicked;
 	}
 	
-	private BankSet getLastClickedBank(Player player, boolean enforce_ownership) throws MondoMessage{
+	public BankSet getLastClickedBank(Player player, boolean enforce_ownership) throws MondoMessage{
 		Location lastClicked = getLastClicked(player);
 		if (lastClicked == null) throw new MondoMessage("Click a MondoChest sign before performing this action", Status.ERROR);
 		
@@ -389,6 +356,10 @@ public final class MondoListener implements Listener {
 		if (playerManager != null) {
 			playerManager.shutdown();
 			playerManager = null;
+		}
+		if (accessConvo != null) {
+		    accessConvo.shutdown();
+		    accessConvo = null;
 		}
 	}
 
