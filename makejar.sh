@@ -8,5 +8,6 @@ rsync -av \
    --exclude "us/crast/quadtree" \
    --exclude "us/crast/datastructures/builders" \
    --exclude "us/crast/bukkitstuff" \
+   --exclude "SecureKey.class" \
    ../../CrastBukkitUtils/bin/* .
 jar cvf ../MondoChest.jar .

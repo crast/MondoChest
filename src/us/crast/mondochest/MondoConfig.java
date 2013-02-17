@@ -7,6 +7,7 @@ import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import us.crast.mondochest.security.MondoSecurity;
@@ -25,26 +26,18 @@ public final class MondoConfig {
 	public static boolean SLAVE_VERTICAL_TWO = false;
     public static boolean SLAVE_HORIZONTAL_TWO = false;
 
-	
-	public static int SLAVE_MAX_ADD_RADIUS = 150;
-	public static int FIND_MAX_RADIUS = 300;
-	public static int SLAVES_PER_MASTER = -1;
-	public static int MASTERS_PER_USER = -1;
-
 	public static Permission VAULT_PERMISSIONS = null;
 	public static boolean USE_COMMANDS = true;
 	public static String FALLBACK_ROLE = MondoConstants.ROLE_NONE;
     public static boolean ACL_ENABLED = true;
+    private static Limits GLOBAL_LIMITS = null;
 
 	private static List<String> decodeErrors = null;
 
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
-		SLAVE_MAX_ADD_RADIUS = getLimit(config, "limits.slaves.max_add_radius");
-		FIND_MAX_RADIUS = getLimit(config, "limits.find_max_radius");
-		SLAVES_PER_MASTER = getLimit(config, "limits.slaves.per_master");
-		MASTERS_PER_USER = getLimit(config, "limits.mondochests.per_user");
+		GLOBAL_LIMITS = new Limits(config);
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
@@ -119,17 +112,6 @@ public final class MondoConfig {
         }
         return null;
     }
-	
-	private static int getLimit(FileConfiguration config, String path) {
-	    String val = config.getString(path);
-	    if (val == null) {
-	        return -1;
-	    } else if (val.equals("unlimited") || val.equals("inf")) {
-	        return -1;
-	    } else {
-	        return Integer.parseInt(val);
-	    }
-	}
 
 	public static Logger getLog() {
 		return log;
@@ -152,5 +134,9 @@ public final class MondoConfig {
 		if (decodeErrors == null) decodeErrors = new java.util.ArrayList<String>();
 		log.warning(error);
 		decodeErrors.add(error);
+	}
+	
+	public static Limits getLimits(final Player player) {
+	    return GLOBAL_LIMITS;
 	}
 }

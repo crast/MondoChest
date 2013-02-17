@@ -109,9 +109,10 @@ public final class MondoListener implements Listener {
 			}
 			
 			// Deal with masters per user limit.
-			if (MondoConfig.MASTERS_PER_USER != -1 && !can_override_master_limit.check(player)) {
-			    if (numBanks(player) >= MondoConfig.MASTERS_PER_USER) {
-			        return new BasicMessage(Status.WARNING, "{WARNING}You have passed the limit of {GREEN}%d{WARNING} banks", MondoConfig.MASTERS_PER_USER);
+			Limits limits = MondoConfig.getLimits(player);
+			if (limits.mastersPerUser != Limits.UNLIMITED && !can_override_master_limit.check(player)) {
+			    if (numBanks(player) >= limits.mastersPerUser) {
+			        return new BasicMessage(Status.WARNING, "{WARNING}You have passed the limit of {GREEN}%d{WARNING} banks", limits.mastersPerUser);
 			    }
 			}
 			
@@ -150,9 +151,12 @@ public final class MondoListener implements Listener {
 		if (lastClicked == null) {
 			return new BasicMessage("To add slaves to a bank, click a master sign first", Status.USAGE);
 		}
-		double distance = block.getLocation().distance(lastClicked);
-		if (distance > MondoConfig.SLAVE_MAX_ADD_RADIUS) {
-			return new BasicMessage("Slave is too far away from the last clicked master, this is not recommended.", Status.WARNING);
+		Limits limits = MondoConfig.getLimits(player);
+		if (limits.slaveMaxAddRadius != Limits.UNLIMITED) {
+    		double distance = block.getLocation().distance(lastClicked);
+    		if (distance > limits.slaveMaxAddRadius) {
+    			return new BasicMessage("Slave is too far away from the last clicked master, this is not recommended.", Status.WARNING);
+    		}
 		}
 		
 		BankSet targetBank = bankManager.getBank(lastClicked);
@@ -161,6 +165,12 @@ public final class MondoListener implements Listener {
 		} else if (!targetBank.getAccess(player).canAddChests() && !can_override_add_slave.check(player)) {
 			return new BasicMessage(Status.WARNING, "You do not have permission to add slaves to this MondoChest");
 		}
+	    if (limits.slavesPerMaster != Limits.UNLIMITED) {
+	        if (targetBank.numChests() >= limits.slavesPerMaster) {
+	            return new BasicMessage(Status.WARNING, "You cannot add more than %d slaves.", limits.slavesPerMaster);
+	        }
+	    }
+		
 		int num_added = addNearbyObjectsToBank(targetBank, sign, material);
 		BasicMessage response = null;
 		if (num_added == -1) {
@@ -280,7 +290,6 @@ public final class MondoListener implements Listener {
         if (!MondoConfig.ACL_ENABLED) {
             throw new MondoMessage(MondoConstants.ACL_ENABLED_MESSAGE, Status.ERROR);
         }
-        player.sendMessage("Entering Conversation");
         accessConvo.begin(player);
     }
 	
@@ -377,8 +386,8 @@ public final class MondoListener implements Listener {
             call.append(new BasicMessage("Not allowed to access this MondoChest", Status.WARNING));
             return;
         }
-        if (MondoConfig.FIND_MAX_RADIUS != -1 
-                && player.getLocation().toVector().distance(bank.getMasterSign()) > MondoConfig.FIND_MAX_RADIUS) {
+        int findMaxRadius = MondoConfig.getLimits(player).findMaxRadius;
+        if (findMaxRadius != Limits.UNLIMITED  && player.getLocation().toVector().distance(bank.getMasterSign()) > findMaxRadius) {
             call.append(new BasicMessage("Too far away from chest bank", Status.ERROR));
             return;
         }
