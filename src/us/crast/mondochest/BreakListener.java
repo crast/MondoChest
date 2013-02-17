@@ -11,9 +11,6 @@ import us.crast.mondochest.command.BasicMessage;
 import us.crast.mondochest.util.SignUtils;
 
 public final class BreakListener implements Listener {
-	private static final String MASTER_SIGN_NAME = MondoConstants.MASTER_SIGN_NAME;
-	private static final String SLAVE_SIGN_NAME = MondoConstants.SLAVE_SIGN_NAME;
-	
 	private MondoListener listener;
 	
 	public BreakListener(MondoListener listener) {
@@ -30,10 +27,13 @@ public final class BreakListener implements Listener {
     		case WALL_SIGN:
     	        Sign sign = SignUtils.signFromBlock(block);
     	        String firstLine = sign.getLine(0);
-    	        if (firstLine.equals(MASTER_SIGN_NAME)) {
+    	        switch (MondoSign.match(firstLine)) {
+    	        case MASTER:
     	            message = this.listener.masterBroken(event, sign, player);
-    	        } else if (firstLine.equals(SLAVE_SIGN_NAME)) {
+    	            break;
+    	        case SLAVE:
     	            message = this.listener.slaveBroken(event, sign, player);
+    	            break;
     	        }		    
     		    break;
     		case CHEST:

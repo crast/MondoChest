@@ -20,6 +20,7 @@ public final class MondoConfig {
 
 	public static boolean RESTACK_MASTER = false;
 	public static boolean RESTACK_SLAVES = false;
+	public static boolean CASE_INSENSITIVE_SIGNS = false;
 	
 	public static Material[] RESTACK_MATERIALS = {};
 	
@@ -49,6 +50,7 @@ public final class MondoConfig {
 		USE_COMMANDS = config.getBoolean("use_commands", true);
 		SLAVE_VERTICAL_TWO = config.getBoolean("special.slave_vertical_two");
 		SLAVE_HORIZONTAL_TWO = config.getBoolean("special.slave_horizontal_two");
+		CASE_INSENSITIVE_SIGNS = config.getBoolean("special.case_insensitive_signs");
 		java.util.List<String> matlist = config.getStringList("restack_materials");
 		RESTACK_MATERIALS = new Material[matlist.size()];
 		for (int i = 0; i < matlist.size(); i++) {

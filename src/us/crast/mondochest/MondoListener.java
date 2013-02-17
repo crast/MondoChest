@@ -34,9 +34,6 @@ import us.crast.mondochest.security.PermissionChecker;
 import us.crast.mondochest.util.SignUtils;
 
 public final class MondoListener implements Listener {
-	private static final String MASTER_SIGN_NAME = MondoConstants.MASTER_SIGN_NAME;
-	private static final String SLAVE_SIGN_NAME = MondoConstants.SLAVE_SIGN_NAME;
-	private static final String RELOAD_SIGN_NAME = MondoConstants.RELOAD_SIGN_NAME;
 	
 	private PermissionChecker can_use;
 	private PermissionChecker can_create_bank;
@@ -70,12 +67,20 @@ public final class MondoListener implements Listener {
 			if (firstLine.startsWith("[")) {
 				MessageWithStatus response = null;
 				try {
-					if (firstLine.equals(MASTER_SIGN_NAME)) {
+				    switch (MondoSign.match(firstLine)) {
+				    case MASTER:
 						response = masterSignClicked(block, sign, player);
-					} else if (firstLine.equals(SLAVE_SIGN_NAME) && can_add_slave.check(player)) {
-						response = slaveSignClicked(block, sign, player);
-					} else if (firstLine.equals(RELOAD_SIGN_NAME) && can_add_slave.check(player)) {
-					    response = reloadSignClicked(block, sign, player);
+						break;
+				    case SLAVE:
+				        if (can_add_slave.check(player)) {
+				            response = slaveSignClicked(block, sign, player);
+				        }
+				        break;
+				    case RELOAD:
+				        if (can_add_slave.check(player)) {
+				            response = reloadSignClicked(block, sign, player);
+				        }
+				        break;
 					}
 				} catch (MondoMessage m) {
 					response = m;
