@@ -34,7 +34,7 @@ public final class MondoConfig {
 	public static String FALLBACK_ROLE = MondoConstants.ROLE_NONE;
     public static boolean ACL_ENABLED = true;
     private static Limits GLOBAL_LIMITS = null;
-    private static List<Limits> groupLimits = new ArrayList<Limits>();
+    private static List<Limits> groupLimits = null;
 
 	private static List<String> decodeErrors = null;
 
@@ -85,6 +85,7 @@ public final class MondoConfig {
 	}
 	
 	private static void configureGroupLimits(ConfigurationSection s) {
+	    groupLimits = new ArrayList<Limits>();
         if (s == null) return;
         for (Map.Entry<String, Object> e : s.getValues(false).entrySet()) {
             if (s.isConfigurationSection(e.getKey())) {
