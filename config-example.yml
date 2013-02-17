@@ -30,7 +30,8 @@ acl_fallback_role: user
 # Setting any limit to -1 or 'unlimited' makes it infinite.
 limits:
     # How far away you can be when doing a /mondo find
-    find_max_radius: 300
+    # radius above 250 will possibly cause chunks to be loaded, which is VERY SLOW
+    find_max_radius: 150
     # Allows limiting how many MondoChests(masters)  a given user can make.
     mondochests_per_user: unlimited
     # How many slaves can be added per master.
@@ -42,16 +43,19 @@ limits:
 # You can create as many groups as you want, but the performance of MondoChest is directly
 # affected by the number of groups, so delete this whole section if you don't need it.
 group_limits:
-    # This group is enabled with permission mondochest.limits.donators
-    donators:
-        find_max_radius: 300
-        mondochests_per_user: 5
-        slaves_per_master: 20
-        slave_max_add_radius: 150
-    # This group uses permission mondochest.limits.admins
+    # This group is enabled with permission mondochest.limits.admins
     admins:
+        find_max_radius: 250
+        slave_max_add_radius: 180
         slaves_per_master: unlimited
         mondochests_per_user: unlimited
+
+    # This group is enabled with permission mondochest.limits.donators
+    donators:
+        # Note we only specified 2 options. Any options not specified
+        # are inherited from the default limits value
+        mondochests_per_user: 5
+        slaves_per_master: 20
 
 
 #######################
