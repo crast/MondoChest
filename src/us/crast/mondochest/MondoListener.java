@@ -271,8 +271,22 @@ public final class MondoListener implements Listener {
 
     private MessageWithStatus chestClicked(Cancellable event, Block block, Player player) {
         if (MondoConfig.PROTECTION_CHEST_OPEN) {
+            if (can_override_open.check(player)) {
+                return null; // Succeed and don't bother creating the banksFromChest mapping
+            }
+            boolean success = true;
+            BlockVector specific_vector = block.getLocation().toVector().toBlockVector();
             for (BankSet bank : banksFromChest(block)) {
-                if (!bank.getAccess(player).canOpenChest() && !can_override_open.check(player)) {
+                ChestManager master = bank.getMasterChest();
+                Role role = bank.getAccess(player);
+                if (specific_vector.equals(master.getChest1()) || specific_vector.equals(master.getChest2())) {
+                    // We have a master chest
+                    success = role.canOpenMasterChest();
+                } else {
+                    // We have a slave chest
+                    success = role.canOpenSlaveChest();
+                }
+                if (!success) {
                     event.setCancelled(true);
                     return new BasicMessage("You do not have access to this MondoChest", Status.WARNING);
                 }

@@ -101,19 +101,23 @@ public final class MondoConfig {
         /** Create roles hard-coded for now*/
         Role.create("none");
         
+        Role.create("deposit")
+            .grantShelve()
+            .grantOpenMasterChest();
+        
         Role.create("user")
             .grantShelve()
-            .grantOpenChest();
+            .grantOpenAnyChest();
         
         Role.create("manager")
             .grantShelve()
-            .grantOpenChest()
+            .grantOpenAnyChest()
             .grantAddChests()
             .grantRemoveChests();
 
         Role.create("admin")
             .grantShelve()
-            .grantOpenChest()
+            .grantOpenAnyChest()
             .grantAddChests()
             .grantRemoveChests()
             .grantManageAccess();        

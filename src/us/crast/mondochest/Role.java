@@ -6,7 +6,8 @@ import java.util.Map;
 public class Role {
     private static Map<String, Role> ROLES = new HashMap<String, Role>();
     private final String name;
-    private boolean open_chest = false;
+    private boolean open_master_chest = false;
+    private boolean open_slave_chest = false;
     private boolean manage_access = false;
     private boolean shelve = false;
     private boolean add_chests = false;
@@ -17,9 +18,18 @@ public class Role {
     }
     
     /** Chaining setters */
-    public Role grantOpenChest() {
-        this.open_chest = true;
+    public Role grantOpenMasterChest() {
+        this.open_master_chest = true;
         return this;
+    }
+    
+    public Role grantOpenSlaveChest() {
+        this.open_slave_chest = true;
+        return this;
+    }
+    
+    public Role grantOpenAnyChest() {
+        return this.grantOpenMasterChest().grantOpenSlaveChest();
     }
     
     public Role grantManageAccess() {
@@ -45,8 +55,12 @@ public class Role {
     
     /** Getters */
     
-    public boolean canOpenChest() {
-        return this.open_chest;
+    public boolean canOpenMasterChest() {
+        return this.open_master_chest;
+    }
+    
+    public boolean canOpenSlaveChest() {
+        return this.open_slave_chest;
     }
     
     public boolean canManageAccess() {
@@ -66,7 +80,7 @@ public class Role {
     }
  
     public boolean canFind() {
-        return this.open_chest; // XXX no find role permission currently
+        return this.open_slave_chest; // XXX no find role permission currently
     }
 
     public String getName() {
