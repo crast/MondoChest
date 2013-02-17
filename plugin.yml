@@ -1,6 +1,6 @@
 name: MondoChest
 main: us.crast.mondochest.MondoChest
-version: 0.7-pre2
+version: 0.7-pre3
 author: Crast
 description: "Sort your items into appropriate chests"
 website: "http://dev.bukkit.org/server-mods/mondochest/"
