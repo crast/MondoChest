@@ -41,7 +41,6 @@ public final class MondoConfig {
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
-		GLOBAL_LIMITS = new Limits(config.getConfigurationSection("limits"), null);
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
@@ -81,6 +80,7 @@ public final class MondoConfig {
 	        FALLBACK_ROLE = MondoConstants.ROLE_NONE;
 	        ACL_ENABLED = false;
 	    }
+	    GLOBAL_LIMITS = new Limits(config.getConfigurationSection("limits"), null);
 	    configureGroupLimits(config.getConfigurationSection("group_limits"));
 	}
 	

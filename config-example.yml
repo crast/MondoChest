@@ -20,7 +20,7 @@ protection:
 # MondoChest 0.7 adds fine-grained access control to each MondoChest.
 # See ACL documentation on website: http://goo.gl/tB44w
 
-acl_fallback_role: configure_me
+acl_fallback_role: user
 
 
 ###################################
