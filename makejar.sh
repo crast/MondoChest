@@ -1,6 +1,6 @@
 #!/bin/bash
 cd bin
-cp ../plugin.yml ../config.yml .
+cp ../plugin.yml ../config.yml ../config-example.yml .
 #mkdir -p res
 #cp ../config.yml res/config-t.yml
 rsync -av \

@@ -1,0 +1,84 @@
+########################
+## Basic Configuration
+
+
+# Valid values: SuperPerms, Vault
+permissions: SuperPerms
+
+# Sign/Chest protection.
+# You probably want to use the defaults, the only reason the options are
+# provided is if you have some other protection and definitely don't want
+# MondoChest protection.
+protection:
+    signs: true
+    chest_break: true
+    chest_open: false
+
+
+#######################
+## Access Control Lists
+# MondoChest 0.7 adds fine-grained access control to each MondoChest.
+# See ACL documentation on website: http://goo.gl/tB44w
+
+acl_fallback_role: configure_me
+
+
+###################################
+## Limits to keep performance sane.
+
+# 'radius' limits are in number of blocks.
+# Setting any limit to -1 or 'unlimited' makes it infinite.
+limits:
+    # How far away you can be when doing a /mondo find
+    find_max_radius: 300
+    # Allows limiting how many MondoChests(masters)  a given user can make.
+    mondochests_per_user: unlimited
+    # How many slaves can be added per master.
+    slaves_per_master: unlimited
+    # How far away from a mondo chest the slave can be
+    slave_max_add_radius: 150
+
+# Group Limits feature allows you to set up different limits for different user classes.
+# You can create as many groups as you want, but the performance of MondoChest is directly
+# affected by the number of groups, so delete this whole section if you don't need it.
+group_limits:
+    # This group is enabled with permission mondochest.limits.donators
+    donators:
+        find_max_radius: 300
+        mondochests_per_user: 5
+        slaves_per_master: 20
+        slave_max_add_radius: 150
+    # This group uses permission mondochest.limits.admins
+    admins:
+        slaves_per_master: unlimited
+        mondochests_per_user: unlimited
+
+
+#######################
+## Restacking feature
+
+# Allow restacking of materials for the master chest.  Restacking will allow
+# various materials which can't stack or stack to less than 64 to be stacked to
+# the maximum value.
+restack_master: false
+
+# Restack materials for the slave chests if 'restack' is on the second line.
+restack_slaves: false
+
+# What materials to restack to the maximum 64
+restack_materials:
+  - SIGN
+  - SNOW_BALL
+  - EGG
+
+
+#####################
+## Specialty options
+
+special:
+    # signs look for slaves up and down two from the sign.
+    # This allows you to hide signs in the floor or ceiling.
+    slave_vertical_two: false
+
+    # signs look 2 to the left and right.
+    slave_horizontal_two: false

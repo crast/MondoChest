@@ -69,8 +69,11 @@ public final class MondoChest extends JavaPlugin {
 		} else {
 			bankManager.load();
 		}
-		if (!(new File(this.getDataFolder(), "config.yml").exists())) { 
-			saveDefaultConfig();
+		File configFile = new File(this.getDataFolder(), "config.yml");
+		if (!configFile.exists()) {
+		    this.saveResource("config-example.yml", true);
+		    File exampleFile = new File(this.getDataFolder(), "config-example.yml");
+		    exampleFile.renameTo(configFile);
 		}
 		if (++num_reloads > 1) {
 			reloadConfig();

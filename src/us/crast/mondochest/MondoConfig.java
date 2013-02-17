@@ -1,11 +1,14 @@
 package us.crast.mondochest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -31,13 +34,14 @@ public final class MondoConfig {
 	public static String FALLBACK_ROLE = MondoConstants.ROLE_NONE;
     public static boolean ACL_ENABLED = true;
     private static Limits GLOBAL_LIMITS = null;
+    private static List<Limits> groupLimits = new ArrayList<Limits>();
 
 	private static List<String> decodeErrors = null;
 
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
-		GLOBAL_LIMITS = new Limits(config);
+		GLOBAL_LIMITS = new Limits(config.getConfigurationSection("limits"), null);
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
@@ -77,9 +81,22 @@ public final class MondoConfig {
 	        FALLBACK_ROLE = MondoConstants.ROLE_NONE;
 	        ACL_ENABLED = false;
 	    }
+	    configureGroupLimits(config.getConfigurationSection("group_limits"));
 	}
 	
-	public static void setupRoles() {
+	private static void configureGroupLimits(ConfigurationSection s) {
+        if (s == null) return;
+        for (Map.Entry<String, Object> e : s.getValues(false).entrySet()) {
+            if (s.isConfigurationSection(e.getKey())) {
+                groupLimits.add(
+                    new Limits((ConfigurationSection) e.getValue(), GLOBAL_LIMITS)
+                );
+            }
+        }
+        
+    }
+
+    public static void setupRoles() {
         /** Create roles hard-coded for now*/
         Role.create("none");
         
@@ -131,12 +148,17 @@ public final class MondoConfig {
 	}
 
 	public static void logDecodeError(String error) {
-		if (decodeErrors == null) decodeErrors = new java.util.ArrayList<String>();
+		if (decodeErrors == null) decodeErrors = new ArrayList<String>();
 		log.warning(error);
 		decodeErrors.add(error);
 	}
 	
 	public static Limits getLimits(final Player player) {
+	    for (Limits limits : groupLimits) {
+	        if (limits.checker.check(player)) {
+	            return limits;
+	        }
+	    }
 	    return GLOBAL_LIMITS;
 	}
 }
