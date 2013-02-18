@@ -26,28 +26,25 @@ import us.crast.utils.StringTools;
 @SerializableAs("MondoChestSet")
 public final class BankSet implements ConfigurationSerializable {
     private String world;
-    private String owner;
-    private BlockVector masterSign;
+    private final String owner;
+    private final BlockVector masterSign;
     private ChestManager masterChest;
-    private Set<ChestManager> chestLocations = new java.util.HashSet<ChestManager>();
-    private DefaultDict<Material, ChestManagerSet> materialChests = new DefaultDict<Material, ChestManagerSet>(
-            ChestManagerSet.getMaker());
-    private DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(
-            ChestManagerSet.getMaker());
+    private Set<ChestManager> chestLocations = new ChestManagerSet();
+    private final DefaultDict<Material, ChestManagerSet> materialChests;
+    private final DefaultDict<MaterialWithData, ChestManagerSet> materialDataChests;
     private Map<String, Role> acl = null;
 
     public BankSet(Chest masterChest, String owner, BlockVector masterSign) {
-        this.owner = owner;
-        this.masterChest = new ChestManager(masterChest, false);
-        this.masterSign = masterSign;
+        this(new ChestManager(masterChest, false), owner, masterSign);
         this.setWorld(masterChest.getWorld().getName());
     }
 
-    private BankSet(ChestManager masterChest, String owner,
-            BlockVector masterSign) {
-        this.owner = owner;
+    private BankSet(ChestManager masterChest, String owner, BlockVector masterSign) {
         this.masterChest = masterChest;
+        this.owner = owner;
         this.masterSign = masterSign;
+        this.materialChests = new DefaultDict<Material, ChestManagerSet>(ChestManagerSet.getMaker());
+        this.materialDataChests = new DefaultDict<MaterialWithData, ChestManagerSet>(ChestManagerSet.getMaker());
     }
 
     public void restackSpecial(World world) {
@@ -95,8 +92,7 @@ public final class BankSet implements ConfigurationSerializable {
         } else {
             BlockVector candidate = newmanager.getChest1();
             for (ChestManager cm : chestLocations) {
-                if (candidate.equals(cm.getChest1())
-                        || candidate.equals(cm.getChest2())) {
+                if (candidate.equals(cm.getChest1()) || candidate.equals(cm.getChest2())) {
                     chestLocations.remove(cm);
                     break;
                 }
@@ -114,9 +110,10 @@ public final class BankSet implements ConfigurationSerializable {
         // XXX de-serializing from version 0.5 might allow a ChestManager to be
         // added which is equal to the master, so stop it by ignoring its add.
         if (manager.equals(masterChest)) {
-            MondoConfig
-                    .logDecodeError("Found a slave chest with the same coordinates as a master. "
-                            + "Removing it to prevent any future issues.");
+            MondoConfig.logDecodeError(
+                "Found a slave chest with the same coordinates as a master. "
+                + "Removing it to prevent any future issues."
+            );
             return;
         }
         chestLocations.add(manager);
@@ -148,10 +145,7 @@ public final class BankSet implements ConfigurationSerializable {
             }
             if (destinations != null) {
                 for (ChestManager dest : destinations) {
-                    // log.info("Stack of " + stack.getType().toString() +
-                    // " starting quantity: " + stack.getAmount());
-                    HashMap<Integer, ItemStack> failures = dest.addItem(world,
-                            stack);
+                    HashMap<Integer, ItemStack> failures = dest.addItem(world, stack);
                     if (failures.isEmpty() && stack.getAmount() >= 0) {
                         masterChest.removeItem(world, stack);
                         if (dest.isRestackAllowed()) {
@@ -159,11 +153,7 @@ public final class BankSet implements ConfigurationSerializable {
                         }
                         num_shelved++;
                         break;
-                    } else {
-                        // ChestManager.printWeirdStack(failures);
                     }
-                    // log.info("Stack of " + stack.getType().toString() +
-                    // " ending quantity: " + stack.getAmount());
                 }
             }
         }
@@ -180,8 +170,7 @@ public final class BankSet implements ConfigurationSerializable {
     }
 
     public Collection<ChestManager> allChestManagers() {
-        ArrayList<ChestManager> managers = new ArrayList<ChestManager>(
-                chestLocations);
+        ArrayList<ChestManager> managers = new ArrayList<ChestManager>(chestLocations);
         managers.add(masterChest);
         return managers;
     }
@@ -217,8 +206,10 @@ public final class BankSet implements ConfigurationSerializable {
     }
 
     public String toString() {
-        return String.format("<Bankset: master(%s), owner=%s, %d chests>",
-                masterChest, getOwner(), numChests());
+        return String.format(
+            "<Bankset: master(%s), owner=%s, %d chests>",
+            masterChest, getOwner(), numChests()
+        );
     }
 
     /* Serialization */
@@ -244,52 +235,50 @@ public final class BankSet implements ConfigurationSerializable {
     }
 
     public static BankSet deserialize(Map<String, Object> d) {
-        BankSet bankset = new BankSet((ChestManager) d.get("masterChest"),
-                (String) d.get("owner"), (BlockVector) d.get("masterSign"));
+        BankSet bankset = new BankSet(
+            (ChestManager) d.get("masterChest"),
+            (String) d.get("owner"), 
+            (BlockVector) d.get("masterSign")
+        );
 
         Object locations = d.get("chestLocations");
         if (locations instanceof Collection<?>) {
-            DecodeResults<ChestManager> results = GenericUtil.decodeCollection(
-                    locations, ChestManager.class);
+            DecodeResults<ChestManager> results = GenericUtil.decodeCollection(locations, ChestManager.class);
             for (ChestManager location : results.validValues) {
                 bankset.addChestManager(location);
             }
             for (Object badValue : results.failedValues) {
-                MondoConfig
-                        .logDecodeError(String
-                                .format("when building chestLocations for bankset %s, expected a ChestManager, got a %s",
-                                        bankset.toString(), badValue.getClass()
-                                                .getName()));
+                MondoConfig.logDecodeError(String.format(
+                    "when building chestLocations for bankset %s, expected a ChestManager, got a %s",
+                    bankset.toString(), badValue.getClass().getName()
+                ));
             }
         } else if (locations == null) {
             MondoConfig.logDecodeError("chestLocations appears to be null");
         } else {
-            MondoConfig
-                    .logDecodeError("chestLocations is supposed to be a list, wtf mait, got: "
-                            + locations.getClass().getName());
+            MondoConfig.logDecodeError(
+                "chestLocations is supposed to be a list, wtf mait, got: "
+                + locations.getClass().getName()
+            );
         }
         Object acl = d.get("acl");
         if (acl != null) {
             if (acl instanceof Collection<?>) {
                 MondoConfig.getLog().warning("Handling ACL as a collection");
-                DecodeResults<String> results = GenericUtil.decodeCollection(
-                        acl, String.class);
+                DecodeResults<String> results = GenericUtil.decodeCollection(acl, String.class);
                 for (String user : results.validValues) {
                     if (!bankset.addAccess(user, "user"))
                         MondoConfig.logDecodeError("Invalid role???");
                 }
                 if (results.hasFailures()) {
-                    MondoConfig
-                            .logDecodeError("ACL entries should be strings.");
+                    MondoConfig.logDecodeError("ACL entries should be strings.");
                 }
             } else if (acl instanceof Map<?, ?>) {
                 for (Map.Entry<?, ?> entry : ((Map<?, ?>) acl).entrySet()) {
-                    bankset.addAccess((String) entry.getKey(),
-                            (String) entry.getValue());
+                    bankset.addAccess((String) entry.getKey(), (String) entry.getValue());
                 }
             } else {
-                MondoConfig
-                        .logDecodeError("ACL is supposed to be a collection");
+                MondoConfig.logDecodeError("ACL is supposed to be a collection");
             }
         }
 
