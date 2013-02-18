@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.crast.mondochest.MessageWithStatus;
-import us.crast.mondochest.Status;
+import us.crast.chatmagic.BasicMessage;
+import us.crast.chatmagic.MessageWithStatus;
+import us.crast.chatmagic.Status;
 
 public class CallInfo {
 	

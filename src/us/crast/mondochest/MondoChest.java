@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import us.crast.chatmagic.MondoMessage;
 import us.crast.mondochest.command.Executor;
 import us.crast.mondochest.persist.BankManager;
 import us.crast.mondochest.util.MetricsLite;

@@ -16,12 +16,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.BlockVector;
 
+import us.crast.chatmagic.MondoMessage;
 import us.crast.datastructures.DefaultDict;
 import us.crast.mondochest.BankSet;
 import us.crast.mondochest.ChestManager;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoConfig;
-import us.crast.mondochest.MondoMessage;
 import us.crast.utils.FileTools;
 import us.crast.utils.StringTools;
 

@@ -7,12 +7,15 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import us.crast.chatmagic.BasicMessage;
+import us.crast.chatmagic.ChatMagic;
 import us.crast.mondochest.security.MondoSecurity;
 
 public final class MondoConfig {
@@ -42,6 +45,7 @@ public final class MondoConfig {
 	
 	public static void configure(MondoChest plugin, FileConfiguration config, Logger log) {
 		MondoConfig.log = log;
+		configureChatColors();
 		RESTACK_MASTER = config.getBoolean("restack_master");
 		RESTACK_SLAVES = config.getBoolean("restack_slaves");
 		PROTECTION_SIGNS = config.getBoolean("protection.signs");
@@ -86,7 +90,16 @@ public final class MondoConfig {
 	    configureGroupLimits(config.getConfigurationSection("group_limits"));
 	}
 	
-	private static void configureGroupLimits(ConfigurationSection s) {
+	private static void configureChatColors() {
+	    BasicMessage.setAppTitle(MondoConstants.APP_NAME);
+	    ChatMagic.registerAlias("{USAGE}", ChatColor.LIGHT_PURPLE);
+        ChatMagic.registerAlias("{WARNING}", ChatColor.DARK_RED);
+        ChatMagic.registerAlias("{ERROR}", ChatColor.RED);
+        ChatMagic.registerAlias("{NOUN}", ChatColor.AQUA);
+        ChatMagic.registerAlias("{VERB}", ChatColor.GRAY);
+    }
+
+    private static void configureGroupLimits(ConfigurationSection s) {
 	    groupLimits = new ArrayList<Limits>();
         if (s == null) return;
         for (Map.Entry<String, Object> e : s.getValues(false).entrySet()) {

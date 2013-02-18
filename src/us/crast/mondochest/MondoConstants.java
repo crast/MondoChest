@@ -1,6 +1,6 @@
 package us.crast.mondochest;
 
-import us.crast.mondochest.util.ChatMagic;
+import us.crast.chatmagic.ChatMagic;
 
 public final class MondoConstants {
 	public static final String APP_NAME = "MondoChest";

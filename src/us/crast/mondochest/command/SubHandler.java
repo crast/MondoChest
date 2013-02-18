@@ -1,6 +1,6 @@
 package us.crast.mondochest.command;
 
-import us.crast.mondochest.MondoMessage;
+import us.crast.chatmagic.MondoMessage;
 
 public interface SubHandler {
 

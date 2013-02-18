@@ -320,8 +320,10 @@ public final class BankSet implements ConfigurationSerializable {
     }
 
     public Map<String, Role> getAcl() {
-        if (acl == null)
+        if (acl == null) {
             acl = new HashMap<String, Role>();
+            addAccess(this.owner, "admin");
+        }
         return acl;
     }
 

@@ -15,17 +15,19 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.RegexPrompt;
 import org.bukkit.entity.Player;
 
+import us.crast.chatmagic.BasicMessage;
+import us.crast.chatmagic.ChatMagic;
+import us.crast.chatmagic.MessageWithStatus;
+import us.crast.chatmagic.MondoMessage;
+import us.crast.chatmagic.Status;
+import us.crast.datastructures.DefaultDict;
+import us.crast.datastructures.builders.ListBuilder;
 import us.crast.mondochest.BankSet;
-import us.crast.mondochest.MessageWithStatus;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoConfig;
 import us.crast.mondochest.MondoConstants;
 import us.crast.mondochest.MondoListener;
-import us.crast.mondochest.MondoMessage;
-import us.crast.mondochest.Status;
-import us.crast.mondochest.command.BasicMessage;
 import us.crast.mondochest.persist.BankManager;
-import us.crast.mondochest.util.ChatMagic;
 import us.crast.utils.CollectionUtil;
 
 public final class AccessConvo implements ConversationAbandonedListener {
@@ -45,8 +47,9 @@ public final class AccessConvo implements ConversationAbandonedListener {
             .addConversationAbandonedListener(this);
     }
 
-    public void begin(Player p) {
-        conversationFactory.buildConversation(p).begin();
+    public void begin(Player player) throws MondoMessage {
+        player.sendMessage(listAccess(player, 1).render(false));
+        conversationFactory.buildConversation(player).begin();
     }
 
     @Override
@@ -67,13 +70,19 @@ public final class AccessConvo implements ConversationAbandonedListener {
         if (bank.getAcl().isEmpty()) {
             return new BasicMessage("Allowed Users: EVERYONE", Status.SUCCESS);
         } else {
-            List<String> users = new ArrayList<String>();
+            DefaultDict<String, List<String>> byRole = new DefaultDict<String, List<String>>(new ListBuilder<String>());
             for (Map.Entry<String, String> entry : CollectionUtil.sortedDictEntries(bank.stringAcl())) {
-                users.add(ChatMagic.colorize("{LIGHT_PURPLE}%s {RED}(%s){GOLD}", entry.getKey(), entry.getValue()));
+                byRole.ensure(entry.getValue()).add(
+                    ChatMagic.colorize("{NOUN}%s{GOLD}", entry.getKey())
+                );
             }
-            String allowed = StringUtils.join(users, ", ");
+            List<String> lines = new ArrayList<String>();
+            for (Map.Entry<String, List<String>> e : byRole.entrySet()) {
+                lines.add(ChatMagic.colorize("    {VERB}%s: %s", e.getKey(), StringUtils.join(e.getValue(), ", ")));
+            }
+            String allowed = StringUtils.join(lines, "\n");
             return new BasicMessage(
-                ChatMagic.colorize("Allowed Users: {LIGHT_PURPLE}%s", allowed),
+                String.format("Allowed Users:\n%s", allowed),
                 Status.SUCCESS
             );
         }
@@ -83,9 +92,9 @@ public final class AccessConvo implements ConversationAbandonedListener {
         BankSet bank = listener.getLastClickedBank(player, true);
         if (bank.addAccess(target, role)) {
             bankManager.markChanged(bank, true);
-            return new BasicMessage(Status.SUCCESS, "Added user %s", target);
+            return new BasicMessage(Status.SUCCESS, "Added {NOUN}%s {GREEN}with role {GRAY}%s", target, role);
         } else {
-            return new BasicMessage(Status.ERROR, "Didn't add user");
+            return new BasicMessage(Status.ERROR, "Role {VERB}%s {ERROR}doesn't exist", role);
         }
     }
     
@@ -109,7 +118,7 @@ public final class AccessConvo implements ConversationAbandonedListener {
             Object response = ctx.getSessionData("next_response");
             if (response != null && response instanceof MessageWithStatus) {
                 ctx.setSessionData("next_response", null);
-                return BasicMessage.render((MessageWithStatus) response, false);
+                return ((MessageWithStatus) response).render(false);
             } else {
                 return ChatMagic.colorize("{USAGE}Commands: {AQUA}list{GOLD}, {AQUA}add{GOLD}, {AQUA}remove{GOLD}, {AQUA}quit");
             }

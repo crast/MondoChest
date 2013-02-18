@@ -23,7 +23,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockVector;
 
-import us.crast.mondochest.command.BasicMessage;
+import us.crast.chatmagic.BasicMessage;
+import us.crast.chatmagic.MessageWithStatus;
+import us.crast.chatmagic.MondoMessage;
+import us.crast.chatmagic.Status;
 import us.crast.mondochest.command.CallInfo;
 import us.crast.mondochest.dialogue.AccessConvo;
 import us.crast.mondochest.persist.BankManager;
@@ -86,14 +89,14 @@ public final class MondoListener implements Listener {
 					response = m;
 				}
 				if (response != null) {
-					player.sendMessage(BasicMessage.render(response, true));
+					player.sendMessage(response.render(true));
 				}
 			}
 			break;
 		case CHEST:
 		    MessageWithStatus response = chestClicked(event, block, player);
 		    if (response != null) {
-		        player.sendMessage(BasicMessage.render(response, true));
+		        player.sendMessage(response.render(true));
 		    }
 		    break;
 		}

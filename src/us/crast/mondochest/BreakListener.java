@@ -7,7 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.block.Sign;
 
-import us.crast.mondochest.command.BasicMessage;
+import us.crast.chatmagic.MessageWithStatus;
+import us.crast.chatmagic.MondoMessage;
 import us.crast.mondochest.util.SignUtils;
 
 public final class BreakListener implements Listener {
@@ -46,7 +47,7 @@ public final class BreakListener implements Listener {
 		    message = e;
     	}
 		if (message != null) {
-		    player.sendMessage(BasicMessage.render(message, true));
+		    player.sendMessage(message.render(true));
 		}
 	}
 	

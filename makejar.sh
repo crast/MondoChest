@@ -6,7 +6,6 @@ cp ../plugin.yml ../config.yml ../config-example.yml .
 rsync -av \
    --exclude "tests" \
    --exclude "us/crast/quadtree" \
-   --exclude "us/crast/datastructures/builders" \
    --exclude "us/crast/bukkitstuff" \
    --exclude "SecureKey.class" \
    ../../CrastBukkitUtils/bin/* .

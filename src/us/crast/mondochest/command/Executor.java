@@ -9,13 +9,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import us.crast.mondochest.MessageWithStatus;
+import us.crast.chatmagic.BasicMessage;
+import us.crast.chatmagic.ChatMagic;
+import us.crast.chatmagic.MessageWithStatus;
+import us.crast.chatmagic.MondoMessage;
+import us.crast.chatmagic.Status;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoConstants;
 import us.crast.mondochest.MondoListener;
-import us.crast.mondochest.MondoMessage;
-import us.crast.mondochest.Status;
-import us.crast.mondochest.util.ChatMagic;
 
 public class Executor implements CommandExecutor {
 	
@@ -77,7 +78,7 @@ public class Executor implements CommandExecutor {
 			call.append(m);
 		}
 		for (MessageWithStatus m: call.getMessages()) {
-			sender.sendMessage(BasicMessage.render(m, true));
+			sender.sendMessage(m.render(true));
 		}
 		return false;
 	}
