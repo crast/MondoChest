@@ -14,3 +14,4 @@ bin/
 .classpath
 makejar.sh
 target/
+.settings
