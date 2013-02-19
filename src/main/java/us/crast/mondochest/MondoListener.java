@@ -400,18 +400,18 @@ public final class MondoListener implements Listener {
         String item_name = StringUtils.join(all_args, ' ');
         Material mat = Material.matchMaterial(item_name);
         if (mat == null) {
-            call.reply(new BasicMessage(Status.ERROR, "Unidentified material '%s'", item_name).render(true));
+            call.reply("{ERROR}Unidentified material '%s'", item_name);
             return;
         }
         World world = player.getWorld();
         BankSet bank = getLastClickedBank(player, false);
         if (!bank.getAccess(player).canFind()) {
-            call.reply(new BasicMessage("Not allowed to access this MondoChest", Status.WARNING).render(true));
+            call.reply("{WARNING}Not allowed to access this MondoChest");
             return;
         }
         int findMaxRadius = MondoConfig.getLimits(player).findMaxRadius;
         if (findMaxRadius != Limits.UNLIMITED  && player.getLocation().toVector().distance(bank.getMasterSign()) > findMaxRadius) {
-            call.reply(new BasicMessage("Too far away from chest bank", Status.ERROR).render(true));
+            call.reply("{ERROR}Too far away from chest bank");
             return;
         }
         boolean found = false;
@@ -424,19 +424,19 @@ public final class MondoListener implements Listener {
             }
             if (quantity > 0) {
                 BlockVector chest1 = chest.getChest1();
-                call.reply(new BasicMessage(Status.INFO, 
-                        "%d in chest at {BLUE}x={RED}%d{BLUE}, y={RED}%d{BLUE}, z={RED}%d",
-                        quantity,
-                        chest1.getBlockX(),
-                        chest1.getBlockY(),
-                        chest1.getBlockZ()
-                ).render(true));
+                call.reply(
+                    "{INFO}%d in chest at {BLUE}x={RED}%d{BLUE}, y={RED}%d{BLUE}, z={RED}%d",
+                    quantity,
+                    chest1.getBlockX(),
+                    chest1.getBlockY(),
+                    chest1.getBlockZ()
+                );
                 if (!found) player.openInventory(chest.getInventory(world, chest.getChest1()));
                 found = true;
             }
         }
         if (!found) {
-            call.reply(new BasicMessage("No items found", Status.ERROR).render(true));
+            call.reply("{ERROR}No items found");
         }
     }
     

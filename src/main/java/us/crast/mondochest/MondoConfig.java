@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import mondocommand.ChatMagic;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.ChatColor;
@@ -15,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import us.crast.chatmagic.BasicMessage;
-import us.crast.chatmagic.ChatMagic;
 import us.crast.mondochest.security.MondoSecurity;
 
 public final class MondoConfig {
@@ -94,6 +94,8 @@ public final class MondoConfig {
 	    BasicMessage.setAppTitle(MondoConstants.APP_NAME);
 	    ChatMagic.registerAlias("{USAGE}", ChatColor.LIGHT_PURPLE);
         ChatMagic.registerAlias("{WARNING}", ChatColor.DARK_RED);
+        ChatMagic.registerAlias("{INFO}", ChatColor.GRAY);
+        ChatMagic.registerAlias("{SUCCESS}", ChatColor.GREEN);
         ChatMagic.registerAlias("{ERROR}", ChatColor.RED);
         ChatMagic.registerAlias("{NOUN}", ChatColor.AQUA);
         ChatMagic.registerAlias("{VERB}", ChatColor.GRAY);

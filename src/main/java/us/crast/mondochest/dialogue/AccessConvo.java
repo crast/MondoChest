@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import mondocommand.ChatMagic;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationAbandonedListener;
@@ -16,7 +18,6 @@ import org.bukkit.conversations.RegexPrompt;
 import org.bukkit.entity.Player;
 
 import us.crast.chatmagic.BasicMessage;
-import us.crast.chatmagic.ChatMagic;
 import us.crast.chatmagic.MessageWithStatus;
 import us.crast.chatmagic.MondoMessage;
 import us.crast.chatmagic.Status;

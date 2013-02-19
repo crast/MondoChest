@@ -2,6 +2,7 @@ package us.crast.mondochest.command;
 
 
 import mondocommand.CallInfo;
+import mondocommand.FormatConfig;
 import mondocommand.MondoCommand;
 import mondocommand.SubHandler;
 
@@ -15,21 +16,23 @@ import us.crast.mondochest.MondoListener;
 public class Executor extends MondoCommand {	
 	private MondoListener listener;
 	private MondoChest mondoChest;
-
+	private static FormatConfig formatter = new FormatConfig()
+	    .setReplyPrefix("{GOLD}MondoChest: ");
 
 	public Executor(MondoChest mondoChest, MondoListener listener) {
-	    super();
+	    super(formatter);
 		this.mondoChest = mondoChest;
 		this.listener = listener;
 		setupCommands();
 	}
 
 	private void setupCommands() {
+	    /*
 		addSub("remove", "mondochest.remove_slave").setHandler(new SubHandler(){
 			public void handle(CallInfo call) {
 				// TODO
 			}
-		});
+		}); */
 		
 		addSub("access", "mondochest.use")
 		    .setDescription("Manage access to a MondoChest")
