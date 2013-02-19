@@ -85,6 +85,8 @@ public final class BankSet implements ConfigurationSerializable {
         // Deal with a specialty case if we add a double chest where there was
         // previously a single, or vice versa.
         if (newmanager.getChest2() != null) {
+            ChestManager reversi = new ChestManager(newmanager.getChest2(), newmanager.getChest1(), false);
+            chestLocations.remove(reversi);
             for (BlockVector vec : newmanager.internalBlockLocations()) {
                 ChestManager test = new ChestManager(vec, null, false);
                 chestLocations.remove(test);

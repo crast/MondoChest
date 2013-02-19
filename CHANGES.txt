@@ -5,6 +5,7 @@ Version 0.7: Not yet released.
  * Permissions can control chest limits
  * Deal smartly with adding duplicate chests
  * Option for case-insensitive signs
+ * Fix bug in sometimes having duplicate chests
 
 Version 0.6.2: 2013-02-04
  * Play nice with SignThatChest by allowing signs right in front of a chest.
