@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mondocommand.CallInfo;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,7 +29,6 @@ import us.crast.chatmagic.BasicMessage;
 import us.crast.chatmagic.MessageWithStatus;
 import us.crast.chatmagic.MondoMessage;
 import us.crast.chatmagic.Status;
-import us.crast.mondochest.command.CallInfo;
 import us.crast.mondochest.dialogue.AccessConvo;
 import us.crast.mondochest.persist.BankManager;
 import us.crast.mondochest.persist.PlayerInfoManager;
@@ -395,22 +396,22 @@ public final class MondoListener implements Listener {
 	}
 
     public void findItems(CallInfo call, Player player) throws MondoMessage {
-        String[] all_args = call.getArgs();
-        String item_name = StringUtils.join(all_args, ' ', 1, all_args.length);
+        List<String> all_args = call.getArgs();
+        String item_name = StringUtils.join(all_args, ' ');
         Material mat = Material.matchMaterial(item_name);
         if (mat == null) {
-            call.append(new BasicMessage(Status.ERROR, "Unidentified material '%s'", item_name));
+            call.reply(new BasicMessage(Status.ERROR, "Unidentified material '%s'", item_name).render(true));
             return;
         }
         World world = player.getWorld();
         BankSet bank = getLastClickedBank(player, false);
         if (!bank.getAccess(player).canFind()) {
-            call.append(new BasicMessage("Not allowed to access this MondoChest", Status.WARNING));
+            call.reply(new BasicMessage("Not allowed to access this MondoChest", Status.WARNING).render(true));
             return;
         }
         int findMaxRadius = MondoConfig.getLimits(player).findMaxRadius;
         if (findMaxRadius != Limits.UNLIMITED  && player.getLocation().toVector().distance(bank.getMasterSign()) > findMaxRadius) {
-            call.append(new BasicMessage("Too far away from chest bank", Status.ERROR));
+            call.reply(new BasicMessage("Too far away from chest bank", Status.ERROR).render(true));
             return;
         }
         boolean found = false;
@@ -423,19 +424,19 @@ public final class MondoListener implements Listener {
             }
             if (quantity > 0) {
                 BlockVector chest1 = chest.getChest1();
-                call.append(new BasicMessage(Status.INFO, 
+                call.reply(new BasicMessage(Status.INFO, 
                         "%d in chest at {BLUE}x={RED}%d{BLUE}, y={RED}%d{BLUE}, z={RED}%d",
                         quantity,
                         chest1.getBlockX(),
                         chest1.getBlockY(),
                         chest1.getBlockZ()
-                ));
+                ).render(true));
                 if (!found) player.openInventory(chest.getInventory(world, chest.getChest1()));
                 found = true;
             }
         }
         if (!found) {
-            call.append(new BasicMessage("No items found", Status.ERROR));
+            call.reply(new BasicMessage("No items found", Status.ERROR).render(true));
         }
     }
     
