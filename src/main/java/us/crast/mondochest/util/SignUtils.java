@@ -12,23 +12,24 @@ import org.bukkit.block.Sign;
 import us.crast.utils.GenericUtil;
 
 public final class SignUtils {
-    public static Vector<Chest> nearbyChests(Sign sign) {
-        return nearbyChests(sign, false, false);
+    private boolean verticalTwo;
+    private boolean horizontalTwo;
+
+    public SignUtils(boolean verticalTwo, boolean horizontalTwo) {
+        this.verticalTwo = verticalTwo;
+        this.horizontalTwo = horizontalTwo;
+        
     }
     
-	public static Vector<Chest> nearbyChests(Sign sign, boolean verticalTwo, boolean horizontalTwo) {
-		return nearbyBlocks(sign, Material.CHEST, verticalTwo, horizontalTwo);
-	}
+	public Vector<Chest> nearbyChests(Sign sign) {
+		return nearbyBlocks(sign, Material.CHEST);
+	}	
 	
-	public static <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target) {
-	    return nearbyBlocks(sign, target, false, false);
-	}
-	
-	public static <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target, boolean verticalTwo, boolean horizontalTwo) {
+	public <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target) {
 		Block block = sign.getBlock();
 		Vector<Block> searchblocks = new Vector<Block>();
-		searchblocks.add(block.getRelative(BlockFace.UP));
 		searchblocks.add(block.getRelative(BlockFace.DOWN));
+		searchblocks.add(block.getRelative(BlockFace.UP));
 		BlockFace facing = signFacing(sign);
 		switch (facing) {
 		case NORTH:
@@ -59,8 +60,8 @@ public final class SignUtils {
 		searchblocks.add(block.getRelative(facing.getOppositeFace()));
 
 		if (verticalTwo) {
-            searchblocks.add(block.getRelative(BlockFace.UP, 2));
             searchblocks.add(block.getRelative(BlockFace.DOWN, 2));
+            searchblocks.add(block.getRelative(BlockFace.UP, 2));
         }
 
 		Vector<T> targets = new Vector<T>();
@@ -71,6 +72,7 @@ public final class SignUtils {
 		}
 		return targets;
 	}
+	
 	public static BlockFace signFacing(Sign sign) {
 		org.bukkit.material.Sign signData = (org.bukkit.material.Sign) sign.getData();
 		return signData.getFacing();

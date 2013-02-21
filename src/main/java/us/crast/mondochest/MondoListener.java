@@ -231,7 +231,7 @@ public final class MondoListener implements Listener {
 	public MessageWithStatus slaveBroken(Cancellable event, Sign sign, Player player) {
 		Map<ChestManager, BankSet> slaves = bankManager.getWorldSlaves(sign.getWorld().getName());
 		int removed = 0;
-		for (Chest chest: SignUtils.nearbyChests(sign, MondoConfig.SLAVE_VERTICAL_TWO, MondoConfig.SLAVE_HORIZONTAL_TWO)) {
+		for (Chest chest: slaveFinder().nearbyChests(sign)) {
 			ChestManager info = new ChestManager(chest, false);
 			if (slaves.containsKey(info)) {
 				BankSet bs = slaves.get(info);
@@ -321,7 +321,7 @@ public final class MondoListener implements Listener {
 	}
 
 	private BankSet bankFromSign(Sign sign, String owner) throws MondoMessage {
-		java.util.Vector<Chest> chestsFound = SignUtils.nearbyChests(sign);
+		java.util.Vector<Chest> chestsFound = masterFinder().nearbyChests(sign);
 		if (chestsFound.isEmpty()) {
 			throw new MondoMessage("No chests found near MondoChest sign", Status.ERROR);
 		} else {
@@ -346,7 +346,7 @@ public final class MondoListener implements Listener {
 		int objectsAdded = 0;
 		boolean allow_restack = sign.getLine(1).trim().equalsIgnoreCase("restack");
 		
-	    List<BlockState> nearby = SignUtils.nearbyBlocks(sign, material, MondoConfig.SLAVE_VERTICAL_TWO, MondoConfig.SLAVE_HORIZONTAL_TWO);
+	    List<BlockState> nearby = slaveFinder().nearbyBlocks(sign, material);
         if (nearby.isEmpty()) return -1;
         for (BlockState block: nearby) {
             if (bank.add(block, allow_restack)) {
@@ -452,6 +452,15 @@ public final class MondoListener implements Listener {
             }
         }
         return myBanks;
+    }
+    
+    private SignUtils slaveFinder() {
+        return new SignUtils(MondoConfig.SLAVE_VERTICAL_TWO, MondoConfig.SLAVE_HORIZONTAL_TWO);
+        
+    }
+    
+    private SignUtils masterFinder() {
+        return new SignUtils(false, false);
     }
     
     public void reloadConfig() {
