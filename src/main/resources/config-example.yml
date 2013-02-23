@@ -87,6 +87,10 @@ special:
     # signs look 2 to the left and right.
     slave_horizontal_two: false
 
+    # Signs look at blocks behind the sign too. (up/down/left/right, no diagonal.)
+    # This will allow a lot of "nested chest" style bank vaults to work.
+    sign_in_front: true
+
     # Me personally, I like the sign names to match exactly [MondoChest].
     # But lots of people have reported annoyance on that, so we now support 
     # e.g. [mondochest], [MONDOchest] or any other capitalization.

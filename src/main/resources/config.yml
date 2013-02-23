@@ -20,4 +20,5 @@ restack_materials: []
 special:
     slave_vertical_two: false
     slave_horizontal_two: false
+    sign_in_front: false
     case_insensitive_signs: false

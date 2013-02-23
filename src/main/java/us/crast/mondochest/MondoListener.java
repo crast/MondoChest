@@ -455,12 +455,16 @@ public final class MondoListener implements Listener {
     }
     
     private SignUtils slaveFinder() {
-        return new SignUtils(MondoConfig.SLAVE_VERTICAL_TWO, MondoConfig.SLAVE_HORIZONTAL_TWO);
+        return new SignUtils(
+            MondoConfig.SLAVE_VERTICAL_TWO, 
+            MondoConfig.SLAVE_HORIZONTAL_TWO,
+            MondoConfig.SIGN_IN_FRONT
+        );
         
     }
     
     private SignUtils masterFinder() {
-        return new SignUtils(false, false);
+        return new SignUtils(false, false, MondoConfig.SIGN_IN_FRONT);
     }
     
     public void reloadConfig() {
