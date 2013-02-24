@@ -74,8 +74,6 @@ public final class MondoConfig {
 			} else {
 				MondoSecurity.setMode("Vault");
 			}
-		} else if (perms_config.equals("false") || perms_config.equals("none")) {
-			MondoSecurity.setMode("null");
 		} else {
 			log.warning(String.format(
 				"Do not know permissions scheme '%s', must be one of "
