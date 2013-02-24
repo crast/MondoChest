@@ -56,7 +56,7 @@ public final class AccessConvo implements ConversationAbandonedListener {
     @Override
     public void conversationAbandoned(ConversationAbandonedEvent e) {
         if (!e.gracefulExit()) {
-            e.getContext().getForWhom().sendRawMessage(BasicMessage.render(Status.ERROR, "Conversation left"));
+            e.getContext().getForWhom().sendRawMessage(BasicMessage.render(Status.ERROR, "Access conversation ended"));
         } else {
             e.getContext().getForWhom().sendRawMessage(BasicMessage.render(Status.INFO, "Bye!"));
         }
@@ -111,7 +111,7 @@ public final class AccessConvo implements ConversationAbandonedListener {
 
     final class AccessPrompt extends RegexPrompt {
         public AccessPrompt() {
-            super(Pattern.compile("^\\w+( .*)?"));
+            super(Pattern.compile("^/?\\w+( .*)?"));
         }
 
         @Override
@@ -131,6 +131,7 @@ public final class AccessConvo implements ConversationAbandonedListener {
             Player player = (Player) ctx.getForWhom();
             MessageWithStatus response = null;
             String cmd = parts[0].toLowerCase();
+            if (cmd.startsWith("/")) cmd = cmd.substring(1);
             try {
                 if (cmd.equals("list")) {
                     int page = (parts.length == 2)? Integer.parseInt(parts[1]) : 1;
