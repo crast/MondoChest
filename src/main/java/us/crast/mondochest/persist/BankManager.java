@@ -134,6 +134,7 @@ public final class BankManager {
 		changed.remove(bank);
 		worldCaches.ensure(world).clear();
 		worldSection(world).set(bank.getKey(), null);
+		should_save = true;
 	}
 	
 	public void markChanged(final String world, final BankSet bank) {

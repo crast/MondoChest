@@ -104,7 +104,10 @@ public final class BankSet implements ConfigurationSerializable {
     }
 
     public boolean removeChest(Chest chest) {
-        ChestManager other = new ChestManager(chest, false);
+        return remove(new ChestManager(chest, false));
+    }
+    
+    public boolean remove(ChestManager other) {
         return chestLocations.remove(other);
     }
 
@@ -185,6 +188,10 @@ public final class BankSet implements ConfigurationSerializable {
 
     public ChestManager getMasterChest() {
         return masterChest;
+    }
+
+    public void setMasterChest(ChestManager manager) {
+        this.masterChest = manager;
     }
 
     public BlockVector getMasterSign() {

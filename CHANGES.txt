@@ -7,6 +7,7 @@ Version 0.7: Not yet released.
  * Option for case-insensitive signs
  * Fix bug in sometimes having duplicate chests
  * Option to allow signs in front of the chests.
+ * Add a /mondo check command to check for missing chests and signs
 
 Version 0.6.2: 2013-02-04
  * Play nice with SignThatChest by allowing signs right in front of a chest.

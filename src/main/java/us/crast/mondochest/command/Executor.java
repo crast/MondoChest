@@ -9,6 +9,7 @@ import mondocommand.SubHandler;
 import us.crast.chatmagic.BasicMessage;
 import us.crast.chatmagic.MondoMessage;
 import us.crast.chatmagic.Status;
+import us.crast.mondochest.CheckerTask;
 import us.crast.mondochest.MondoChest;
 import us.crast.mondochest.MondoConstants;
 import us.crast.mondochest.MondoListener;
@@ -72,6 +73,15 @@ public class Executor extends MondoCommand {
                         new BasicMessage(Status.SUCCESS, "%s version %s", MondoConstants.APP_NAME, MondoConstants.MONDOCHEST_VERSION).render(true));
                 }    
 		    });
+	    
+		addSub("check", "mondochest.admin.check")
+          .allowConsole()
+          .setDescription("Check")
+          .setHandler(new SubHandler() {
+              public void handle(CallInfo call) {
+                  new CheckerTask(mondoChest, call.getSender()).run();
+              }    
+          });
 	}
 
 }
