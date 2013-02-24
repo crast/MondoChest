@@ -2,7 +2,6 @@ package us.crast.mondochest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import mondocommand.ChatMagic;
@@ -102,12 +101,12 @@ public final class MondoConfig {
     }
 
     private static void configureGroupLimits(ConfigurationSection s) {
-	    groupLimits = new ArrayList<Limits>();
         if (s == null) return;
-        for (Map.Entry<String, Object> e : s.getValues(false).entrySet()) {
-            if (s.isConfigurationSection(e.getKey())) {
+	    groupLimits = new ArrayList<Limits>();
+        for (String name : s.getKeys(false)) {
+            if (s.isConfigurationSection(name)) {
                 groupLimits.add(
-                    new Limits((ConfigurationSection) e.getValue(), GLOBAL_LIMITS)
+                    new Limits(s.getConfigurationSection(name), GLOBAL_LIMITS)
                 );
             }
         }
