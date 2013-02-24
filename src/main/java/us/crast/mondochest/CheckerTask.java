@@ -147,6 +147,9 @@ class TaskEntry implements Comparable<TaskEntry> {
         result = getChunkX().compareTo(other.getChunkX());
         if (result != 0) return result;
         result = getChunkZ().compareTo(other.getChunkZ());
+        if (result != 0) return result;
+        result = new Integer(chest.getChest1().getBlockY())
+                    .compareTo(other.chest.getChest1().getBlockY());
         return result;
     }
 }

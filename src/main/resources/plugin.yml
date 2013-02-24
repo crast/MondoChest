@@ -22,6 +22,7 @@ permissions:
             mondochest.admin.add_any_slave: true
             mondochest.admin.reload: true
             mondochest.admin.no_master_limit: true
+            mondochest.admin.check: true
     mondochest.create_master:
         description: Create a new MondoChest bank
         default: op
@@ -50,7 +51,7 @@ permissions:
         description: "Can make unlimited MondoChests"
         default: op
     mondochest.admin.check:
-        description: "Can run the /mondo check command"
+        description: "Able to run the /mondo check command"
         default: op
 
 commands:
