@@ -72,7 +72,7 @@ public class Executor extends MondoCommand {
 	    
 		addSub("check", "mondochest.admin.check")
           .allowConsole()
-          .setDescription("Check")
+          .setDescription("Check/cleanup missing/broken chest data.")
           .setHandler(new SubHandler() {
               public void handle(CallInfo call) {
                   new CheckerTask(mondoChest, call.getSender()).run();
