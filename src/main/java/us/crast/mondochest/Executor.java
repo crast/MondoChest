@@ -1,4 +1,4 @@
-package us.crast.mondochest.command;
+package us.crast.mondochest;
 
 
 import mondocommand.CallInfo;
@@ -9,10 +9,6 @@ import mondocommand.SubHandler;
 import us.crast.chatmagic.BasicMessage;
 import us.crast.chatmagic.MondoMessage;
 import us.crast.chatmagic.Status;
-import us.crast.mondochest.CheckerTask;
-import us.crast.mondochest.MondoChest;
-import us.crast.mondochest.MondoConstants;
-import us.crast.mondochest.MondoListener;
 
 public class Executor extends MondoCommand {	
 	private MondoListener listener;
