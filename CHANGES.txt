@@ -1,4 +1,4 @@
-Version 0.7: Not yet released.
+Version 0.7: 2013-03-20
  * Fix bug in chest break protection
  * Implement a more stringent and specific ACL
  * Conversation-based ACL controls
