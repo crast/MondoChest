@@ -23,14 +23,7 @@ public class Executor extends MondoCommand {
 		setupCommands();
 	}
 
-	private void setupCommands() {
-	    /*
-		addSub("remove", "mondochest.remove_slave").setHandler(new SubHandler(){
-			public void handle(CallInfo call) {
-				// TODO
-			}
-		}); */
-		
+	private void setupCommands() {		
 		addSub("access", "mondochest.use")
 		    .setDescription("Manage access to a MondoChest")
 		    .setHandler(new SubHandler() {

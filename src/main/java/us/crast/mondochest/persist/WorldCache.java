@@ -16,6 +16,7 @@ public final class WorldCache {
 	private final String world;
 	private Map<ChestManager, BankSet> slaves = null;
 	private DefaultDict<BlockVector, Set<BankSet>> banksByChest = null;
+	private HashSet<ClearWatcher> clears = new HashSet<ClearWatcher>();
 
 	public WorldCache(String world) {
 		this.world = world;
@@ -24,6 +25,13 @@ public final class WorldCache {
 	public void clear() {
 		this.slaves = null;
 		this.banksByChest = null;
+		for (ClearWatcher watcher : clears) {
+		    watcher.clear(world);
+		}
+	}
+	
+	public void addClearWatcher(ClearWatcher watcher) {
+	    clears.add(watcher);
 	}
 
 	public Map<ChestManager, BankSet> getSlaves(BankManager bankManager) {
@@ -63,6 +71,9 @@ public final class WorldCache {
 		return new Maker();
 	}
 	
+	public static interface ClearWatcher {
+	    public void clear(String world);
+	}
 }
 
 /* Maker */

@@ -4,7 +4,7 @@
   <groupId>us.crast</groupId>
   <artifactId>MondoChest</artifactId>
   <packaging>jar</packaging>
-  <version>0.7</version>
+  <version>0.7.1-SNAPSHOT</version>
   <name>MondoChest</name>
   <url>https://github.com/crast/MondoChest</url>
 

@@ -4,7 +4,7 @@ import mondocommand.ChatMagic;
 
 public final class MondoConstants {
 	public static final String APP_NAME = "MondoChest";
-	public static final String MONDOCHEST_VERSION = "0.7";
+	public static final String MONDOCHEST_VERSION = "0.7.1-pre1";
 	
 	public static final int DOUBLE_CHEST_SIZE = 54;
 	public static final int SINGLE_CHEST_SIZE = 27;
