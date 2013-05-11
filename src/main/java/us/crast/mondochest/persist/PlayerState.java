@@ -1,19 +1,30 @@
 package us.crast.mondochest.persist;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 public class PlayerState {
-	private Location lastClickedMaster;
+	private String lastClickedWorld;
+	private Vector lastClickedVector;
+	
 	private State state = State.NORMAL;
 	public PlayerState(Player player) {}
 	
 	/* Getters/Setters */
 	public Location getLastClickedMaster() {
-		return lastClickedMaster;
+		return new Location(
+		    Bukkit.getWorld(lastClickedWorld),
+		    lastClickedVector.getX(),
+		    lastClickedVector.getY(),
+		    lastClickedVector.getZ()
+		);
 	}
+	
 	public void setLastClickedMaster(Location lastClickedMaster) {
-		this.lastClickedMaster = lastClickedMaster;
+		this.lastClickedWorld = lastClickedMaster.getWorld().toString();
+		this.lastClickedVector = lastClickedMaster.toVector();
 	}
 	
 	public boolean isManagingChest() {
