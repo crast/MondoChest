@@ -31,7 +31,7 @@ public class PlayerState {
 	    if (lastClickedMaster == null) {
 	        this.lastClickedWorld = null;
 	    } else {
-    		this.lastClickedWorld = lastClickedMaster.getWorld().toString();
+    		this.lastClickedWorld = lastClickedMaster.getWorld().getName();
     		this.lastClickedVector = lastClickedMaster.toVector();
 	    }
 	}
