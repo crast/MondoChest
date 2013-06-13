@@ -3,6 +3,7 @@ package us.crast.mondochest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,13 +21,14 @@ public class RedstoneListener implements Listener, WorldCache.ClearWatcher {
         this.bankManager = plugin.getBankManager();
     }
     
-    @EventHandler(ignoreCancelled=true)
+    @EventHandler
     public void onBlockRedstone(BlockRedstoneEvent event) {
         if (event.getOldCurrent() != 0 || event.getNewCurrent() == 0) {
             return;
         }
         Block block = event.getBlock();
-        String worldName = block.getWorld().getName();
+        World world = block.getWorld();
+        String worldName = world.getName();
         Map<BlockVector, BankSet> worldInteresting = bankInfo.get(worldName);
         if (worldInteresting == null) {
             worldInteresting = buildWorldInteresting(worldName);
@@ -35,7 +37,7 @@ public class RedstoneListener implements Listener, WorldCache.ClearWatcher {
         BlockVector target = new BlockVector(block.getX(), block.getY(), block.getZ());
         BankSet targetBank = worldInteresting.get(target);
         if (targetBank != null) {
-            targetBank.shelveItems(block.getWorld());
+            targetBank.shelveItems(world);
         }
     }
 
