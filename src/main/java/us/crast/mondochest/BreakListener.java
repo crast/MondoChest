@@ -38,6 +38,7 @@ public final class BreakListener implements Listener {
     	        }		    
     		    break;
     		case CHEST:
+    		case TRAPPED_CHEST:
     		    message = this.listener.chestBroken(event, block, player);
     		    break;
     		default:

@@ -9,6 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 
+import us.crast.mondochest.MondoConstants;
 import us.crast.utils.GenericUtil;
 
 public final class SignUtils {
@@ -24,10 +25,10 @@ public final class SignUtils {
     }
     
 	public Vector<Chest> nearbyChests(Sign sign) {
-		return nearbyBlocks(sign, Material.CHEST);
+		return nearbyBlocks(sign, MondoConstants.CHEST_MATERIALS);
 	}	
 	
-	public <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, Material target) {
+	public <T extends BlockState> Vector<T> nearbyBlocks(Sign sign, MaterialSet materials) {
 		Block block = sign.getBlock();
 		Vector<Block> searchblocks = new Vector<Block>();
 		searchblocks.add(block.getRelative(BlockFace.DOWN));
@@ -54,7 +55,7 @@ public final class SignUtils {
 
 		Vector<T> targets = new Vector<T>();
 		for (Block b: searchblocks) {
-			if (b.getType() == target) {
+			if (materials.contains(b.getType())) {
 				targets.add(GenericUtil.<T>cast(b.getState()));
 			}
 		}

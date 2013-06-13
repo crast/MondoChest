@@ -1,5 +1,9 @@
 package us.crast.mondochest;
 
+import org.bukkit.Material;
+
+import us.crast.mondochest.util.MaterialSet;
+
 import mondocommand.ChatMagic;
 
 public final class MondoConstants {
@@ -22,4 +26,7 @@ public final class MondoConstants {
         + " set the {GREEN}acl_fallback_role{ERROR} variable or you will not"
         + " be allowed to use ACL commands until it's set."
     );
+    
+    public static final MaterialSet CHEST_MATERIALS = new MaterialSet(Material.CHEST, Material.TRAPPED_CHEST);
+    public static final MaterialSet DISPENSER_MATERIALS = new MaterialSet(Material.DISPENSER);
 }

@@ -35,6 +35,7 @@ import us.crast.mondochest.persist.PlayerInfoManager;
 import us.crast.mondochest.persist.PlayerState;
 import us.crast.mondochest.security.MondoSecurity;
 import us.crast.mondochest.security.PermissionChecker;
+import us.crast.mondochest.util.MaterialSet;
 import us.crast.mondochest.util.SignUtils;
 
 public final class MondoListener implements Listener {
@@ -155,7 +156,7 @@ public final class MondoListener implements Listener {
 	    }
 	}
 
-    private MessageWithStatus slaveClickedCommon(Block block, Sign sign, Player player, String noun, Material material) throws MondoMessage {
+    private MessageWithStatus slaveClickedCommon(Block block, Sign sign, Player player, String noun, MaterialSet materials) throws MondoMessage {
 	    Location lastClicked = getLastClicked(player);
 		if (lastClicked == null) {
 			return new BasicMessage("To add slaves to a bank, click a master sign first", Status.USAGE);
@@ -180,7 +181,7 @@ public final class MondoListener implements Listener {
 	        }
 	    }
 		
-		int num_added = addNearbyObjectsToBank(targetBank, sign, material);
+		int num_added = addNearbyObjectsToBank(targetBank, sign, materials);
 		BasicMessage response = null;
 		if (num_added == -1) {
 			response = new BasicMessage("No nearby " + noun + "s found", Status.ERROR);
@@ -200,10 +201,10 @@ public final class MondoListener implements Listener {
 	}
 	
 	private MessageWithStatus slaveSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
-	    return slaveClickedCommon(block, sign, player, "chest", Material.CHEST);
+	    return slaveClickedCommon(block, sign, player, "chest", MondoConstants.CHEST_MATERIALS);
 	}
 	private MessageWithStatus reloadSignClicked(Block block, Sign sign, Player player) throws MondoMessage {
-        return slaveClickedCommon(block, sign, player, "dispenser", Material.DISPENSER);
+        return slaveClickedCommon(block, sign, player, "dispenser", MondoConstants.DISPENSER_MATERIALS);
     }
 
     public MessageWithStatus masterBroken(Cancellable event, Sign sign, Player player) {
@@ -342,11 +343,11 @@ public final class MondoListener implements Listener {
 	    return results;
 	}
 	
-	private int addNearbyObjectsToBank(BankSet bank, Sign sign, Material material) {
+	private int addNearbyObjectsToBank(BankSet bank, Sign sign, MaterialSet materials) {
 		int objectsAdded = 0;
 		boolean allow_restack = sign.getLine(1).trim().equalsIgnoreCase("restack");
 		
-	    List<BlockState> nearby = slaveFinder().nearbyBlocks(sign, material);
+	    List<BlockState> nearby = slaveFinder().nearbyBlocks(sign, materials);
         if (nearby.isEmpty()) return -1;
         for (BlockState block: nearby) {
             if (bank.add(block, allow_restack)) {
