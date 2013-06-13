@@ -52,9 +52,9 @@ public final class BankSet implements ConfigurationSerializable {
     }
 
     public boolean add(BlockState block, boolean allow_restack) {
-        if (block.getType() == Material.CHEST) {
+        if (MondoConstants.CHEST_MATERIALS.match(block)) {
             return addChest((Chest) block, allow_restack);
-        } else if (block.getType() == Material.DISPENSER) {
+        } else if (MondoConstants.DISPENSER_MATERIALS.match(block)) {
             return addDispenser((Dispenser) block, allow_restack);
         } else {
             return false;

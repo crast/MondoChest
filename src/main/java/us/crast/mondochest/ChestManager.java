@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -36,7 +35,7 @@ public final class ChestManager implements ConfigurationSerializable {
 		chest1 = block.getLocation().toVector().toBlockVector();
 		for (BlockFace face: cardinals) {
 			Block other = block.getRelative(face);
-			if (other.getType() == Material.CHEST) {
+			if (other.getType() == block.getType()) {
 				BlockVector othervec = other.getLocation().toVector().toBlockVector();
 				if (face == BlockFace.NORTH || face == BlockFace.EAST) {
 					chest2 = chest1;
@@ -71,7 +70,7 @@ public final class ChestManager implements ConfigurationSerializable {
 	
 	public Inventory getInventory(World world, BlockVector vector) {
 		Block block = world.getBlockAt(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
-		if (block.getType() == Material.CHEST) {
+		if (MondoConstants.CHEST_MATERIALS.match(block)) {
 			return ((Chest) block.getState()).getInventory();
 		} else {
 			return null;

@@ -15,6 +15,7 @@ import org.bukkit.util.BlockVector;
 import us.crast.chatmagic.BasicMessage;
 import us.crast.chatmagic.MondoMessage;
 import us.crast.chatmagic.Status;
+import us.crast.mondochest.util.MaterialSet;
 
 
 public class CheckerTask implements Runnable {
@@ -23,6 +24,7 @@ public class CheckerTask implements Runnable {
     private ArrayList<TaskEntry> tasks = new ArrayList<TaskEntry>();
     private int currentIndex;
     private CommandSender sender;
+    private static final MaterialSet WALL_SIGN_TARGET = new MaterialSet(Material.WALL_SIGN);
 
     public CheckerTask(MondoChest plugin, CommandSender sender) {
         this.plugin = plugin;
@@ -52,9 +54,9 @@ public class CheckerTask implements Runnable {
             World world = plugin.getServer().getWorld(task.bank.getWorld());
             BlockVector[] locs = task.chest.internalBlockLocations();
             boolean is_master = task.bank.getMasterChest().equals(task.chest);
-            ArrayList<Block> successes = checkTargets(world, Material.CHEST, locs);
+            ArrayList<Block> successes = checkTargets(world, MondoConstants.CHEST_MATERIALS, locs);
             if (is_master) {
-                if (successes.size() == 0 || checkTargets(world, Material.WALL_SIGN, task.bank.getMasterSign()).size() == 0) {
+                if (successes.size() == 0 || checkTargets(world, WALL_SIGN_TARGET, task.bank.getMasterSign()).size() == 0) {
                     log("Removing whole bank");
                     plugin.getBankManager().removeBank(task.bank.getWorld(), task.bank);
                 } else if (successes.size() < locs.length) {
@@ -79,7 +81,7 @@ public class CheckerTask implements Runnable {
         }
         finish();
     }
-    
+
     private void finish() {
         try {
             plugin.getBankManager().saveIfNeeded();
@@ -96,12 +98,12 @@ public class CheckerTask implements Runnable {
      * @param world
      * @param locs
      */
-    private ArrayList<Block> checkTargets(World world, Material target, BlockVector ... locs) {
+    private ArrayList<Block> checkTargets(World world, MaterialSet targets, BlockVector ... locs) {
         ArrayList<Block> successes = new ArrayList<Block>();
         for (BlockVector v: locs) {
             Block block = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-            if (block.getType() != target) {
-                log("%s{INFO}: expected {NOUN}%s{INFO}, got {NOUN}%s", formatBV(v), target, block.getType());
+            if (!targets.match(block)) {
+                log("%s{INFO}: expected {NOUN}%s{INFO}, got {NOUN}%s", formatBV(v), targets, block.getType());
             } else {
                 successes.add(block);
                 //log("-> Item at %s is a chest!", v);

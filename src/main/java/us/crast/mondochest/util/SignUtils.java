@@ -2,7 +2,6 @@ package us.crast.mondochest.util;
 
 import java.util.Vector;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;

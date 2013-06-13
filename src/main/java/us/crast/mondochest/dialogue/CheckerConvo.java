@@ -65,6 +65,7 @@ public final class CheckerConvo implements ConversationAbandonedListener {
             }
         }
 
+        @SuppressWarnings("unused")
         @Override
         protected Prompt acceptValidatedInput(ConversationContext ctx, String input) {
             String[] parts = input.split(" ", 3);

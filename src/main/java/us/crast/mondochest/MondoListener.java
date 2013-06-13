@@ -96,6 +96,7 @@ public final class MondoListener implements Listener {
 			}
 			break;
 		case CHEST:
+		case TRAPPED_CHEST:
 		    MessageWithStatus response = chestClicked(event, block, player);
 		    if (response != null) {
 		        player.sendMessage(response.render(true));
@@ -371,7 +372,7 @@ public final class MondoListener implements Listener {
 		return lastClicked;
 	}
 	
-	public BankSet getLastClickedBank(Player player, boolean enforce_ownership) throws MondoMessage{
+	public BankSet getLastClickedBank(Player player, boolean enforce_ownership) throws MondoMessage {
 		Location lastClicked = getLastClicked(player);
 		if (lastClicked == null) throw new MondoMessage("Click a MondoChest sign before performing this action", Status.ERROR);
 		
