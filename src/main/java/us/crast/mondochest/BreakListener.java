@@ -27,8 +27,7 @@ public final class BreakListener implements Listener {
     		switch (block.getType()) {
     		case WALL_SIGN:
     	        Sign sign = SignUtils.signFromBlock(block);
-    	        String firstLine = sign.getLine(0);
-    	        switch (MondoSign.match(firstLine)) {
+    	        switch (MondoSign.match(sign.getLine(0))) {
     	        case MASTER:
     	            message = this.listener.masterBroken(event, sign, player);
     	            break;
