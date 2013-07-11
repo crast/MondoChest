@@ -27,9 +27,9 @@ acl_fallback_role: user
 ## Limits to keep performance sane.
 
 # 'radius' limits are in number of blocks.
-# Setting any limit to -1 or 'unlimited' makes it infinite.
+# Setting any limit to 'unlimited' makes it infinite.
 limits:
-    # How far away you can be when doing a /mondo find
+    # How far away you can be from the master when doing a /mondo find
     # radius above 250 will possibly cause chunks to be loaded, which is VERY SLOW
     find_max_radius: 150
     # Allows limiting how many MondoChests(masters)  a given user can make.
@@ -43,6 +43,12 @@ limits:
 # You can create as many groups as you want, but the performance of MondoChest is directly
 # affected by the number of groups, so delete this whole section if you don't need it.
 group_limits:
+    # NOTE MondoChest doesn't check groups in your permission system, instead it checks
+    # for a specific permission node. If you want to map a group in your permission 
+    # system, give them a permission node like mondochest.limits.<groupname>
+    # Why do it this way? You can then use things like per-world permissions 
+    # to disable mondochest in the nether or in certain worlds of a multi-world server.
+
     # This group is enabled with permission mondochest.limits.admins
     admins:
         find_max_radius: 250
