@@ -101,8 +101,8 @@ public final class MondoConfig {
     }
 
     private static void configureGroupLimits(ConfigurationSection s) {
+        groupLimits = new ArrayList<Limits>();
         if (s == null) return;
-	    groupLimits = new ArrayList<Limits>();
         for (String name : s.getKeys(false)) {
             if (s.isConfigurationSection(name)) {
                 groupLimits.add(

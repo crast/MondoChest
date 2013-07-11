@@ -13,6 +13,8 @@ limits:
     slaves_per_master: unlimited
     slave_max_add_radius: 150
 
+group_limits: {}
+
 restack_master: false
 restack_slaves: false
 restack_materials: []
