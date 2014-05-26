@@ -449,7 +449,7 @@ public final class MondoListener implements Listener {
 
     public void addSignlessSlave(CallInfo call, Player player) throws MondoMessage {
         for (Block b : player.getLineOfSight(null, 15)) {
-            if (b.getType() == Material.CHEST || b.getType() == Material.TRAPPED_CHEST) {
+            if (MondoConstants.CHEST_MATERIALS.match(b)) {
                 BankSet bank = checkSlaveAddAccess(b, player);
                 if (bank.add(b.getState(), true)) {
                     call.reply("{SUCCESS}Added slave chest to bank.");
