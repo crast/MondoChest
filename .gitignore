@@ -15,3 +15,7 @@ bin/
 makejar.sh
 target/
 .settings
+
+# IntelliJ
+.idea
+MondoChest.iml
