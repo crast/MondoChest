@@ -1,6 +1,7 @@
-Version 0.7.1: Not yet released
+Version 0.7.1: 2013-11-14
  * Support trapped chests.
  * Fix NullPointer issue when group limits are removed
+ * Dropped support for older MC, minimum version is now 1.5.2-R1
 
 Version 0.7: 2013-03-20
  * Fix bug in chest break protection

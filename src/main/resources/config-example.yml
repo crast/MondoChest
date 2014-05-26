@@ -101,3 +101,7 @@ special:
     # But lots of people have reported annoyance on that, so we now support 
     # e.g. [mondochest], [MONDOchest] or any other capitalization.
     case_insensitive_signs: true
+
+    # New feature which allows slaves to be added without signs.
+    # This also requires the user to have the permission mondochest.add_signless_slave
+    signless_slaves: false

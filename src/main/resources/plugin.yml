@@ -29,6 +29,9 @@ permissions:
     mondochest.add_slave:
         description: Add MondoSlaves to a MondoChest bank
         default: op
+    mondochest.add_signless_slave:
+        description: Add slaves to a MondoChest bank without a sign
+        default: op
     mondochest.use:
         description: Use MondoChest sign
         default: true

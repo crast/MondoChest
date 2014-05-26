@@ -24,3 +24,4 @@ special:
     slave_horizontal_two: false
     sign_in_front: false
     case_insensitive_signs: false
+    signless_slaves: false

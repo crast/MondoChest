@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import mondocommand.CallInfo;
+import mondocommand.ChatMagic;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -47,7 +48,6 @@ public final class MondoListener implements Listener {
 	private PermissionChecker can_override_add_slave;
     private PermissionChecker can_override_open;
     private PermissionChecker can_override_master_limit;
-
 	
 	private final BankManager bankManager;
 	private PlayerInfoManager playerManager = new PlayerInfoManager();
@@ -157,31 +157,36 @@ public final class MondoListener implements Listener {
 	    }
 	}
 
+    private BankSet checkSlaveAddAccess(Block block, Player player) throws MondoMessage {
+        Location lastClicked = getLastClicked(player);
+        if (lastClicked == null) {
+            throw new MondoMessage("To add slaves to a bank, click a master sign first", Status.USAGE);
+        }
+        Limits limits = MondoConfig.getLimits(player);
+        if (limits.slaveMaxAddRadius != Limits.UNLIMITED) {
+            double distance = block.getLocation().distance(lastClicked);
+            if (distance > limits.slaveMaxAddRadius) {
+                throw new MondoMessage("Slave is too far away from the last clicked master, this is not recommended.", Status.WARNING);
+            }
+        }
+
+        BankSet targetBank = bankManager.getBank(lastClicked);
+        if (targetBank == null) {
+            throw new MondoMessage("Wot. No Target " + lastClicked.toString(), Status.ERROR);
+        } else if (!targetBank.getAccess(player).canAddChests() && !can_override_add_slave.check(player)) {
+            throw new MondoMessage("You do not have permission to add slaves to this MondoChest", Status.WARNING);
+        }
+        if (limits.slavesPerMaster != Limits.UNLIMITED) {
+            if (targetBank.numChests() >= limits.slavesPerMaster) {
+                throw new MondoMessage(ChatMagic.colorize("{WARNING}You cannot add more than {GREEN}%d{WARNING} slaves.", limits.slavesPerMaster), Status.WARNING);
+            }
+        }
+        return targetBank;
+    }
+
     private MessageWithStatus slaveClickedCommon(Block block, Sign sign, Player player, String noun, MaterialSet materials) throws MondoMessage {
-	    Location lastClicked = getLastClicked(player);
-		if (lastClicked == null) {
-			return new BasicMessage("To add slaves to a bank, click a master sign first", Status.USAGE);
-		}
-		Limits limits = MondoConfig.getLimits(player);
-		if (limits.slaveMaxAddRadius != Limits.UNLIMITED) {
-    		double distance = block.getLocation().distance(lastClicked);
-    		if (distance > limits.slaveMaxAddRadius) {
-    			return new BasicMessage("Slave is too far away from the last clicked master, this is not recommended.", Status.WARNING);
-    		}
-		}
-		
-		BankSet targetBank = bankManager.getBank(lastClicked);
-		if (targetBank == null) {
-			return new BasicMessage("Wot. No Target " + lastClicked.toString(), Status.ERROR);
-		} else if (!targetBank.getAccess(player).canAddChests() && !can_override_add_slave.check(player)) {
-			return new BasicMessage(Status.WARNING, "You do not have permission to add slaves to this MondoChest");
-		}
-	    if (limits.slavesPerMaster != Limits.UNLIMITED) {
-	        if (targetBank.numChests() >= limits.slavesPerMaster) {
-	            return new BasicMessage(Status.WARNING, "You cannot add more than %d slaves.", limits.slavesPerMaster);
-	        }
-	    }
-		
+
+        BankSet targetBank = checkSlaveAddAccess(block, player);
 		int num_added = addNearbyObjectsToBank(targetBank, sign, materials);
 		BasicMessage response = null;
 		if (num_added == -1) {
@@ -440,6 +445,21 @@ public final class MondoListener implements Listener {
         if (!found) {
             call.reply("{ERROR}No items found");
         }
+    }
+
+    public void addSignlessSlave(CallInfo call, Player player) throws MondoMessage {
+        for (Block b : player.getLineOfSight(null, 15)) {
+            if (b.getType() == Material.CHEST || b.getType() == Material.TRAPPED_CHEST) {
+                BankSet bank = checkSlaveAddAccess(b, player);
+                if (bank.add(b.getState(), true)) {
+                    call.reply("{SUCCESS}Added slave chest to bank.");
+                } else {
+                    call.reply("{WARNING}Chest already in bank or invalid.");
+                }
+                return;
+            }
+        }
+        call.reply("{ERROR}Make sure the chest to add is in front of the cursor.");
     }
     
     /**

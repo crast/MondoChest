@@ -52,7 +52,15 @@ public class Executor extends MondoCommand {
 					listener.findItems(call, call.getPlayer());
 				}
 			});
-
+        if (MondoConfig.SIGNLESS_SLAVES) {
+            addSub("add_slave", "mondochest.add_signless_slave")
+                .setDescription("Add a slave without a sign")
+                .setHandler(new SubHandler() {
+                    public void handle(CallInfo call) throws MondoMessage {
+                        listener.addSignlessSlave(call, call.getPlayer());
+                    }
+                });
+        }
 		addSub("version", "mondochest.admin.console")
 			.allowConsole()
 			.setDescription("Version Info")
