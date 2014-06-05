@@ -66,8 +66,7 @@ public class Executor extends MondoCommand {
 			.setDescription("Version Info")
 			.setHandler(new SubHandler() {
 				public void handle(CallInfo call) {
-					call.reply(
-						new BasicMessage(Status.SUCCESS, "%s version %s", MondoConstants.APP_NAME, MondoConstants.MONDOCHEST_VERSION).render(true));
+					call.reply("{SUCCESS}%s version %s", MondoConstants.APP_NAME, MondoConstants.MONDOCHEST_VERSION);
 				}
 			});
 

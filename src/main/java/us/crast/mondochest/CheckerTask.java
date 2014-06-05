@@ -52,6 +52,14 @@ public class CheckerTask implements Runnable {
         while (--currentIndex >= 0) {
             TaskEntry task = tasks.get(currentIndex);
             World world = plugin.getServer().getWorld(task.bank.getWorld());
+            if (world == null) {
+                log(
+                    "{WARNING}Missing world {NOUN}%s{WARNING}, removing bank at {GREEN}%s",
+                    task.bank.getWorld(), task.bank.getMasterSign()
+                );
+                plugin.getBankManager().removeBank(task.bank.getWorld(), task.bank);
+                continue;
+            }
             BlockVector[] locs = task.chest.internalBlockLocations();
             boolean is_master = task.bank.getMasterChest().equals(task.chest);
             ArrayList<Block> successes = checkTargets(world, MondoConstants.CHEST_MATERIALS, locs);
