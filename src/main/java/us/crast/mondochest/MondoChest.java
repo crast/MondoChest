@@ -9,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import us.crast.chatmagic.MondoMessage;
 import us.crast.mondochest.persist.BankManager;
-import us.crast.mondochest.util.MetricsLite;
 
 public final class MondoChest extends JavaPlugin {
 	private Logger log;
@@ -41,12 +40,13 @@ public final class MondoChest extends JavaPlugin {
 			log.info("I think I have an economy!");
 		}
 		*/
+		/*
 		try {
 		    MetricsLite metrics = new MetricsLite(this);
 		    metrics.start();
 		} catch (IOException e) {
 		    // Failed to submit the stats :-(
-		}
+		}*/
 
 	}
 	

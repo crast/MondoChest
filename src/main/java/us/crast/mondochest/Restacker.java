@@ -14,11 +14,14 @@ public final class Restacker {
 	
 	private static void restack(RestackerContext context) {
 		Map<Integer, ItemStack> availMats = new java.util.HashMap<Integer, ItemStack>();
+
+		// XXX TODO: come up with a better way than using deprecated getId() to do material stacking checks
+
 		for (Material mat: MondoConfig.RESTACK_MATERIALS) availMats.put(new Integer(mat.getId()), null);
 		
 		List<ItemStack> items = context.listItems();
 		for (ItemStack stack: items) {
-			Integer id = new Integer(stack.getTypeId());
+			Integer id = new Integer(stack.getType().getId());
 			if (availMats.containsKey(id) && stack.getAmount() < 64) {
 				ItemStack avail = availMats.get(id);
 				if (avail == null) {

@@ -1,8 +1,10 @@
+
+Version 0.8-pre1
+ * Back from the dead! 2019 update fixes API issues and now supports bukkit(and spigot) 1.8 -> 1.13
+ * Some small internal cleanups as we get ready for some big upcoming changes
+
 Version 0.7.2-pre2
  * /mondo check can detect missing worlds and remove their chests
-
-
-Version 0.7.2-pre1
 
 Version 0.7.1: 2013-11-14
  * Support trapped chests.
